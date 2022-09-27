@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "92794491570",
+    "project_id": "petwatch-9a46d",
+    "storage_bucket": "petwatch-9a46d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92794491570:android:c2e75318bd3a074f55efab",
+        "android_client_info": {
+          "package_name": "com.example.petwatch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "92794491570-opp5bhqr4p5de4neekagh0tbcv6q8nh6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7hIrOnhSWdLBIi9eeY-nopLNiSCWN3EE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "92794491570-opp5bhqr4p5de4neekagh0tbcv6q8nh6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
