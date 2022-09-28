@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FireAuth {
   // For registering a new user
@@ -20,6 +21,12 @@ class FireAuth {
       await user!.updateDisplayName(name);
       await user.reload();
       user = auth.currentUser;
+      // create document
+      FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+        "email": user?.email,
+        "building": "Something",
+        "name": user?.displayName
+      });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
