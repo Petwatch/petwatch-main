@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  ApartmentCodePage(),
+                                                  RegisterPage(),
                                             ),
                                           );
                                         },
