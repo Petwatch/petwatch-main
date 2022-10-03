@@ -144,11 +144,7 @@ class _ApartmentCodePageState extends State<ApartmentCodePage> {
                       alignment: Alignment.bottomCenter,
                       child: TextButton(
                         onPressed: () {
-                          setState(() {
-                            _isProcessing = true;
-                          });
-
-                          //proceed to register page                                                Navigator.of(context)
+                          //proceed to login page
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (context) => LoginPage(),
