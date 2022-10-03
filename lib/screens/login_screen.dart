@@ -7,6 +7,8 @@ import 'package:petwatch/screens/register_page.dart';
 import 'package:petwatch/screens/profile_page.dart';
 import 'package:petwatch/utils/fire_auth.dart';
 
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -22,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final _focusPassword = FocusNode();
 
   bool _isProcessing = false;
+  bool _isProcessingFacebook = false;
 
   Future<FirebaseApp> _initializeFirebase() async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
@@ -40,6 +43,21 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     return firebaseApp;
+  }
+
+  Future<UserCredential> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final LoginResult loginResult = await FacebookAuth.instance.login();
+
+    // Create a credential from the access token
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+    final firebaseUser = await FirebaseAuth.instance
+        .signInWithCredential(facebookAuthCredential);
+
+    // Once signed in, return the UserCredential
+    return firebaseUser;
   }
 
   @override
@@ -167,6 +185,56 @@ class _LoginPageState extends State<LoginPage> {
                                         },
                                         child: Text(
                                           'Register',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                          SizedBox(height: 24.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text("OR"),
+                            ],
+                          ),
+                          SizedBox(height: 24.0),
+                          _isProcessingFacebook
+                              ? CircularProgressIndicator()
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            setState(() {
+                                              _isProcessingFacebook = true;
+                                            });
+
+                                            User? user =
+                                                (await signInWithFacebook())
+                                                    .user;
+
+                                            setState(() {
+                                              _isProcessingFacebook = false;
+                                            });
+
+                                            if (user != null) {
+                                              Navigator.of(context)
+                                                  .pushReplacement(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ProfilePage(user: user),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                        child: Text(
+                                          'Sign In with Facebook',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                       ),
