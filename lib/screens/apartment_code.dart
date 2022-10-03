@@ -85,7 +85,7 @@ class _ApartmentCodePageState extends State<ApartmentCodePage> {
                                                         .pushReplacement(
                                                       MaterialPageRoute(
                                                         builder: (context) =>
-                                                            RegisterPage(),
+                                                            RegisterScreen(),
                                                       ),
                                                     )
                                                   }
