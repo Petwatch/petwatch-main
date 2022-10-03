@@ -1,11 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/login_screen.dart';
 import 'package:petwatch/screens/apartment_code.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petwatch/config/palette.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -14,6 +23,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    debugPrint('in main.dart');
     return MaterialApp(
       title: 'Pet Watch',
       theme: ThemeData(
@@ -29,7 +39,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Palette.petWatchGreen,
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(shape: StadiumBorder()))),
-      home: LoginPage(),
+      // ignore: prefer_const_constructors
+      home: AuthGate(),
     );
   }
 }
