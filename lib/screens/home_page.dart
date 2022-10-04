@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 
 class HomePage extends StatefulWidget {
   // @override
@@ -19,10 +20,12 @@ class _HomePageState extends State<HomePage> {
         onTap: () {},
         child: Scaffold(
           appBar: AppBar(title: Text('HomePage')),
-          body: Padding(
+          body: Container(
+              color: Colors.white,
               padding: const EdgeInsets.all(24.0),
-              child: Center(
-                child: Text("Test"),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [Text("tet"), SignOutButton()],
               )),
         ));
   }

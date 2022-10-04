@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
-import 'package:petwatch/screens/login_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'firebase_options.dart';
@@ -92,12 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-                child: Text('Click this'))
+            TextButton(onPressed: () {}, child: Text('Click this'))
           ],
         ),
       ),
