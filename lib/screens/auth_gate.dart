@@ -39,21 +39,6 @@ class AuthGate extends StatelessWidget {
               return PersonalInfo();
             }),
           );
-          // debugPrint("I got this far");
-          // Future<StatefulWidget> Function() test = () async {
-          //   if (await UserCheck.validateUserHasBuilding(
-          //       uid: snapshot.data!.uid)) {
-          //     debugPrint("User Validated");
-          //     return HomePage();
-          //   }
-
-          //   return PersonalInfo();
-          // };
-          // if (test != null) {
-          //   debugPrint("What? ");
-          //   debugPrint("$test");
-          //   return HomePage();
-          // }
         }
         return PersonalInfo();
       },
