@@ -18,6 +18,7 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
+        var userId = snapshot.data?.uid ?? "";
         if (!snapshot.hasData) {
           return SignInScreen(providerConfigs: [
             EmailProviderConfiguration(),
@@ -33,14 +34,17 @@ class AuthGate extends StatelessWidget {
             stream: UserCheck.validateUserHasBuilding(uid: snapshot.data!.uid),
             builder: ((context, snapshot) {
               debugPrint("${snapshot.data.toString()}");
-              if (snapshot.data.toString() == "true") {
-                return HomePage();
+              while (snapshot.data == null) {
+                return CircularProgressIndicator(); // TODO: replace this with a screen that has a processing circle.
               }
-              return PersonalInfo();
+              if (snapshot.data.toString() == "true") {
+                return HomePage(uid: userId);
+              }
+              return PersonalInfo(uid: userId);
             }),
           );
         }
-        return PersonalInfo();
+        return PersonalInfo(uid: userId);
       },
     );
   }
