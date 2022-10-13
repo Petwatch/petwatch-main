@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/main.dart';
-import 'package:petwatch/screens/home_page.dart';
+import 'package:petwatch/screens/routes.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/utils/validate_user.dart';
 
@@ -38,7 +38,7 @@ class AuthGate extends StatelessWidget {
                 return CircularProgressIndicator(); // TODO: replace this with a screen that has a processing circle.
               }
               if (snapshot.data.toString() == "true") {
-                return HomePage();
+                return Routes();
               }
               return PersonalInfo(uid: userId);
             }),
