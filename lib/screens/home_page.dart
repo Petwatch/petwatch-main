@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
+import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/components/bottom_nav_bar.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
     return GestureDetector(
         onTap: () {},
         child: Scaffold(
-          appBar: AppBar(title: Text('HomePage')),
+          appBar: TopNavBar(),
           body: Center(
             child: Padding(
               padding: EdgeInsets.all(24),
