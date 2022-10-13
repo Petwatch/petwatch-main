@@ -1,23 +1,19 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   // @override
   // State<StatefulWidget> createState() {
   //   // TODO: implement createState
   //   throw UnimplementedError();
   // }
-  final String uid;
-  const HomePage({required String this.uid});
 
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -31,7 +27,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("tet"),
+                      Text(FirebaseAuth.instance.currentUser!.uid.toString()),
                       SignOutButton(),
                     ]),
               ),

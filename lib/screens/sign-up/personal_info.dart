@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petwatch/screens/home_page.dart';
+import 'package:petwatch/screens/sign-up/sign_up_complete.dart';
 
 class PersonalInfo extends StatefulWidget {
   final String uid;
@@ -224,14 +225,12 @@ class PersonalInfoState extends State<PersonalInfo> {
                                                           "uid": widget.uid
                                                         }),
 
-                                                        //proceed to register page                                                Navigator.of(context)
+                                                        //proceed to register page
                                                         Navigator.of(context)
                                                             .pushReplacement(
                                                           MaterialPageRoute(
                                                             builder: (context) =>
-                                                                HomePage(
-                                                                    uid: widget
-                                                                        .uid),
+                                                                SignUpCompletePage(),
                                                           ),
                                                         )
                                                       }
