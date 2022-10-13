@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
-import 'package:petwatch/screens/home_page.dart';
+import 'package:petwatch/screens/routes.dart';
 
 class SignUpCompletePage extends StatelessWidget {
   @override
