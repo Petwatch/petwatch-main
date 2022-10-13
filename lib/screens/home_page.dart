@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
+import 'package:petwatch/components/bottom_nav_bar.dart';
 
 class HomePage extends StatelessWidget {
   // @override
@@ -19,18 +20,20 @@ class HomePage extends StatelessWidget {
     return GestureDetector(
         onTap: () {},
         child: Scaffold(
-            appBar: AppBar(title: Text('HomePage')),
-            body: Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(FirebaseAuth.instance.currentUser!.uid.toString()),
-                      SignOutButton(),
-                    ]),
-              ),
-            )));
+          appBar: AppBar(title: Text('HomePage')),
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(FirebaseAuth.instance.currentUser!.uid.toString()),
+                    SignOutButton(),
+                  ]),
+            ),
+          ),
+          bottomNavigationBar: BottomNavBar(),
+        ));
   }
 }
