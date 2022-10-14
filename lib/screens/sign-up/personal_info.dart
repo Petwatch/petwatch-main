@@ -223,7 +223,10 @@ class PersonalInfoState extends State<PersonalInfo> {
                                                           "lookingFor":
                                                               _character
                                                                   .toString(),
-                                                          "uid": widget.uid
+                                                          "uid": widget.uid,
+                                                          "buildingCode":
+                                                              _codeTextController
+                                                                  .text
                                                         }),
 
                                                         //proceed to register page
