@@ -29,7 +29,14 @@ class _TopNavBarState extends State<TopNavBar> {
         icon: const Icon(Icons.filter_alt_rounded),
         onPressed: () => {},
       ),
-      title: Text("Logo"),
+      title: Container(
+        width: 75,
+        height: 75,
+        child: Image.asset(
+          'assets/images/petwatch_logo_white.png',
+        ),
+      ),
+      centerTitle: true,
       backgroundColor: Theme.of(context).colorScheme.primary,
       actions: [
         IconButton(

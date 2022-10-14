@@ -27,7 +27,14 @@ class _MessageNavBarState extends State<MessageNavBar> {
         icon: const Icon(Icons.keyboard_arrow_left),
         onPressed: () => {Navigator.pop(context)},
       ),
-      title: Text("Logo"),
+      title: Container(
+        width: 75,
+        height: 75,
+        child: Image.asset(
+          'assets/images/petwatch_logo_white.png',
+        ),
+      ),
+      centerTitle: true,
       backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
