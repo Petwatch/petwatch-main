@@ -7,10 +7,12 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/pet-profile/pet_setup_info.dart';
 
 class PetProfilePage extends StatelessWidget {
-  // @override
-  // State<StatefulWidget> createState() {
-  //   // TODO: implement createState
-  //   throw UnimplementedError();
+  // void getPetData() async {
+  //   var docRef = await FirebaseFirestore.instance
+  //       .collectionGroup('users')
+  //       .where('uid',
+  //           isEqualTo: FirebaseAuth.instance.currentUser!.uid.toString())
+  //       .get();
   // }
 
   @override
