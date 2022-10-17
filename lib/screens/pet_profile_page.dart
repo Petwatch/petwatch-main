@@ -12,13 +12,23 @@ class PetObject {
   String breed;
   String sex;
   String age;
+  String weight;
+  String trained;
+  String chipped;
+  String friendly;
+  String other;
 
   PetObject(
       {required this.name,
       required this.type,
       required this.breed,
       required this.sex,
-      required this.age});
+      required this.age,
+      required this.weight,
+      required this.trained,
+      required this.chipped,
+      required this.friendly,
+      required this.other});
 }
 
 class PetProfilePage extends StatefulWidget {
@@ -55,7 +65,12 @@ class _PetProfilePageState extends State<PetProfilePage> {
               type: petDocRef['type'],
               breed: petDocRef['breed'],
               sex: petDocRef['sex'],
-              age: petDocRef['age']));
+              age: petDocRef['age'],
+              weight: petDocRef['weight'],
+              trained: petDocRef['houseTrained'],
+              chipped: petDocRef['microChipped'],
+              friendly: petDocRef['friendlyWith'],
+              other: petDocRef['other']));
         }
         if (petDataArr.isNotEmpty) {
           gotPets = true;
@@ -82,14 +97,165 @@ class _PetProfilePageState extends State<PetProfilePage> {
             return Positioned(
                 right: 0,
                 left: 0,
-                bottom: 305,
+                bottom: 180,
                 child: Column(
                   children: [
-                    Text("Name: ${petDataArr[0].name}"),
-                    Text("Type: ${petDataArr[0].type}"),
-                    Text("Breed: ${petDataArr[0].breed}"),
-                    Text("Sex: ${petDataArr[0].sex}"),
-                    Text("Age: ${petDataArr[0].age}"),
+                    Text(
+                      petDataArr[0].name,
+                      style: const TextStyle(
+                          fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: Text(
+                        petDataArr[0].breed,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 100,
+                      width: 300,
+                      child: Text(petDataArr[0].other),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  if (petDataArr[0].trained == "yes")
+                                    Chip(
+                                      elevation: 5,
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      label: const SizedBox(
+                                          width: 50,
+                                          height: 25,
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "Trained",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ))),
+                                      labelPadding: const EdgeInsets.only(
+                                        left: 15,
+                                        right: 15,
+                                      ),
+                                    ),
+                                  if (petDataArr[0].chipped == "yes")
+                                    Chip(
+                                      elevation: 5,
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      label: const SizedBox(
+                                          width: 50,
+                                          height: 25,
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "Chip",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ))),
+                                      labelPadding: const EdgeInsets.only(
+                                        left: 15,
+                                        right: 15,
+                                      ),
+                                    ),
+                                  if (petDataArr[0].friendly.contains("true"))
+                                    Chip(
+                                      elevation: 5,
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      label: const SizedBox(
+                                          width: 50,
+                                          height: 25,
+                                          child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "Friendly",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ))),
+                                      labelPadding: const EdgeInsets.only(
+                                        left: 15,
+                                        right: 15,
+                                      ),
+                                    ),
+                                ],
+                              ))),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  Chip(
+                                    elevation: 5,
+                                    label: SizedBox(
+                                        width: 50,
+                                        height: 25,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(petDataArr[0].type))),
+                                    labelPadding: const EdgeInsets.only(
+                                      left: 15,
+                                      right: 15,
+                                    ),
+                                  ),
+                                  Chip(
+                                    elevation: 5,
+                                    label: SizedBox(
+                                        width: 50,
+                                        height: 25,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(petDataArr[0].sex))),
+                                    labelPadding: const EdgeInsets.only(
+                                      left: 15,
+                                      right: 15,
+                                    ),
+                                  ),
+                                  Chip(
+                                    elevation: 5,
+                                    label: SizedBox(
+                                        width: 50,
+                                        height: 25,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                                "${petDataArr[0].age} years"))),
+                                    labelPadding: const EdgeInsets.only(
+                                      left: 15,
+                                      right: 15,
+                                    ),
+                                  ),
+                                  Chip(
+                                    elevation: 5,
+                                    label: SizedBox(
+                                        width: 50,
+                                        height: 25,
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                                "${petDataArr[0].weight} lbs"))),
+                                    labelPadding: const EdgeInsets.only(
+                                      left: 15,
+                                      right: 15,
+                                    ),
+                                  ),
+                                ],
+                              ))),
+                    )
                   ],
                 ));
           } else {
