@@ -17,4 +17,4 @@ class Palette {
       900: const Color(0xff000000), //100%
     },
   );
-} // you can define define int 500 as the default shade and add your lighter tints above and darker tints below.
+}
