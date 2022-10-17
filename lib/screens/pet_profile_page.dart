@@ -6,14 +6,115 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/pet-profile/pet_setup_info.dart';
 
-class PetProfilePage extends StatelessWidget {
-  // void getPetData() async {
-  //   var docRef = await FirebaseFirestore.instance
-  //       .collectionGroup('users')
-  //       .where('uid',
-  //           isEqualTo: FirebaseAuth.instance.currentUser!.uid.toString())
-  //       .get();
-  // }
+class PetObject {
+  String name;
+  String type;
+  String breed;
+  String sex;
+  String age;
+
+  PetObject(
+      {required this.name,
+      required this.type,
+      required this.breed,
+      required this.sex,
+      required this.age});
+}
+
+class PetProfilePage extends StatefulWidget {
+  @override
+  _PetProfilePageState createState() => _PetProfilePageState();
+}
+
+class _PetProfilePageState extends State<PetProfilePage> {
+  List<PetObject> petDataArr = [];
+  bool gotPets = false;
+
+  Stream<bool> getData() async* {
+    Map<String, dynamic> userDocRef;
+
+    var getUserDoc = await FirebaseFirestore.instance
+        .collectionGroup('users')
+        .where('uid',
+            isEqualTo: FirebaseAuth.instance.currentUser!.uid.toString())
+        .get()
+        .then((snapshot) async {
+      userDocRef = snapshot.docs[0].data() as Map<String, dynamic>;
+      var addPetData = await FirebaseFirestore.instance
+          .collection("building-codes")
+          .doc(userDocRef['buildingCode'])
+          .collection('users')
+          .doc(userDocRef['uid'])
+          .collection("pets")
+          .get()
+          .then((snapshot) {
+        for (int i = 0; i < snapshot.docs.length; i++) {
+          var petDocRef = snapshot.docs[i].data();
+          petDataArr.add(PetObject(
+              name: petDocRef['name'],
+              type: petDocRef['type'],
+              breed: petDocRef['breed'],
+              sex: petDocRef['sex'],
+              age: petDocRef['age']));
+        }
+        if (petDataArr.isNotEmpty) {
+          gotPets = true;
+        }
+      });
+    });
+    if (gotPets == true) {
+      yield true;
+    } else {
+      yield false;
+    }
+  }
+
+  Widget _buildPetData(BuildContext context) {
+    return StreamBuilder(
+        stream: getData(),
+        builder: ((context, snapshot) {
+          while (snapshot.data == null) {
+            return Container(
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator());
+          }
+          if (snapshot.data.toString() == 'true') {
+            return Positioned(
+                right: 0,
+                left: 0,
+                bottom: 305,
+                child: Column(
+                  children: [
+                    Text("Name: ${petDataArr[0].name}"),
+                    Text("Type: ${petDataArr[0].type}"),
+                    Text("Breed: ${petDataArr[0].breed}"),
+                    Text("Sex: ${petDataArr[0].sex}"),
+                    Text("Age: ${petDataArr[0].age}"),
+                  ],
+                ));
+          } else {
+            return Positioned(
+                right: 0,
+                left: 0,
+                bottom: 305,
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PetSetupInfo()))
+                            },
+                        child: const Text(
+                          "Setup a pet profile!",
+                          style: TextStyle(color: Colors.white),
+                        ))
+                  ],
+                ));
+          }
+        }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,27 +192,7 @@ class PetProfilePage extends StatelessWidget {
                             ),
                           ),
                         )),
-                    Positioned(
-                      right: 0,
-                      left: 0,
-                      bottom: 305,
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () => {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PetSetupInfo()))
-                                  },
-                              child: const Text(
-                                "Setup a pet profile!",
-                                style: TextStyle(color: Colors.white),
-                              ))
-                        ],
-                      ),
-                    ),
+                    _buildPetData(context)
                   ],
                 ),
               )

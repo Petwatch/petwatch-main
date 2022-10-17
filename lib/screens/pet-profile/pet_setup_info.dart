@@ -13,7 +13,7 @@ class PetSetupInfo extends StatefulWidget {
   _PetSetupInfoState createState() => _PetSetupInfoState();
 }
 
-enum petTypeCharacter { cat, dog }
+enum petTypeCharacter { Cat, Dog }
 
 enum houseTrainedCharacter { yes, no }
 
@@ -44,7 +44,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
 
   bool _isProcessing = false;
 
-  petTypeCharacter? _character = petTypeCharacter.cat;
+  petTypeCharacter? _character = petTypeCharacter.Cat;
   houseTrainedCharacter? _trainedCharacter = houseTrainedCharacter.yes;
   petSpayedCharacter? _spayedCharacter = petSpayedCharacter.yes;
   microChipCharacter? _chipCharacter = microChipCharacter.yes;
@@ -156,7 +156,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                             ),
                             RadioListTile(
                               title: const Text("Cat"),
-                              value: petTypeCharacter.cat,
+                              value: petTypeCharacter.Cat,
                               groupValue: _character,
                               onChanged: (petTypeCharacter? value) {
                                 setState(() {
@@ -169,7 +169,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                             ),
                             RadioListTile(
                               title: const Text("Dog"),
-                              value: petTypeCharacter.dog,
+                              value: petTypeCharacter.Dog,
                               groupValue: _character,
                               onChanged: (petTypeCharacter? value) {
                                 setState(() {
@@ -485,7 +485,11 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                               setState(() {
                                                 _isProcessing = false;
                                               });
-                                              Navigator.pop(context);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PetProfilePage()));
                                             });
                                           },
                                           child: const Text(
