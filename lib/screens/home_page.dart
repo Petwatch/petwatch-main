@@ -8,41 +8,36 @@ import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/components/bottom_nav_bar.dart';
-import 'package:petwatch/screens/pet_profile_page.dart';
+import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
+import 'package:provider/provider.dart';
+
+import '../state/user_model.dart';
 
 class HomePage extends StatelessWidget {
-  // @override
-  // State<StatefulWidget> createState() {
-  //   // TODO: implement createState
-  //   throw UnimplementedError();
-  // }
+  HomePage();
+
+  // final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {},
-        child: Scaffold(
-          appBar: TopNavBar(),
-          body: Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(FirebaseAuth.instance.currentUser!.uid.toString()),
-                    SignOutButton(),
-                    ElevatedButton(
-                        onPressed: () => {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PetProfilePage()))
-                            },
-                        child: Text("Pet"))
-                  ]),
+    return Consumer<UserModel>(builder: (context, value, child) {
+      return GestureDetector(
+          onTap: () {},
+          child: Scaffold(
+            appBar: TopNavBar(),
+            body: Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(value.petInfo['name']),
+                      SignOutButton(),
+                    ]),
+              ),
             ),
-          ),
-        ));
+          ));
+    });
   }
 }

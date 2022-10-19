@@ -7,7 +7,9 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/main.dart';
 import 'package:petwatch/screens/routes.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
+import 'package:petwatch/state/user_model.dart';
 import 'package:petwatch/utils/validate_user.dart';
+import 'package:provider/provider.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({Key? key}) : super(key: key);
