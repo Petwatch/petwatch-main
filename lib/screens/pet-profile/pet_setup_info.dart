@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
-import 'package:petwatch/screens/pet_profile_page.dart';
+import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class PetSetupInfo extends StatefulWidget {
@@ -481,6 +481,8 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                     _chipCharacter!),
                                                 "other":
                                                     _otherTextController.text,
+                                                "uid": FirebaseAuth
+                                                    .instance.currentUser!.uid
                                               });
                                               setState(() {
                                                 _isProcessing = false;
