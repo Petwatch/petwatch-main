@@ -52,16 +52,10 @@ class UserModel extends ChangeNotifier {
       }
       value.docs.forEach((element) {
         // debugPrint(element.data())
-<<<<<<< Updated upstream
         // debugPrint("${element.data().toString()}");
         petInfo.add(element.data());
         debugPrint(petInfo[0]["name"]);
         // debugPrint("${petInfo['friendly']}");
-=======
-        debugPrint("${element.data().toString()}");
-        petInfo = element.data();
-        debugPrint("${petInfo['friendlyWith']}");
->>>>>>> Stashed changes
       });
     });
 
