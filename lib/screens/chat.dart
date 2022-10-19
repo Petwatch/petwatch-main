@@ -1,5 +1,4 @@
 import 'dart:isolate';
-import 'dart:js';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:petwatch/screens/message_tile.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 class ChatPage extends StatefulWidget {
   final String groupId;
