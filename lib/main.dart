@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:petwatch/screens/message_screen.dart';
+
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
+
 
 import 'config/palette.dart';
 import 'firebase_options.dart';
@@ -45,7 +49,7 @@ class MyApp extends StatelessWidget {
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(shape: StadiumBorder()))),
       // ignore: prefer_const_constructors
-      home: AuthGate(),
+      home: MessageScreen(),
     );
   }
 }
