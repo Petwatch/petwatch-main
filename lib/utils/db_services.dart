@@ -82,6 +82,7 @@ class DatabaseService {
         .snapshots();
   }
 
+//get group owner/administrator
   Future getGroupAdmin(String groupId) async {
     DocumentReference d = groupCollection.doc(groupId);
     DocumentSnapshot documentSnapshot = await d.get();
