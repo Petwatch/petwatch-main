@@ -21,24 +21,65 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Scaffold(
               appBar: TopNavBar(),
               body: Center(
-                  child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("${user.name["Name"]}"),
-                    ElevatedButton(
-                        onPressed: () => {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PetProfilePage()))
-                            },
-                        child: Text("Pet"))
-                  ],
-                ),
-              ))));
+                child: Column(children: [
+                  TextButton(onPressed: (() {}), child: const Text("Edit")),
+                  Stack(
+                    children: [
+                      Card(
+                          shape: CircleBorder(),
+                          elevation: 2,
+                          child: CircleAvatar(
+                              radius: 75,
+                              backgroundColor: Colors.white,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.zero,
+                                  child: Image.asset(
+                                    'assets/images/petwatch_logo.png',
+                                  )))),
+                      Positioned(
+                          left: 100,
+                          top: 100,
+                          child: TextButton(
+                              onPressed: (() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PetProfilePage()));
+                              }),
+                              child: Card(
+                                  shape: CircleBorder(),
+                                  elevation: 2,
+                                  child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor:
+                                          Color.fromARGB(255, 189, 189, 189),
+                                      child: ClipRRect(
+                                          borderRadius: BorderRadius.zero,
+                                          child: Image.asset(
+                                            'assets/images/petwatch_logo.png',
+                                          ))))))
+                    ],
+                  ),
+                  Text(
+                    "${user.name["Name"]}",
+                    style: TextStyle(fontSize: 40),
+                  ),
+                  Text(
+                    "Subtitle Placeholder",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Text("More information placeholder"),
+                  ElevatedButton(
+                      onPressed: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PetProfilePage()))
+                          },
+                      child: Text("Pet"))
+                ]),
+              )));
     }));
   }
 }

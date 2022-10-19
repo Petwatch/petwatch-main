@@ -13,6 +13,7 @@ class UserModel extends ChangeNotifier {
 
   UserModel() {
     getUserData();
+    // getPetData();
   }
   // static Future<UserModel> create() async {
 
@@ -20,10 +21,11 @@ class UserModel extends ChangeNotifier {
   final uid = <String, String>{"uid": FirebaseAuth.instance.currentUser!.uid};
   Map buildingCode = <String, String>{"buildingCode": ""};
   Map name = <String, String>{"Name": ""};
-  Map petInfo = <String, String>{};
+  List<Map<String, dynamic>> petInfo = [];
   bool hasPet = false;
 
   Future getUserData() async {
+    petInfo = [];
     await FirebaseFirestore.instance
         .collectionGroup('users')
         .where('uid', isEqualTo: uid['uid'])
@@ -50,9 +52,10 @@ class UserModel extends ChangeNotifier {
       }
       value.docs.forEach((element) {
         // debugPrint(element.data())
-        debugPrint("${element.data().toString()}");
-        petInfo = element.data();
-        debugPrint("${petInfo['friendly']}");
+        // debugPrint("${element.data().toString()}");
+        petInfo.add(element.data());
+        debugPrint(petInfo[0]["name"]);
+        // debugPrint("${petInfo['friendly']}");
       });
     });
 

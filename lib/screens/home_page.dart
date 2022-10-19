@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(value.petInfo['name']),
+                      Text(value.name['name']),
                       SignOutButton(),
                     ]),
               ),
