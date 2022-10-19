@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/message_screen.dart';
 
 class MessageNavBar extends StatefulWidget implements PreferredSizeWidget {
@@ -20,22 +23,28 @@ class _MessageNavBarState extends State<MessageNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-        color: Colors.white,
-        iconSize: 35,
-        icon: const Icon(Icons.keyboard_arrow_left),
-        onPressed: () => {Navigator.pop(context)},
-      ),
-      title: Container(
-        width: 75,
-        height: 75,
-        child: Image.asset(
-          'assets/images/petwatch_logo_white.png',
-        ),
-      ),
-      centerTitle: true,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-    );
+    return GestureDetector(
+        onTap: () {},
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              color: Colors.white,
+              iconSize: 35,
+              icon: const Icon(Icons.keyboard_arrow_left),
+              onPressed: () => {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MessageScreen()))
+              },
+            ),
+            centerTitle: true,
+            title: const Text(
+              "Messages",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 27),
+            ),
+          ),
+        ));
   }
 }

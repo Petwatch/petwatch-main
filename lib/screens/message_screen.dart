@@ -1,21 +1,13 @@
 import 'dart:ffi';
 import 'auth_gate.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutterfire_ui/auth.dart';
-import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/auth_gate.dart';
-import 'package:petwatch/screens/sign-up/personal_info.dart';
-import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:petwatch/components/bottom_nav_bar.dart';
+import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/components/group_chat_tile.dart';
 import 'package:petwatch/utils/db_services.dart';
+import 'package:petwatch/components/bottom_nav_bar.dart';
 import 'package:petwatch/components/components.dart';
-import 'package:petwatch/utils/db_services.dart';
 
 class MessageScreen extends StatefulWidget {
   @override
@@ -25,11 +17,10 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   String userName = "";
   String email = "";
+  String groupName = "";
   AuthGate authGate = AuthGate();
   Stream? groups;
   bool _isLoading = false;
-  String groupName = "";
-  String value = "";
 
   @override
   void initState() {
@@ -46,22 +37,6 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   getUserData() async {
-    await DatabaseService.getUserEmailFromSF().then((value) {
-      var temp = value;
-      if (temp != null) {
-        setState(() {
-          email = temp;
-        });
-      }
-    });
-    await DatabaseService.getUserNameFromSF().then((val) {
-      var temps = val;
-      if (temps != null) {
-        setState(() {
-          userName = temps;
-        });
-      }
-    });
     await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getUserGroups()
         .then((snapshot) {
@@ -73,20 +48,11 @@ class _MessageScreenState extends State<MessageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //listens for actions
     return GestureDetector(
         onTap: () {},
         child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Theme.of(context).primaryColor,
-            title: const Text(
-              "Messages",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 27),
-            ),
-          ),
+          appBar: MessageNavBar(),
           body: Center(
             child: Padding(
               padding: EdgeInsets.all(24),
@@ -94,7 +60,7 @@ class _MessageScreenState extends State<MessageScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Tap the '+' icon to start a new chat"),
+                    const Text("Tap the '+' icon to start a new chat"),
                   ]),
             ),
           ),
