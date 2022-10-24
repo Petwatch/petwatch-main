@@ -20,7 +20,7 @@ class UserModel extends ChangeNotifier {
   // }
   final uid = <String, String>{"uid": FirebaseAuth.instance.currentUser!.uid};
   Map buildingCode = <String, String>{"buildingCode": ""};
-  Map name = <String, String>{"Name": ""};
+  Map name = <String, String>{"name": ""};
   List<Map<String, dynamic>> petInfo = [];
   bool hasPet = false;
 
@@ -34,7 +34,7 @@ class UserModel extends ChangeNotifier {
       // Map test = <String, String>{"Name": ""};
       value.docs.forEach((element) {
         debugPrint("name: ${element.data().toString()}");
-        name["Name"] = element['name'];
+        name["name"] = element['name'];
         buildingCode["buildingCode"] = element["buildingCode"];
       });
     }, onError: (e) => {"Name": "Error Getting Name"});
@@ -60,6 +60,21 @@ class UserModel extends ChangeNotifier {
     });
 
     notifyListeners();
+  }
+
+  void DeletePet(int index, Map pet) async {
+// await Firestore.instance.runTransaction((Transaction myTransaction) async {
+//     await myTransaction.delete(snapshot.data.documents[index].reference);
+// });
+
+    // const docRef = await FirebaseFirestore.instance.collection('pets')
+    //   .where()
+
+    // await FirebaseFirestore.instance.runTransaction((transaction) async {
+    //     await transaction.delete(documentReference)
+    // })
+
+    // #TODO: we need to add a unique ID to each pet so that we can get a ref and delete it.
   }
 
   // final buildingId = <String, String>{"buildingCode": getBuildingID()};

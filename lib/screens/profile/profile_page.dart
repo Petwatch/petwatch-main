@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:petwatch/state/user_model.dart';
@@ -62,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   Text(
-                    "${user.name["Name"]}",
+                    "${user.name["name"]}",
                     style: TextStyle(fontSize: 40),
                   ),
                   Text(
@@ -70,14 +71,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text("More information placeholder"),
-                  ElevatedButton(
-                      onPressed: () => {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PetProfilePage()))
-                          },
-                      child: Text("Pet"))
+                  SignOutButton()
+                  // ElevatedButton(
+                  //     onPressed: () => {
+                  //           Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (context) => PetProfilePage()))
+                  //         },
+                  //     child: Text("Pet"))
                 ]),
               )));
     }));

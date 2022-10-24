@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 
 import '../../state/user_model.dart';
 
+enum Menu { edit, delete, itemThree, itemFour }
+
 class PetProfilePage extends StatefulWidget {
   @override
   _PetProfilePageState createState() => _PetProfilePageState();
@@ -27,6 +29,23 @@ class _PetProfilePageState extends State<PetProfilePage> {
             padding: EdgeInsets.all(24),
             child: Column(
               children: [
+                PopupMenuButton(
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                    PopupMenuItem(
+                        value: Menu.edit,
+                        child: const Text('Edit'),
+                        onTap: () {
+                          debugPrint("Edit inside of ${index}");
+                        }),
+                    PopupMenuItem(
+                      value: Menu.delete,
+                      child: const Text("Delete"),
+                      onTap: () {
+                        debugPrint("Deleting pet at index ${index}");
+                      },
+                    )
+                  ],
+                ),
                 Card(
                   elevation: 5,
                   shape: CircleBorder(),
