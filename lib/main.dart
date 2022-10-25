@@ -5,12 +5,15 @@ import 'package:petwatch/screens/auth_gate.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 import 'config/palette.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey =
+      "pk_test_51LumtJJVJnx1h9JWy7XlZr7eutUu5FzaUtbLKrTwReTve1faSYJhkiUDO0lbsoDdzogCIepksB8AyaU3wgKy50wr00UuVZVwMq";
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

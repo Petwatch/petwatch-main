@@ -4,6 +4,9 @@ import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+// import 'package:http/http.dart' as http;
+import 'package:petwatch/services/stripe-backend-service.dart';
 
 class ProfilePage extends StatefulWidget {
   // final BuildContext context;
@@ -11,6 +14,21 @@ class ProfilePage extends StatefulWidget {
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
+}
+
+_launchStripeConnect() async {
+  // const url = Uri.encodeFull("https://google.com");
+  CreateAccountResponse response =
+      await StripeBackendService.createSellerAccount();
+  debugPrint("${response.url}");
+  final Uri _url = Uri.parse('https://flutter.dev');
+  final Uri _tetURL =
+      Uri.https('petwatch-stripe-api.onrender.com', '/api/hello');
+  // var response = await http.get(_tetURL);
+  // debugPrint('${response.body}');
+  if (!await launchUrl(_url)) {
+    throw 'Could not launch $_url';
+  }
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -71,7 +89,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text("More information placeholder"),
-                  SignOutButton()
+                  SignOutButton(),
+                  ElevatedButton(
+                      onPressed: () {
+                        _launchStripeConnect();
+                      },
+                      child: Text("Become a pet sitter"))
                   // ElevatedButton(
                   //     onPressed: () => {
                   //           Navigator.push(
