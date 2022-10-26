@@ -1,4 +1,6 @@
 import 'dart:ffi';
+import 'package:petwatch/screens/profile/profile_page.dart';
+
 import 'auth_gate.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -46,36 +48,66 @@ class _MessageScreenState extends State<MessageScreen> {
     });
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   //listens for actions
+  //   return GestureDetector(
+  //       onTap: () {},
+  //       child: Scaffold(
+  //         appBar: MessageNavBar(),
+  //         body: Center(
+  //           child: Padding(
+  //             padding: EdgeInsets.all(24),
+  //             child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.center,
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: const [
+  //                   Text("Tap the '+' icon to start a new chat"),
+  //                 ]),
+  //           ),
+  //         ),
+  //         body: groupList(),
+  //         floatingActionButton: FloatingActionButton(
+  //           onPressed: () {
+  //             popupDialogue(context);
+  //           },
+  //           elevation: 0,
+  //           child: const Icon(
+  //             Icons.add,
+  //             color: Colors.white,
+  //             size: 30,
+  //           ),
+  //         ),
+  //       ));
+  // }
+
   @override
   Widget build(BuildContext context) {
-    //listens for actions
-    return GestureDetector(
-        onTap: () {},
-        child: Scaffold(
-          appBar: MessageNavBar(),
-          body: Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Tap the '+' icon to start a new chat"),
-                  ]),
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              popupDialogue(context);
-            },
-            elevation: 0,
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 30,
-            ),
-          ),
-        ));
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text(
+          "Messages",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
+        ),
+      ),
+      body: groupList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          popupDialogue(context);
+        },
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+    );
   }
 
   popupDialogue(BuildContext context) {
@@ -100,7 +132,7 @@ class _MessageScreenState extends State<MessageScreen> {
                       : TextField(
                           onChanged: (val) {
                             setState(() {
-                              // groupName = val;
+                              groupName = val;
                             });
                           },
                           style: const TextStyle(color: Colors.black),
@@ -149,7 +181,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         });
                         Navigator.of(context).pop();
                         showSnackbar(context, Colors.green,
-                            "Group created successfully.");
+                            "chat created successfully.");
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -166,35 +198,37 @@ class _MessageScreenState extends State<MessageScreen> {
 
   groupList() {
     return StreamBuilder(
-        //stream: groups,
+        stream: groups,
         builder: (context, AsyncSnapshot snapshot) {
-      // make some checks
-      if (snapshot.hasData) {
-        if (snapshot.data['groups'] != null) {
-          if (snapshot.data['groups'].length != 0) {
-            return ListView.builder(
-              itemCount: snapshot.data['groups'].length,
-              itemBuilder: (context, index) {
-                int reverseIndex = snapshot.data['groups'].length - index - 1;
-                return GroupTile(
-                    groupId: getId(snapshot.data['groups'][reverseIndex]),
-                    groupName: getName(snapshot.data['groups'][reverseIndex]),
-                    userName: snapshot.data['fullName']);
-              },
-            );
+          // make some checks
+          if ((snapshot.hasData) && (snapshot.data.exists)) {
+            if (snapshot.data['groups'] != null) {
+              if (snapshot.data['groups'].length != 0) {
+                return ListView.builder(
+                  itemCount: snapshot.data['groups'].length,
+                  itemBuilder: (context, index) {
+                    int reverseIndex =
+                        snapshot.data['groups'].length - index - 1;
+                    return GroupTile(
+                        groupId: getId(snapshot.data['groups'][reverseIndex]),
+                        groupName:
+                            getName(snapshot.data['groups'][reverseIndex]),
+                        userName: snapshot.data['fullName']);
+                  },
+                );
+              } else {
+                return noGroupWidget();
+              }
+            } else {
+              return noGroupWidget();
+            }
           } else {
-            return noGroupWidget();
+            return Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor),
+            );
           }
-        } else {
-          return noGroupWidget();
-        }
-      } else {
-        return Center(
-          child:
-              CircularProgressIndicator(color: Theme.of(context).primaryColor),
-        );
-      }
-    });
+        });
   }
 
   noGroupWidget() {
