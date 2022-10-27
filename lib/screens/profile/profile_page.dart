@@ -21,9 +21,9 @@ _launchStripeConnect() async {
   CreateAccountResponse response =
       await StripeBackendService.createSellerAccount();
   debugPrint("${response.url}");
-  final Uri _url = Uri.parse('https://flutter.dev');
-  final Uri _tetURL =
-      Uri.https('petwatch-stripe-api.onrender.com', '/api/hello');
+  final Uri _url = Uri.parse(response.url);
+  // final Uri _tetURL =
+  //     Uri.https('petwatch-stripe-api.onrender.com', '/api/hello');
   // var response = await http.get(_tetURL);
   // debugPrint('${response.body}');
   if (!await launchUrl(_url)) {
@@ -91,8 +91,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   Text("More information placeholder"),
                   SignOutButton(),
                   ElevatedButton(
-                      onPressed: () {
-                        _launchStripeConnect();
+                      onPressed: () async {
+                        await _launchStripeConnect();
                       },
                       child: Text("Become a pet sitter"))
                   // ElevatedButton(
