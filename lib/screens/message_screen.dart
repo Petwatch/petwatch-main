@@ -1,6 +1,8 @@
 import 'dart:ffi';
-import 'package:petwatch/screens/profile/profile_page.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:petwatch/screens/profile/profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'auth_gate.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,14 +14,20 @@ import 'package:petwatch/components/bottom_nav_bar.dart';
 import 'package:petwatch/components/components.dart';
 
 class MessageScreen extends StatefulWidget {
+  const MessageScreen({Key? key}) : super(key: key);
   @override
-  _MessageScreenState createState() => _MessageScreenState();
+  State<MessageScreen> createState() => _MessageScreenState();
 }
 
 class _MessageScreenState extends State<MessageScreen> {
-  String userName = "";
-  String email = "";
+  final uid = <String, String>{"uid": FirebaseAuth.instance.currentUser!.uid};
+  Map buildingCode = <String, String>{"buildingCode": ""};
+  Map name = <String, String>{"Name": ""};
+  Map petInfo = <String, String>{};
+  bool hasPet = false;
+
   String groupName = "";
+  String userName = "";
   AuthGate authGate = AuthGate();
   Stream? groups;
   bool _isLoading = false;
@@ -39,6 +47,11 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   getUserData() async {
+    await DatabaseService.getUserName().then((val) {
+      setState(() {
+        userName = val!;
+      });
+    });
     await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getUserGroups()
         .then((snapshot) {
@@ -46,6 +59,11 @@ class _MessageScreenState extends State<MessageScreen> {
         groups = snapshot;
       });
     });
+    // await DatabaseService.getUserNameFromSF().then((val) {
+    //   setState(() {
+    //     userName = val!;
+    //   });
+    // });
   }
 
   // @override
@@ -173,7 +191,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         DatabaseService(
                                 uid: FirebaseAuth.instance.currentUser!.uid)
                             .createGroup(
-                                userName,
+                                name.toString(),
                                 FirebaseAuth.instance.currentUser!.uid,
                                 groupName)
                             .whenComplete(() {
@@ -213,7 +231,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         groupId: getId(snapshot.data['groups'][reverseIndex]),
                         groupName:
                             getName(snapshot.data['groups'][reverseIndex]),
-                        userName: snapshot.data['fullName']);
+                        userName: snapshot.data['name']);
                   },
                 );
               } else {
@@ -224,8 +242,15 @@ class _MessageScreenState extends State<MessageScreen> {
             }
           } else {
             return Center(
-              child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor),
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text("Tap the '+' icon to start a new chat"),
+                    ]),
+              ),
             );
           }
         });

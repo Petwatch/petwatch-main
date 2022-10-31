@@ -11,32 +11,42 @@ class DatabaseService {
   static String userEmailKey = "USEREMAILKEY";
 
   // reference for our collections
-  final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection("users");
+  final CollectionReference userCollection = FirebaseFirestore.instance
+      .collection('building-codes')
+      .doc('123456789')
+      .collection('users');
   final CollectionReference groupCollection =
       FirebaseFirestore.instance.collection("groups");
 
   // saving userData
-  Future savingUserData(String fullName, String email) async {
+  Future savingUserData(String fullName) async {
     return await userCollection.doc(uid).set({
       "fullName": fullName,
-      "email": email,
       "groups": [],
       "profilePic": "",
       "uid": uid,
     });
   }
 
+  static Future<String?> getUserName() async {
+    DocumentReference? name = FirebaseFirestore.instance
+        .collection('building-codes')
+        .doc('123456789')
+        .collection('users')
+        .doc('uid');
+    return name.toString();
+  }
+
   // getting user data
-  Future gettingUserData(String email) async {
+  Future getUserData(String fullNames) async {
     QuerySnapshot snapshot =
-        await userCollection.where("email", isEqualTo: email).get();
+        await userCollection.where("fullName", isEqualTo: fullNames).get();
     return snapshot;
   }
 
-  static Future<String?> getUserEmailFromSF() async {
+  static Future<bool> saveUserNameSF(String userName) async {
     SharedPreferences sf = await SharedPreferences.getInstance();
-    return sf.getString(userEmailKey);
+    return await sf.setString(userNameKey, userName);
   }
 
   static Future<String?> getUserNameFromSF() async {
@@ -66,7 +76,11 @@ class DatabaseService {
       "groupId": groupDocumentReference.id,
     });
 
-    DocumentReference userDocumentReference = userCollection.doc(uid);
+    DocumentReference userDocumentReference = FirebaseFirestore.instance
+        .collection('building-codes')
+        .doc('123456789')
+        .collection('users')
+        .doc(uid);
     return await userDocumentReference.update({
       "groups":
           FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])

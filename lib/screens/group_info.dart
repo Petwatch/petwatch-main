@@ -8,7 +8,7 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
-import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
+import 'package:petwatch/utils/db_services.dart';
 import 'package:flutter/material.dart';
 
 class GroupInfo extends StatefulWidget {
@@ -36,13 +36,13 @@ class _GroupInfoState extends State<GroupInfo> {
 
   getMembers() async {
     //GET GROUP MEMBERS
-    // DatabaseService(uid: FirebaseFirestore.instance.currentUser!.uid)
-    //     .getGroupMembers(widget.groupId)
-    //     .then((val) {
-    //   setState(() {
-    //     members = val;
-    //   });
-    // });
+    DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getGroupMembers(widget.groupId)
+        .then((val) {
+      setState(() {
+        members = val;
+      });
+    });
   }
 
   String getName(String name) {
@@ -90,7 +90,7 @@ class _GroupInfoState extends State<GroupInfo> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${widget.groupName}",
+                        widget.groupName,
                         style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(
