@@ -13,16 +13,15 @@ class UserModel extends ChangeNotifier {
 
   UserModel() {
     getUserData();
-    // getPetData();
   }
-  // static Future<UserModel> create() async {
-
-  // }
   final uid = <String, String>{"uid": FirebaseAuth.instance.currentUser!.uid};
   Map buildingCode = <String, String>{"buildingCode": ""};
   Map name = <String, String>{"name": ""};
   List<Map<String, dynamic>> petInfo = [];
   bool hasPet = false;
+  bool postsLoading = true;
+
+  List<Map<String, dynamic>> posts = [];
 
   Future getUserData() async {
     petInfo = [];
@@ -32,15 +31,12 @@ class UserModel extends ChangeNotifier {
         .get()
         .then((value) {
       // Map test = <String, String>{"Name": ""};
-      value.docs.forEach((element) {
+      for (var element in value.docs) {
         debugPrint("name: ${element.data().toString()}");
         name["name"] = element['name'];
         buildingCode["buildingCode"] = element["buildingCode"];
-      });
+      }
     }, onError: (e) => {"Name": "Error Getting Name"});
-
-    // await FirebaseFirestore.instance.collectionGroup("users")
-    // .where(uid, isEqualTo: uid['uid']).colelction
 
     await FirebaseFirestore.instance
         .collectionGroup('pets')
@@ -50,15 +46,30 @@ class UserModel extends ChangeNotifier {
       if (value.docs.length != 0) {
         hasPet = true;
       }
-      value.docs.forEach((element) {
-        // debugPrint(element.data())
-        // debugPrint("${element.data().toString()}");
+      for (var element in value.docs) {
         petInfo.add(element.data());
         debugPrint(petInfo[0]["name"]);
         // debugPrint("${petInfo['friendly']}");
-      });
+      }
     });
+    getPosts();
+    // notifyListeners();
+  }
 
+  Future getPosts() async {
+    // debugPrint(buildingCode['buildingCode']);
+    await FirebaseFirestore.instance // #TODO : sort by dat created
+        .collection('building-codes/${buildingCode['buildingCode']}/posts')
+        .get()
+        .then((value) => {
+              // ignore: avoid_function_literals_in_foreach_calls
+              value.docs.forEach((element) {
+                posts.add(element.data());
+                // debugPrint(element.data().toString());
+              })
+            });
+    // debugPrint(posts.toString());
+    postsLoading = false;
     notifyListeners();
   }
 

@@ -1,15 +1,18 @@
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
-// class GetHomePage {
-//   static Future getPosts({required String uid}) async {
-    
-//       FirebaseFirestore.instance
-//       .collection('building-codes')
-//       .doc('123456789')
-//       .collection('posts')
-//       .get()
+import 'package:flutter/widgets.dart';
 
-//   }
-// }
+class GetHomePage {
+  static void getPosts({required String uid}) async {
+    await FirebaseFirestore.instance
+        .collection('building-codes/123456789/posts')
+        .get()
+        .then((value) => {
+              value.docs.forEach((element) {
+                debugPrint(element.data().toString());
+              })
+            });
+  }
+}

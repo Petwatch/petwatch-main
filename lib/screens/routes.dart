@@ -9,7 +9,7 @@ import 'package:petwatch/screens/profile/profile_page.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/components/bottom_nav_bar.dart';
-import 'package:petwatch/screens/home_page.dart';
+import 'package:petwatch/screens/home-page/home_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 
