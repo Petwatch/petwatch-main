@@ -41,6 +41,12 @@ dependencies:
   firebase_core: ^1.23.0
   flutterfire_ui: ^0.4.3+10
   cloud_firestore: ^3.4.9
+  flutter_facebook_auth: ^4.0.1
+  provider: ^6.0.4
+  flutter_stripe: ^6.0.0
+  url_launcher: ^6.1.6
+  http: ^0.13.5
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +74,9 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/images/petwatch_logo.png
+    - assets/images/petwatch_logo_white.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
