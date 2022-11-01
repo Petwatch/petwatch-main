@@ -26,7 +26,7 @@ class _PetProfilePageState extends State<PetProfilePage> {
     return Card(
         elevation: 4,
         child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(16),
             child: Column(
               children: [
                 PopupMenuButton(
@@ -52,12 +52,8 @@ class _PetProfilePageState extends State<PetProfilePage> {
                   child: CircleAvatar(
                     radius: 75,
                     backgroundColor: Colors.white,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.zero,
-                      child: Image.asset(
-                        'assets/images/petwatch_logo.png',
-                      ),
-                    ),
+                    backgroundImage:
+                        NetworkImage(value.petInfo[index]['pictureUrl']),
                   ),
                 ),
                 Text(

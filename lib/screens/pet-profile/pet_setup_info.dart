@@ -55,6 +55,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
   bool _uploadedPicture = false;
 
   File file = File("");
+  var url;
 
   petTypeCharacter? _character = petTypeCharacter.Cat;
   houseTrainedCharacter? _trainedCharacter = houseTrainedCharacter.yes;
@@ -466,7 +467,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                   padding: EdgeInsets.only(top: 50, bottom: 50),
                                   child: _uploadedPicture == true
                                       ? CircleAvatar(
-                                          child: Image.file(file),
+                                          backgroundImage: FileImage(file),
                                         )
                                       : ElevatedButton(
                                           onPressed: () async {
@@ -505,6 +506,8 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                               try {
                                                 await petPictureRef
                                                     .putFile(file);
+                                                url = await petPictureRef
+                                                    .getDownloadURL();
                                                 _uploadedPicture = true;
                                               } catch (error) {
                                                 debugPrint(error.toString());
@@ -559,8 +562,9 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                       _chipCharacter!),
                                                   "other":
                                                       _otherTextController.text,
-                                                  "uid": FirebaseAuth
-                                                      .instance.currentUser!.uid
+                                                  "uid": FirebaseAuth.instance
+                                                      .currentUser!.uid,
+                                                  "pictureUrl": url
                                                 });
                                                 setState(() {
                                                   _isProcessing = false;
