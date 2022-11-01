@@ -43,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(children: [
                   TextButton(onPressed: (() {}), child: const Text("Edit")),
                   Stack(
+                    clipBehavior: Clip.none,
                     children: [
                       Card(
                           shape: CircleBorder(),
@@ -52,8 +53,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               backgroundColor: Colors.white,
                               child: ClipRRect(
                                   borderRadius: BorderRadius.zero,
-                                  child: Image.asset(
-                                    'assets/images/petwatch_logo.png',
+                                  child: Icon(
+                                    Icons.account_circle_rounded,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    size: 150,
                                   )))),
                       Positioned(
                           left: 100,
@@ -70,14 +74,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   shape: CircleBorder(),
                                   elevation: 2,
                                   child: CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor:
-                                          Color.fromARGB(255, 189, 189, 189),
-                                      child: ClipRRect(
-                                          borderRadius: BorderRadius.zero,
-                                          child: Image.asset(
-                                            'assets/images/petwatch_logo.png',
-                                          ))))))
+                                    radius: 25,
+                                    backgroundImage: NetworkImage(user
+                                        .petInfo[0]['pictureUrl']
+                                        .toString()),
+                                  ))))
                     ],
                   ),
                   Text(

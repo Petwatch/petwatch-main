@@ -463,10 +463,37 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                 ),
                               ),
                               Padding(
-                                  padding: EdgeInsets.only(top: 50, bottom: 50),
+                                  padding: EdgeInsets.only(top: 50),
                                   child: _uploadedPicture == true
-                                      ? CircleAvatar(
-                                          backgroundImage: FileImage(file),
+                                      ? Column(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 75,
+                                              backgroundImage: FileImage(file),
+                                            ),
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  FilePickerResult? result =
+                                                      await FilePicker.platform
+                                                          .pickFiles();
+                                                  debugPrint(result.toString());
+                                                  if (result != null) {
+                                                    file = File(result
+                                                        .files.single.path
+                                                        .toString());
+                                                    setState(() {
+                                                      _uploadedPicture = true;
+                                                    });
+                                                  } else {
+                                                    // User canceled the picker
+                                                  }
+                                                },
+                                                child: const Text(
+                                                  "Change Pet Picture",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ))
+                                          ],
                                         )
                                       : ElevatedButton(
                                           onPressed: () async {
@@ -478,13 +505,18 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                               file = File(result
                                                   .files.single.path
                                                   .toString());
-                                              _uploadedPicture = true;
+                                              setState(() {
+                                                _uploadedPicture = true;
+                                              });
                                             } else {
                                               // User canceled the picker
                                             }
                                           },
-                                          child: Text(
-                                              "Upload picture placeholder"))),
+                                          child: const Text(
+                                            "Upload Pet Picture",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ))),
                               const SizedBox(height: 32.0),
                               _isProcessing
                                   ? const CircularProgressIndicator()
