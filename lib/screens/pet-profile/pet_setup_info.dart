@@ -11,7 +11,6 @@ import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 
