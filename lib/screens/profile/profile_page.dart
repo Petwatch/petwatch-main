@@ -71,14 +71,21 @@ class _ProfilePageState extends State<ProfilePage> {
                                             PetProfilePage()));
                               }),
                               child: Card(
-                                  shape: CircleBorder(),
-                                  elevation: 2,
-                                  child: CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: NetworkImage(user
-                                        .petInfo[0]['pictureUrl']
-                                        .toString()),
-                                  ))))
+                                shape: CircleBorder(),
+                                elevation: 2,
+                                child: CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage: user.hasPet
+                                      ? NetworkImage(user.petInfo[0]
+                                              ['pictureUrl']
+                                          .toString())
+                                      : null,
+                                  child: !user.hasPet
+                                      ? Image.asset(
+                                          'assets/images/petwatch_logo_white.png')
+                                      : null,
+                                ),
+                              )))
                     ],
                   ),
                   Text(
