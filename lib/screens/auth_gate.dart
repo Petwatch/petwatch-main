@@ -40,9 +40,7 @@ class AuthGate extends StatelessWidget {
                 return CircularProgressIndicator(); // TODO: replace this with a screen that has a processing circle.
               }
               if (snapshot.data.toString() == "true") {
-                return Routes(
-                  index: 0,
-                );
+                return Routes();
               }
               return PersonalInfo(uid: userId);
             }),

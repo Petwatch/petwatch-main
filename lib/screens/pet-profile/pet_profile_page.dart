@@ -238,12 +238,8 @@ class _PetProfilePageState extends State<PetProfilePage> {
                 iconSize: 35,
                 icon: const Icon(Icons.keyboard_arrow_left),
                 onPressed: () => {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Routes(
-                                index: 0,
-                              )))
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Routes()))
                 },
               ),
               title: Container(

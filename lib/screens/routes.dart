@@ -14,20 +14,14 @@ import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 
 class Routes extends StatefulWidget {
-  int index;
-  Routes({Key? key, required this.index});
+  const Routes();
   // final BuildContext context;
   @override
   State<Routes> createState() => _RoutesState();
 }
 
 class _RoutesState extends State<Routes> {
-  // int _selectedIndex = 0;
-
-  // @override
-  // void initState() {
-  //   _selectedIndex = widget.index;
-  // }
+  int _selectedIndex = 0;
 
   static final List<String> _widgetOptions = <String>[
     'HomePage',
@@ -45,7 +39,7 @@ class _RoutesState extends State<Routes> {
 
   void _onItemTapped(int index) {
     setState(() {
-      widget.index = index;
+      _selectedIndex = index;
     });
   }
 
@@ -59,11 +53,11 @@ class _RoutesState extends State<Routes> {
             onTap: () {},
             child: Scaffold(
               body: Center(
-                child: gotoPage(widget.index),
+                child: gotoPage(_selectedIndex),
               ),
               bottomNavigationBar: BottomNavBar(
                 onItemTapped: _onItemTapped,
-                selectedIndex: widget.index,
+                selectedIndex: _selectedIndex,
               ),
             ));
       },
