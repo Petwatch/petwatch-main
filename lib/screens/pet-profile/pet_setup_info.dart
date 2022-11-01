@@ -475,7 +475,9 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                 onPressed: () async {
                                                   FilePickerResult? result =
                                                       await FilePicker.platform
-                                                          .pickFiles();
+                                                          .pickFiles(
+                                                              type: FileType
+                                                                  .image);
                                                   debugPrint(result.toString());
                                                   if (result != null) {
                                                     file = File(result
@@ -499,7 +501,8 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                           onPressed: () async {
                                             FilePickerResult? result =
                                                 await FilePicker.platform
-                                                    .pickFiles();
+                                                    .pickFiles(
+                                                        type: FileType.image);
                                             debugPrint(result.toString());
                                             if (result != null) {
                                               file = File(result
