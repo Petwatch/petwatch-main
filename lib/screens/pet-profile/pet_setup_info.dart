@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,6 +11,8 @@ import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
 
 class PetSetupInfo extends StatefulWidget {
   @override
@@ -47,6 +51,10 @@ class _PetSetupInfoState extends State<PetSetupInfo>
   final _focusOther = FocusNode();
 
   bool _isProcessing = false;
+  bool _uploadedPicture = false;
+
+  File file = File("");
+  var url;
 
   petTypeCharacter? _character = petTypeCharacter.Cat;
   houseTrainedCharacter? _trainedCharacter = houseTrainedCharacter.yes;
@@ -72,6 +80,26 @@ class _PetSetupInfoState extends State<PetSetupInfo>
 
   void _handleTabSelection() {
     setState(() {});
+  }
+
+  Future<void> _uploadPetPicture() async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final petPictureRef = storageRef
+        .child("${FirebaseAuth.instance.currentUser?.uid}/petpicture.jpg");
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    debugPrint(result.toString());
+    if (result != null) {
+      file = File(result.files.single.path.toString());
+      try {
+        await petPictureRef.putFile(file);
+        _uploadedPicture = true;
+      } catch (error) {
+        debugPrint(error.toString());
+      }
+    } else {
+      // User canceled the picker
+    }
   }
 
   @override
@@ -434,9 +462,29 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                   hintText: "Other information...",
                                 ),
                               ),
-                              const Padding(
+                              Padding(
                                   padding: EdgeInsets.only(top: 50, bottom: 50),
-                                  child: Text("Upload picture placeholder")),
+                                  child: _uploadedPicture == true
+                                      ? CircleAvatar(
+                                          backgroundImage: FileImage(file),
+                                        )
+                                      : ElevatedButton(
+                                          onPressed: () async {
+                                            FilePickerResult? result =
+                                                await FilePicker.platform
+                                                    .pickFiles();
+                                            debugPrint(result.toString());
+                                            if (result != null) {
+                                              file = File(result
+                                                  .files.single.path
+                                                  .toString());
+                                              _uploadedPicture = true;
+                                            } else {
+                                              // User canceled the picker
+                                            }
+                                          },
+                                          child: Text(
+                                              "Upload picture placeholder"))),
                               const SizedBox(height: 32.0),
                               _isProcessing
                                   ? const CircularProgressIndicator()
@@ -448,6 +496,21 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                               setState(() {
                                                 _isProcessing = true;
                                               });
+                                              final storageRef = FirebaseStorage
+                                                  .instance
+                                                  .ref();
+                                              final petPictureRef =
+                                                  storageRef.child(
+                                                      "${FirebaseAuth.instance.currentUser?.uid}/${_nameTextController.text}.jpg");
+                                              try {
+                                                await petPictureRef
+                                                    .putFile(file);
+                                                url = await petPictureRef
+                                                    .getDownloadURL();
+                                                _uploadedPicture = true;
+                                              } catch (error) {
+                                                debugPrint(error.toString());
+                                              }
                                               var docRef =
                                                   await FirebaseFirestore
                                                       .instance
@@ -498,8 +561,9 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                       _chipCharacter!),
                                                   "other":
                                                       _otherTextController.text,
-                                                  "uid": FirebaseAuth
-                                                      .instance.currentUser!.uid
+                                                  "uid": FirebaseAuth.instance
+                                                      .currentUser!.uid,
+                                                  "pictureUrl": url
                                                 });
                                                 setState(() {
                                                   _isProcessing = false;
