@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/pet-profile/pet_setup_info.dart';
+import 'package:petwatch/screens/routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../state/user_model.dart';
@@ -236,7 +237,14 @@ class _PetProfilePageState extends State<PetProfilePage> {
                 color: Colors.white,
                 iconSize: 35,
                 icon: const Icon(Icons.keyboard_arrow_left),
-                onPressed: () => {Navigator.pop(context)},
+                onPressed: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Routes(
+                                index: 0,
+                              )))
+                },
               ),
               title: Container(
                 width: 75,
