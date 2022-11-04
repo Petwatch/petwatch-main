@@ -49,16 +49,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           shape: CircleBorder(),
                           elevation: 2,
                           child: CircleAvatar(
-                              radius: 75,
-                              backgroundColor: Colors.white,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.zero,
-                                  child: Icon(
-                                    Icons.account_circle_rounded,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: 150,
-                                  )))),
+                            radius: 75,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            backgroundImage: user.hasPicture
+                                ? NetworkImage(user.pictureUrl['pictureUrl'])
+                                : null,
+                            child: !user.hasPicture
+                                ? Image.asset(
+                                    'assets/images/petwatch_logo_white.png')
+                                : null,
+                          )),
                       Positioned(
                           left: 100,
                           top: 100,
@@ -75,6 +76,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 elevation: 2,
                                 child: CircleAvatar(
                                   radius: 25,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
                                   backgroundImage: user.hasPet
                                       ? NetworkImage(user.petInfo[0]
                                               ['pictureUrl']

@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petwatch/screens/routes.dart';
 import 'package:petwatch/screens/sign-up/sign_up_complete.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
 
 class PersonalInfo extends StatefulWidget {
   final String uid;
@@ -55,6 +59,10 @@ class PersonalInfoState extends State<PersonalInfo> {
 
   bool _isProcessing = false;
   bool apartmentCode = true;
+  bool _uploadedPicture = false;
+
+  File file = File("");
+  var url;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +149,7 @@ class PersonalInfoState extends State<PersonalInfo> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10),
+                          padding: const EdgeInsets.only(top: 0),
                           child: Text(
                             'The access code is distributed by your landlord.',
                             textAlign: TextAlign.center,
@@ -179,8 +187,62 @@ class PersonalInfoState extends State<PersonalInfo> {
                               });
                             },
                           ),
+                          Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: _uploadedPicture == true
+                                  ? Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage: FileImage(file),
+                                        ),
+                                        ElevatedButton(
+                                            onPressed: () async {
+                                              FilePickerResult? result =
+                                                  await FilePicker.platform
+                                                      .pickFiles(
+                                                          type: FileType.image);
+                                              debugPrint(result.toString());
+                                              if (result != null) {
+                                                file = File(result
+                                                    .files.single.path
+                                                    .toString());
+                                                setState(() {
+                                                  _uploadedPicture = true;
+                                                });
+                                              } else {
+                                                // User canceled the picker
+                                              }
+                                            },
+                                            child: const Text(
+                                              "Change Profile Picture",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ))
+                                      ],
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        FilePickerResult? result =
+                                            await FilePicker.platform.pickFiles(
+                                                type: FileType.image);
+                                        debugPrint(result.toString());
+                                        if (result != null) {
+                                          file = File(result.files.single.path
+                                              .toString());
+                                          setState(() {
+                                            _uploadedPicture = true;
+                                          });
+                                        } else {
+                                          // User canceled the picker
+                                        }
+                                      },
+                                      child: const Text(
+                                        "Upload Profile Picture",
+                                        style: TextStyle(color: Colors.white),
+                                      ))),
                         ]),
-                        SizedBox(height: 32.0),
+                        SizedBox(height: 16.0),
                         _isProcessing
                             ? CircularProgressIndicator()
                             : Row(
@@ -195,6 +257,20 @@ class PersonalInfoState extends State<PersonalInfo> {
                                           setState(() {
                                             _isProcessing = true;
                                           });
+                                          if (_uploadedPicture) {
+                                            final storageRef =
+                                                FirebaseStorage.instance.ref();
+                                            final petPictureRef = storageRef.child(
+                                                "${FirebaseAuth.instance.currentUser?.uid}/user.jpg");
+                                            try {
+                                              await petPictureRef.putFile(file);
+                                              url = await petPictureRef
+                                                  .getDownloadURL();
+                                              _uploadedPicture = true;
+                                            } catch (error) {
+                                              debugPrint(error.toString());
+                                            }
+                                          }
                                           FirebaseFirestore.instance
                                               .collection('building-codes')
                                               .where(FieldPath.documentId,
@@ -228,6 +304,23 @@ class PersonalInfoState extends State<PersonalInfo> {
                                                               _codeTextController
                                                                   .text
                                                         }),
+                                                        if (_uploadedPicture)
+                                                          {
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'building-codes')
+                                                                .doc(
+                                                                    _codeTextController
+                                                                        .text)
+                                                                .collection(
+                                                                    'users')
+                                                                .doc(widget.uid)
+                                                                .update(<String,
+                                                                    String>{
+                                                              "pictureUrl": url
+                                                            }),
+                                                          },
 
                                                         //proceed to register page
                                                         Navigator.of(context)
