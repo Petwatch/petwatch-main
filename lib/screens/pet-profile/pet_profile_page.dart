@@ -53,8 +53,9 @@ class _PetProfilePageState extends State<PetProfilePage> {
                   child: CircleAvatar(
                     radius: 75,
                     backgroundColor: Colors.white,
-                    backgroundImage:
-                        NetworkImage(value.petInfo[index]['pictureUrl']),
+                    backgroundImage: value.petInfo[index]['pictureUrl'] != null
+                        ? NetworkImage(value.petInfo[index]['pictureUrl'])
+                        : null,
                   ),
                 ),
                 Text(
@@ -127,7 +128,7 @@ class _PetProfilePageState extends State<PetProfilePage> {
                                   ),
                                 ),
                               if (value.petInfo[index]['friendlyWith']
-                                  .contains("true"))
+                                  .containsValue(true))
                                 Chip(
                                   elevation: 5,
                                   backgroundColor:

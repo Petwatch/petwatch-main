@@ -571,7 +571,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                     .collection("pets")
                                                     .doc(_nameTextController
                                                         .text)
-                                                    .set(<String, String>{
+                                                    .set({
                                                   "name":
                                                       _nameTextController.text,
                                                   "type":
@@ -585,8 +585,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                       _sexTextController.text,
                                                   "breed":
                                                       _breedTextController.text,
-                                                  "friendlyWith":
-                                                      values.toString(),
+                                                  "friendlyWith": {...values},
                                                   "houseTrained": describeEnum(
                                                       _trainedCharacter!),
                                                   "spayedOrNeutered":
