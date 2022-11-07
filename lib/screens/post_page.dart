@@ -20,51 +20,40 @@ class PostPage extends StatelessWidget {
 
     return Card(
         elevation: 2,
-        child: IntrinsicHeight(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(children: [
-                  CircleAvatar(
-                    // radius: 75,
-                    backgroundColor: Colors.white,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.zero,
-                      child: Image.asset(
-                        'assets/images/petwatch_logo.png',
-                      ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0),
+              child: Row(children: [
+                CircleAvatar(
+                  // radius: 75,
+                  backgroundColor: Colors.white,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.zero,
+                    child: Image.asset(
+                      'assets/images/petwatch_logo.png',
                     ),
                   ),
-                  Text(post['comments'][0]['commentAuthorName']),
-                  Container(
-                    child: const VerticalDivider(
-                      width: 20,
-                      thickness: 1,
-                      indent: 20,
-                      endIndent: 0,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  Text(formattedDate),
-                ]),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      commentText,
-                      softWrap: false,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ))
-                  ],
                 ),
-              )
-            ],
-          ),
+                Text("${post['comments'][0]['commentAuthorName']}  |  "),
+                Text(formattedDate),
+              ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Text(
+                    commentText,
+                    softWrap: false,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ))
+                ],
+              ),
+            )
+          ],
         ));
   }
 
@@ -72,6 +61,8 @@ class PostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final infoPostDateFormat = new DateFormat('MMMd');
     final timestamp = post['postedTime'] as Timestamp;
+    final _commentFieldController = TextEditingController();
+    final _focusCommentField = FocusNode();
     var datePosted =
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
 
@@ -87,81 +78,108 @@ class PostPage extends StatelessWidget {
     post['comments'].asMap().forEach((index, comment) {
       commentList.add(commentCard(context, comment, index));
     });
-    return Scaffold(
+
+    return GestureDetector(
+      onTap: () {
+        _focusCommentField.unfocus();
+      },
+      child: Scaffold(
         appBar: MessageNavBar(),
-        body: Center(
-          child: Padding(
-              padding: const EdgeInsets.only(top: 24),
-              child: FractionallySizedBox(
-                  widthFactor: .95,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Card(
-                          elevation: 2,
-                          child: IntrinsicHeight(
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(15),
-                                  child: Row(children: [
-                                    CircleAvatar(
-                                      // radius: 75,
-                                      backgroundColor: Colors.white,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.zero,
-                                        child: Image.asset(
-                                          'assets/images/petwatch_logo.png',
-                                        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: IntrinsicHeight(
+                  child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Card(
+                              elevation: 2,
+                              child: IntrinsicHeight(
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(15),
+                                        child: Row(children: [
+                                          CircleAvatar(
+                                            // radius: 75,
+                                            backgroundColor: Colors.white,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.zero,
+                                              child: Image.asset(
+                                                'assets/images/petwatch_logo.png',
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                              "${post['postedBy']['name']}  |  "),
+                                          Text(formattedDate),
+                                        ]),
                                       ),
                                     ),
-                                    Text(post['postedBy']['name']),
-                                    Container(
-                                      child: const VerticalDivider(
-                                        width: 20,
-                                        thickness: 1,
-                                        indent: 20,
-                                        endIndent: 0,
-                                        color: Colors.grey,
+                                    Padding(
+                                      padding: const EdgeInsets.all(15),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                            description,
+                                            // softWrap: false,
+                                            // maxLines: 2,
+                                            overflow: TextOverflow.clip,
+                                          ))
+                                        ],
                                       ),
                                     ),
-                                    Text(formattedDate),
-                                  ]),
+                                    Padding(
+                                      padding: const EdgeInsets.all(15),
+                                      child: Row(
+                                        children: [
+                                          Chip(
+                                              backgroundColor: Colors.yellow,
+                                              label: Text(post['type'])),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(15),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          child: Flexible(
-                                        child: Text(
-                                          description,
-                                          // softWrap: false,
-                                          // maxLines: 2,
-                                          overflow: TextOverflow.clip,
-                                        ),
-                                      ))
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(15),
-                                  child: Row(
-                                    children: [
-                                      Chip(
-                                          backgroundColor: Colors.yellow,
-                                          label: Text(post['type'])),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          )),
-                      ElevatedButton(onPressed: () {}, child: Text("Reply")),
-                      ...commentList
-                    ],
-                  ))),
-        ));
+                              )),
+                          Divider(
+                            thickness: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          ...commentList
+                        ],
+                      )),
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: TextFormField(
+                      minLines: 1,
+                      maxLines: 4,
+                      controller: _commentFieldController,
+                      focusNode: _focusCommentField,
+                      decoration: InputDecoration(hintText: "Comment..."),
+                    ),
+                  ),
+                )),
+                IconButton(onPressed: () {}, icon: Icon(Icons.send))
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
