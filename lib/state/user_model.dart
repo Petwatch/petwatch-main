@@ -54,7 +54,6 @@ class UserModel extends ChangeNotifier {
       }
       for (var element in value.docs) {
         petInfo.add(element.data());
-        debugPrint(petInfo[0]["name"]);
         // debugPrint("${petInfo['friendly']}");
       }
     });
