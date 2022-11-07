@@ -69,7 +69,8 @@ class UserModel extends ChangeNotifier {
         .then((value) => {
               // ignore: avoid_function_literals_in_foreach_calls
               value.docs.forEach((element) {
-                posts.add(element.data());
+                debugPrint(element.id);
+                posts.add({...element.data(), "id": element.id});
                 // debugPrint(element.data().toString());
               })
             });
