@@ -192,7 +192,8 @@ class PostPage extends StatelessWidget {
 
                         debugPrint("$comment");
                         FirebaseFirestore.instance
-                            .collection("/building-codes/123456789/posts/")
+                            .collection(
+                                "/building-codes/${user.buildingCode["buildingCode"]}/posts/")
                             .doc(post["id"])
                             .update({
                           "comments": FieldValue.arrayUnion([comment])
