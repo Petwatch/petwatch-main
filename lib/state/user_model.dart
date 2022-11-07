@@ -63,6 +63,7 @@ class UserModel extends ChangeNotifier {
 
   Future getPosts() async {
     // debugPrint(buildingCode['buildingCode']);
+    postsLoading = true;
     await FirebaseFirestore.instance // #TODO : sort by dat created
         .collection('building-codes/${buildingCode['buildingCode']}/posts')
         .get()

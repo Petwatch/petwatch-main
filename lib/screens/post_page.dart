@@ -197,6 +197,8 @@ class PostPage extends StatelessWidget {
                             .update({
                           "comments": FieldValue.arrayUnion([comment])
                         });
+
+                        user.getPosts();
                       },
                       icon: Icon(Icons.send))
                 ],
