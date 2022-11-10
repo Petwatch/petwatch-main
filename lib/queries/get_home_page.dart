@@ -11,7 +11,7 @@ class GetHomePage {
         .get()
         .then((value) => {
               value.docs.forEach((element) {
-                debugPrint(element.data().toString());
+                // debugPrint(element.data().toString());
               })
             });
   }

@@ -16,7 +16,7 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('in auth gate');
+    // debugPrint('in auth gate');
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
@@ -35,7 +35,7 @@ class AuthGate extends StatelessWidget {
           return StreamBuilder(
             stream: UserCheck.validateUserHasBuilding(uid: snapshot.data!.uid),
             builder: ((context, snapshot) {
-              debugPrint("${snapshot.data.toString()}");
+              // debugPrint("${snapshot.data.toString()}");
               while (snapshot.data == null) {
                 return CircularProgressIndicator(); // TODO: replace this with a screen that has a processing circle.
               }

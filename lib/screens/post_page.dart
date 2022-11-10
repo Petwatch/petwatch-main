@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -7,9 +8,19 @@ import 'package:provider/provider.dart';
 
 import '../state/user_model.dart';
 
-class PostPage extends StatelessWidget {
+class PostPage extends StatefulWidget {
   final Map<String, dynamic> post;
-  PostPage({required this.post});
+
+  PostPage({super.key, required this.post});
+  @override
+  PostPageState createState() => PostPageState(post: this.post);
+}
+
+class PostPageState extends State<PostPage> {
+  final Map<String, dynamic> post;
+
+  PostPageState({required this.post});
+  // PostPage({required this.post});
 
   Widget commentCard(
       BuildContext context, Map<String, dynamic> comment, int index) {
@@ -74,17 +85,18 @@ class PostPage extends StatelessWidget {
 
     var description = post['desc'] as String;
 
-    List<Widget> commentList = [];
-    // for (var comment in post['comments']) {
-    //   commentList.add(commentCard(context, comment, 0));
-    // }
-    // var commentArr = post['comments'] as List<
-    post['comments'].asMap().forEach((index, comment) {
-      // commentList.
-      commentList.insert(0, commentCard(context, comment, index));
-    });
-
     return Consumer<UserModel>(builder: ((context, user, child) {
+      final test = Provider.of<UserModel>(context).posts;
+      // debugPrint("${test[0]["comments"].toString()}");
+      debugPrint("ReRendering");
+      // debugPrint("${post['comments'].length}");
+      List<Widget> commentList = [];
+
+      Map<String, dynamic> myPost = user.getPost(post["id"]);
+      debugPrint("myPost: $myPost");
+      for (var i = 0; i < myPost["comments"].length; i++) {
+        commentList.insert(0, commentCard(context, myPost["comments"][i], i));
+      }
       return GestureDetector(
         onTap: () {
           _focusCommentField.unfocus();
@@ -182,7 +194,7 @@ class PostPage extends StatelessWidget {
                   )),
                   IconButton(
                       onPressed: () {
-                        debugPrint("${post["id"]}");
+                        // debugPrint("${post["id"]}");
                         Map comment = <String, dynamic>{
                           "commentAuthorName": user.name["name"],
                           "commentAuthorUID": user.uid["uid"],
@@ -190,16 +202,21 @@ class PostPage extends StatelessWidget {
                           "postedTime": Timestamp.now()
                         };
 
-                        debugPrint("$comment");
+                        // debugPrint("$comment");
                         FirebaseFirestore.instance
                             .collection(
                                 "/building-codes/${user.buildingCode["buildingCode"]}/posts/")
                             .doc(post["id"])
                             .update({
                           "comments": FieldValue.arrayUnion([comment])
-                        });
+                        }).then((value) => {
+                                  user.getPosts(),
+                                  setState(() {
+                                    // post = post;
+                                  })
+                                });
 
-                        user.getPosts();
+                        // context.dispatchNotification(notification)
                       },
                       icon: Icon(Icons.send))
                 ],

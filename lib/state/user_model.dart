@@ -13,6 +13,7 @@ class UserModel extends ChangeNotifier {
 
   UserModel() {
     getUserData();
+    this.posts;
   }
   final uid = <String, String>{"uid": FirebaseAuth.instance.currentUser!.uid};
   Map buildingCode = <String, String>{"buildingCode": ""};
@@ -24,6 +25,14 @@ class UserModel extends ChangeNotifier {
   bool hasPicture = false;
 
   List<Map<String, dynamic>> posts = [];
+
+  set postsStuff(List<Map<String, dynamic>> posts) {
+    posts = this.posts;
+  }
+
+  List<Map<String, dynamic>> get postsStuff {
+    return posts;
+  }
 
   Future getUserData() async {
     petInfo = [];
@@ -62,23 +71,41 @@ class UserModel extends ChangeNotifier {
   }
 
   Future getPosts() async {
-    // debugPrint(buildingCode['buildingCode']);
+    posts = [];
+    // debugPrint("Getting posts");
     postsLoading = true;
-    await FirebaseFirestore.instance // #TODO : sort by dat created
+    await FirebaseFirestore.instance // #TODO : sort by date created
         .collection('building-codes/${buildingCode['buildingCode']}/posts')
         .get()
         .then((value) => {
               // ignore: avoid_function_literals_in_foreach_calls
               value.docs.forEach((element) {
-                debugPrint(element.id);
+                // debugPrint(element.id);
                 posts.add({...element.data(), "id": element.id});
                 // debugPrint(element.data().toString());
               })
             });
     // debugPrint(posts.toString());
     postsLoading = false;
+    var post = posts[0];
+    // debugPrint(post['comments'].length.toString());
+    // debugPrint(posts.length.toString());
     notifyListeners();
   }
+
+  Map<String, dynamic> getPost(id) {
+    Map<String, dynamic> myPost = {"TEst": "Test"};
+    debugPrint("$posts");
+    for (var element in posts) {
+      if (element["id"] == id) {
+        myPost = element;
+      }
+      // return element["id"] == id;
+    }
+    return myPost;
+  }
+
+  // Future updatePost(id) async {}
 
   void DeletePet(int index, Map pet) async {
 // await Firestore.instance.runTransaction((Transaction myTransaction) async {
