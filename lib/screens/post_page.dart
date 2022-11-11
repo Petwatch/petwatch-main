@@ -31,6 +31,7 @@ class PostPageState extends State<PostPage> {
     var formattedDate = commentDateFormat.format(datePosted);
 
     var commentText = comment['commentText'] as String;
+    var commentAuthor = comment['commentAuthorName'] as String;
 
     return Card(
         elevation: 2,
@@ -49,7 +50,7 @@ class PostPageState extends State<PostPage> {
                     ),
                   ),
                 ),
-                Text("${post['comments'][0]['commentAuthorName']}  |  "),
+                Text("${commentAuthor}  |  "),
                 Text(formattedDate),
               ]),
             ),
@@ -84,19 +85,33 @@ class PostPageState extends State<PostPage> {
     var formattedDate = infoPostDateFormat.format(datePosted);
 
     var description = post['desc'] as String;
+    UserModel userModel = UserModel();
+    userModel.addListener(() {
+      debugPrint("New Comment has been added");
+    });
 
     return Consumer<UserModel>(builder: ((context, user, child) {
-      final test = Provider.of<UserModel>(context).posts;
+      // final test = Provider.of<UserModel>(context).posts;
       // debugPrint("${test[0]["comments"].toString()}");
       debugPrint("ReRendering");
+      // debugPrint("${post["comments"].length}");
       // debugPrint("${post['comments'].length}");
       List<Widget> commentList = [];
 
-      Map<String, dynamic> myPost = user.getPost(post["id"]);
-      debugPrint("myPost: $myPost");
-      for (var i = 0; i < myPost["comments"].length; i++) {
-        commentList.insert(0, commentCard(context, myPost["comments"][i], i));
+      final Map<String, dynamic> thePost = user.posts.firstWhere(
+          (e) => e["documentID"]! == post["documentID"], orElse: (() {
+        return {};
+      }));
+
+      // Map<String, dynamic> myPost = user.getPost(post["id"]);
+      // debugPrint("myPost: $myPost");
+      if (thePost["comments"] != null) {
+        for (var i = 0; i < thePost["comments"].length; i++) {
+          commentList.insert(
+              0, commentCard(context, thePost["comments"][i], i));
+        }
       }
+
       return GestureDetector(
         onTap: () {
           _focusCommentField.unfocus();
@@ -210,10 +225,15 @@ class PostPageState extends State<PostPage> {
                             .update({
                           "comments": FieldValue.arrayUnion([comment])
                         }).then((value) => {
-                                  user.getPosts(),
                                   setState(() {
-                                    // post = post;
-                                  })
+                                    user.getPost(thePost["documentID"],
+                                        user.buildingCode["buildingCode"]);
+                                  }),
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) =>
+                                  //             PostPage(post: post)))
                                 });
 
                         // context.dispatchNotification(notification)

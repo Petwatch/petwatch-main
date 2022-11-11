@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    debugPrint('in main.dart');
+    // debugPrint('in main.dart');
     return MaterialApp(
       title: 'Pet Watch',
       theme: ThemeData(

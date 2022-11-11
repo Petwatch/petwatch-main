@@ -20,7 +20,7 @@ _launchStripeConnect() async {
   // const url = Uri.encodeFull("https://google.com");
   CreateAccountResponse response =
       await StripeBackendService.createSellerAccount();
-  debugPrint("${response.url}");
+  // debugPrint("${response.url}");
   final Uri _url = Uri.parse(response.url);
   // final Uri _tetURL =
   //     Uri.https('petwatch-stripe-api.onrender.com', '/api/hello');

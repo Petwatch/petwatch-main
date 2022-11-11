@@ -43,7 +43,7 @@ class UserModel extends ChangeNotifier {
         .then((value) {
       // Map test = <String, String>{"Name": ""};
       for (var element in value.docs) {
-        debugPrint("name: ${element.data().toString()}");
+        // debugPrint("name: ${element.data().toString()}");
         name["name"] = element['name'];
         buildingCode["buildingCode"] = element["buildingCode"];
         if (element.data().toString().contains("pictureUrl")) {
@@ -63,46 +63,43 @@ class UserModel extends ChangeNotifier {
       }
       for (var element in value.docs) {
         petInfo.add(element.data());
-        // debugPrint("${petInfo['friendly']}");
       }
     });
     getPosts();
-    // notifyListeners();
   }
 
   Future getPosts() async {
     posts = [];
-    // debugPrint("Getting posts");
     postsLoading = true;
-    await FirebaseFirestore.instance // #TODO : sort by date created
+    await FirebaseFirestore.instance
         .collection('building-codes/${buildingCode['buildingCode']}/posts')
+        .orderBy("postedTime", descending: true)
         .get()
         .then((value) => {
-              // ignore: avoid_function_literals_in_foreach_calls
+              debugPrint("${value.size}"),
               value.docs.forEach((element) {
-                // debugPrint(element.id);
                 posts.add({...element.data(), "id": element.id});
-                // debugPrint(element.data().toString());
               })
+            })
+        .then((value) => {
+              postsLoading = false,
+              notifyListeners(),
             });
-    // debugPrint(posts.toString());
-    postsLoading = false;
-    var post = posts[0];
-    // debugPrint(post['comments'].length.toString());
-    // debugPrint(posts.length.toString());
-    notifyListeners();
   }
 
-  Map<String, dynamic> getPost(id) {
-    Map<String, dynamic> myPost = {"TEst": "Test"};
-    debugPrint("$posts");
-    for (var element in posts) {
-      if (element["id"] == id) {
-        myPost = element;
+  Future getPost(id, String buildingCode) async {
+    await FirebaseFirestore.instance
+        .doc("/building-codes/${buildingCode}/posts/${id}")
+        .get()
+        .then((value) {
+      for (var i = 0; i < posts.length; i++) {
+        // debugPrint("Is this for loop printing?");
+        if (posts[i]["documentID"] == id) {
+          posts[i] = value.data()!;
+        }
       }
-      // return element["id"] == id;
-    }
-    return myPost;
+      notifyListeners();
+    });
   }
 
   // Future updatePost(id) async {}

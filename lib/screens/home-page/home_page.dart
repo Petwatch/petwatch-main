@@ -10,14 +10,15 @@ import 'package:provider/provider.dart';
 
 import '../../state/user_model.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage();
 
-  // final BuildContext context;
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
   Widget singlePost(BuildContext context, Map<String, dynamic> post) {
-    // debugPrint(post.toString());
-    // This dat stuff is only for a info post for now.
     final infoPostDateFormat = new DateFormat('MMMd');
     final timestamp = post['postedTime'] as Timestamp;
     var datePosted =
@@ -29,7 +30,7 @@ class HomePage extends StatelessWidget {
 
     return GestureDetector(
         onTap: (() {
-          debugPrint("clicked");
+          // debugPrint("clicked");
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => PostPage(post: post)));
         }),
@@ -107,13 +108,23 @@ class HomePage extends StatelessWidget {
             )));
   }
 
+  UserModel userModel = UserModel();
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    userModel.addListener(() {
+      // debugPrint("New Post has been added");
+      // debugPrint("${userModel.posts.length}");
+    });
     return Consumer<UserModel>(builder: (context, value, child) {
       List<Widget> postList = [];
       for (var post in value.posts) {
         postList.add(singlePost(context, post));
       }
+      // debugPrint("${postList.length}");
 
       return GestureDetector(
           onTap: () {},
