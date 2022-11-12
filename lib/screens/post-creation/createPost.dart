@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/home-page/home_page.dart';
+import 'package:petwatch/screens/routes.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +81,7 @@ class _CreatePostState extends State<CreatePost> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomePage())),
+                                      builder: (context) => Routes())),
                               value.getPosts(),
                             });
                     // debugPrint("$post");
