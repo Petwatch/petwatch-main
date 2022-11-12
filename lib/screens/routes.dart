@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
@@ -41,6 +42,39 @@ class _RoutesState extends State<Routes> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  late FirebaseMessaging messaging;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    CheckDeviceId();
+  }
+
+  void CheckDeviceId() async {
+    messaging = FirebaseMessaging.instance;
+    String deviceId = await messaging.getToken().then(((value) {
+      return value ?? "";
+    }));
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+
+    await FirebaseFirestore.instance
+        .collectionGroup("users")
+        .where("uid", isEqualTo: userId)
+        .get()
+        .then((value) => {
+              value.docs.forEach((element) async {
+                if (element.data().containsKey("deviceId") &&
+                    element["deviceId"] == deviceId) {
+                } else {
+                  await FirebaseFirestore.instance
+                      .doc(element.reference.path)
+                      .update({"deviceId": deviceId});
+                }
+              })
+            });
   }
 
   @override

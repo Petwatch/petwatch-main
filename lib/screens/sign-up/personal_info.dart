@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -63,6 +64,8 @@ class PersonalInfoState extends State<PersonalInfo> {
 
   File file = File("");
   var url;
+
+  late FirebaseMessaging messaging;
 
   @override
   Widget build(BuildContext context) {
@@ -277,68 +280,61 @@ class PersonalInfoState extends State<PersonalInfo> {
                                                   isEqualTo:
                                                       _codeTextController.text)
                                               .get()
-                                              .then((value) => {
-                                                    // debugPrint(
-                                                    //     'Data: ${value.size}'),
-                                                    if (value.size == 1)
-                                                      {
-                                                        FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                                'building-codes')
-                                                            .doc(
-                                                                _codeTextController
-                                                                    .text)
-                                                            .collection('users')
-                                                            .doc(widget.uid)
-                                                            .set(<String,
-                                                                String>{
-                                                          "name":
-                                                              _nameController
-                                                                  .text,
-                                                          "lookingFor":
-                                                              _character
-                                                                  .toString(),
-                                                          "uid": widget.uid,
-                                                          "buildingCode":
-                                                              _codeTextController
-                                                                  .text
-                                                        }),
-                                                        if (_uploadedPicture)
-                                                          {
-                                                            FirebaseFirestore
-                                                                .instance
-                                                                .collection(
-                                                                    'building-codes')
-                                                                .doc(
-                                                                    _codeTextController
-                                                                        .text)
-                                                                .collection(
-                                                                    'users')
-                                                                .doc(widget.uid)
-                                                                .update(<String,
-                                                                    String>{
-                                                              "pictureUrl": url
-                                                            }),
-                                                          },
+                                              .then((value) async {
+                                            // debugPrint(
+                                            //     'Data: ${value.size}'),
+                                            messaging =
+                                                FirebaseMessaging.instance;
+                                            String deviceId = await messaging
+                                                .getToken()
+                                                .then(((value) {
+                                              return value ?? "";
+                                            }));
 
-                                                        //proceed to register page
-                                                        Navigator.of(context)
-                                                            .pushReplacement(
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                SignUpCompletePage(),
-                                                          ),
-                                                        )
-                                                      }
-                                                    else
-                                                      {
-                                                        setState(() {
-                                                          apartmentCode = false;
-                                                          _isProcessing = false;
-                                                        })
-                                                      },
-                                                  });
+                                            if (value.size == 1) {
+                                              FirebaseFirestore.instance
+                                                  .collection('building-codes')
+                                                  .doc(_codeTextController.text)
+                                                  .collection('users')
+                                                  .doc(widget.uid)
+                                                  .set(<String, String>{
+                                                "name": _nameController.text,
+                                                "lookingFor":
+                                                    _character.toString(),
+                                                "uid": widget.uid,
+                                                "buildingCode":
+                                                    _codeTextController.text,
+                                                "deviceId": deviceId
+                                              });
+                                              if (_uploadedPicture) {
+                                                FirebaseFirestore.instance
+                                                    .collection(
+                                                        'building-codes')
+                                                    .doc(_codeTextController
+                                                        .text)
+                                                    .collection('users')
+                                                    .doc(widget.uid)
+                                                    .update(<String, String>{
+                                                  "pictureUrl": url
+                                                });
+                                              }
+                                              ;
+
+                                              //proceed to register page
+                                              Navigator.of(context)
+                                                  .pushReplacement(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SignUpCompletePage(),
+                                                ),
+                                              );
+                                            } else {
+                                              setState(() {
+                                                apartmentCode = false;
+                                                _isProcessing = false;
+                                              });
+                                            }
+                                          });
                                         }
                                       },
                                       child: Text(

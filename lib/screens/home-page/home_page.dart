@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
@@ -108,9 +109,14 @@ class _HomePageState extends State<HomePage> {
             )));
   }
 
+  late FirebaseMessaging messaging;
   UserModel userModel = UserModel();
   void initState() {
     super.initState();
+    messaging = FirebaseMessaging.instance;
+    messaging.getToken().then((value) {
+      debugPrint(value);
+    });
   }
 
   @override
