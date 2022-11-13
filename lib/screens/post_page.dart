@@ -121,74 +121,82 @@ class PostPageState extends State<PostPage> {
           body: Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  child: IntrinsicHeight(
-                    child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Card(
-                                elevation: 2,
-                                child: IntrinsicHeight(
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(15),
-                                          child: Row(children: [
-                                            CircleAvatar(
-                                              // radius: 75,
-                                              backgroundColor: Colors.white,
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.zero,
-                                                child: Image.asset(
-                                                  'assets/images/petwatch_logo.png',
+                child: RefreshIndicator(
+                  onRefresh: () {
+                    return user.getPosts();
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Card(
+                                  elevation: 2,
+                                  child: IntrinsicHeight(
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: Row(children: [
+                                              CircleAvatar(
+                                                // radius: 75,
+                                                backgroundColor: Colors.white,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.zero,
+                                                  child: Image.asset(
+                                                    'assets/images/petwatch_logo.png',
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Text(
-                                                "${post['postedBy']['name']}  |  "),
-                                            Text(formattedDate),
-                                          ]),
+                                              Text(
+                                                  "${post['postedBy']['name']}  |  "),
+                                              Text(formattedDate),
+                                            ]),
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(15),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                                child: Text(
-                                              description,
-                                              // softWrap: false,
-                                              // maxLines: 2,
-                                              overflow: TextOverflow.clip,
-                                            ))
-                                          ],
+                                        Padding(
+                                          padding: const EdgeInsets.all(15),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                  child: Text(
+                                                description,
+                                                // softWrap: false,
+                                                // maxLines: 2,
+                                                overflow: TextOverflow.clip,
+                                              ))
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(15),
-                                        child: Row(
-                                          children: [
-                                            Chip(
-                                                backgroundColor: Colors.yellow,
-                                                label: Text(post['type'])),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                )),
-                            Divider(
-                              thickness: 2,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            ...commentList
-                          ],
-                        )),
+                                        Padding(
+                                          padding: const EdgeInsets.all(15),
+                                          child: Row(
+                                            children: [
+                                              Chip(
+                                                  backgroundColor:
+                                                      Colors.yellow,
+                                                  label: Text(post['type'])),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                              Divider(
+                                thickness: 2,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              ...commentList
+                            ],
+                          )),
+                    ),
                   ),
                 ),
               ),

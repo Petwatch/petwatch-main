@@ -15,7 +15,8 @@ import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 
 class Routes extends StatefulWidget {
-  const Routes();
+  final int initialIndex;
+  const Routes(this.initialIndex);
   // final BuildContext context;
   @override
   State<Routes> createState() => _RoutesState();
@@ -51,6 +52,7 @@ class _RoutesState extends State<Routes> {
     // TODO: implement initState
     super.initState();
     CheckDeviceId();
+    _selectedIndex = widget.initialIndex;
   }
 
   void CheckDeviceId() async {

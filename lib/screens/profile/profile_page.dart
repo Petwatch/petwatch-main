@@ -40,81 +40,133 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Scaffold(
               appBar: TopNavBar(),
               body: Center(
-                child: Column(children: [
-                  TextButton(onPressed: (() {}), child: const Text("Edit")),
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Card(
-                          shape: CircleBorder(),
-                          elevation: 2,
-                          child: CircleAvatar(
-                            radius: 75,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            backgroundImage: user.hasPicture
-                                ? NetworkImage(user.pictureUrl['pictureUrl'])
-                                : null,
-                            child: !user.hasPicture
-                                ? Image.asset(
-                                    'assets/images/petwatch_logo_white.png')
-                                : null,
-                          )),
-                      Positioned(
-                          left: 100,
-                          top: 100,
-                          child: TextButton(
-                              onPressed: (() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            PetProfilePage()));
-                              }),
-                              child: Card(
-                                shape: CircleBorder(),
-                                elevation: 2,
-                                child: CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary,
-                                  backgroundImage: user.hasPet
-                                      ? NetworkImage(user.petInfo[0]
-                                              ['pictureUrl']
-                                          .toString())
-                                      : null,
-                                  child: !user.hasPet
-                                      ? Image.asset(
-                                          'assets/images/petwatch_logo_white.png')
-                                      : null,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Card(
+                    elevation: 10,
+                    child: Column(children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: PopupMenuButton(
+                          offset: Offset.fromDirection(270, 12),
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
+                          ),
+                          position: PopupMenuPosition.under,
+                          icon: Icon(Icons.menu),
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                            PopupMenuItem(
+                              padding: EdgeInsets.zero,
+                              child: Center(
+                                child: TextButton(
+                                    onPressed: () {},
+                                    child: Text("Edit\nProfile",
+                                        textAlign: TextAlign.center)),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              padding: EdgeInsets.zero,
+                              child: Center(
+                                child: TextButton(
+                                    onPressed: () async {
+                                      await _launchStripeConnect();
+                                    },
+                                    child: Text("Become\na pet sitter",
+                                        textAlign: TextAlign.center)),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              padding: EdgeInsets.zero,
+                              child: Center(
+                                child: SignOutButton(
+                                  variant: ButtonVariant.text,
                                 ),
-                              )))
-                    ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Card(
+                              shape: CircleBorder(),
+                              elevation: 2,
+                              child: CircleAvatar(
+                                radius: 75,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                backgroundImage: user.hasPicture
+                                    ? NetworkImage(
+                                        user.pictureUrl['pictureUrl'])
+                                    : null,
+                                child: !user.hasPicture
+                                    ? Image.asset(
+                                        'assets/images/petwatch_logo_white.png')
+                                    : null,
+                              )),
+                          Positioned(
+                              left: 100,
+                              top: 100,
+                              child: TextButton(
+                                  onPressed: (() {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PetProfilePage()));
+                                  }),
+                                  child: Card(
+                                    shape: CircleBorder(),
+                                    elevation: 2,
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      backgroundImage: user.hasPet
+                                          ? NetworkImage(user.petInfo[0]
+                                                  ['pictureUrl']
+                                              .toString())
+                                          : null,
+                                      child: !user.hasPet
+                                          ? Image.asset(
+                                              'assets/images/petwatch_logo_white.png')
+                                          : null,
+                                    ),
+                                  )))
+                        ],
+                      ),
+                      Text(
+                        "${user.name["name"]}",
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      Text(
+                        "Subtitle Placeholder",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text("More information placeholder"),
+                      // SignOutButton(),
+                      // TextButton(
+                      //     onPressed: () async {
+                      //       await _launchStripeConnect();
+                      //     },
+                      //     child: Text("Become a pet sitter"))
+                      // ElevatedButton(
+                      //     onPressed: () => {
+                      //           Navigator.push(
+                      //               context,
+                      //               MaterialPageRoute(
+                      //                   builder: (context) => PetProfilePage()))
+                      //         },
+                      //     child: Text("Pet"))
+                    ]),
                   ),
-                  Text(
-                    "${user.name["name"]}",
-                    style: TextStyle(fontSize: 40),
-                  ),
-                  Text(
-                    "Subtitle Placeholder",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Text("More information placeholder"),
-                  SignOutButton(),
-                  ElevatedButton(
-                      onPressed: () async {
-                        await _launchStripeConnect();
-                      },
-                      child: Text("Become a pet sitter"))
-                  // ElevatedButton(
-                  //     onPressed: () => {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => PetProfilePage()))
-                  //         },
-                  //     child: Text("Pet"))
-                ]),
+                ),
               )));
     }));
   }

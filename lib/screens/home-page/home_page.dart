@@ -138,15 +138,21 @@ class _HomePageState extends State<HomePage> {
             appBar: const TopNavBar(),
             body: value.postsLoading
                 ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    child: Center(
-                        child: Padding(
-                      padding: const EdgeInsets.all(0),
-                      child: Column(
-                          // crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [...postList]),
-                    )),
+                : RefreshIndicator(
+                    onRefresh: () {
+                      return value.getPosts();
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Center(
+                          child: Padding(
+                        padding: const EdgeInsets.all(0),
+                        child: Column(
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [...postList]),
+                      )),
+                    ),
                   ),
             floatingActionButton: FloatingActionButton(
                 onPressed: () {

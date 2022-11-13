@@ -42,14 +42,19 @@ class _CreatePostState extends State<CreatePost> {
             controller: _PostTitle,
             focusNode: _PostTitleNode,
           ),
-          TextField(
-            decoration:
-                InputDecoration(hintText: "Post", border: OutlineInputBorder()),
-            controller: _PostContents,
-            keyboardType: TextInputType.multiline,
-            focusNode: _PostContentsNode,
-            // minLines: 10,
-            maxLines: 20,
+          Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: TextField(
+              decoration: InputDecoration(
+                  labelText: "Post",
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder()),
+              controller: _PostContents,
+              keyboardType: TextInputType.multiline,
+              focusNode: _PostContentsNode,
+              // minLines: 10,
+              maxLines: 20,
+            ),
           ),
           Align(
               alignment: Alignment.centerRight,
@@ -81,7 +86,7 @@ class _CreatePostState extends State<CreatePost> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Routes())),
+                                      builder: (context) => Routes(0))),
                               value.getPosts(),
                             });
                     // debugPrint("$post");
@@ -104,24 +109,26 @@ class _CreatePostState extends State<CreatePost> {
             }),
             child: Scaffold(
               appBar: MessageNavBar(),
-              body: Align(
-                alignment: Alignment.center,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    DropdownButton(
-                      value: selectedPostValue,
-                      items: dropdownItems,
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedPostValue = value!;
-                        });
-                      },
-                    ),
-                    if (selectedPostValue == "Info") ...[
-                      infoPostForm(context, value)
-                    ]
-                  ],
+              body: SingleChildScrollView(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DropdownButton(
+                        value: selectedPostValue,
+                        items: dropdownItems,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedPostValue = value!;
+                          });
+                        },
+                      ),
+                      if (selectedPostValue == "Info") ...[
+                        infoPostForm(context, value)
+                      ]
+                    ],
+                  ),
                 ),
               ),
             ));
