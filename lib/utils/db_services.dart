@@ -16,7 +16,7 @@ class DatabaseService {
       .doc('123456789')
       .collection('users');
   final CollectionReference groupCollection =
-      FirebaseFirestore.instance.collection("groups");
+      FirebaseFirestore.instance.collection('groups');
 
   // saving userData
   Future savingUserData(String fullName) async {
@@ -40,7 +40,7 @@ class DatabaseService {
   // getting user data
   Future getUserData(String fullNames) async {
     QuerySnapshot snapshot =
-        await userCollection.where("fullName", isEqualTo: fullNames).get();
+        await userCollection.where("name", isEqualTo: fullNames).get();
     return snapshot;
   }
 
@@ -50,8 +50,10 @@ class DatabaseService {
   }
 
   static Future<String?> getUserNameFromSF() async {
-    SharedPreferences sf = await SharedPreferences.getInstance();
-    return sf.getString(userNameKey);
+    return getUserName();
+
+    // SharedPreferences sf = await SharedPreferences.getInstance();
+    // return sf.getString(userNameKey);
   }
 
   // get user groups
@@ -110,7 +112,7 @@ class DatabaseService {
 
   // search
   searchByName(String groupName) {
-    return groupCollection.where("groupName", isEqualTo: groupName).get();
+    return userCollection.where("name", isEqualTo: groupName).get();
   }
 
   // function -> bool

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:petwatch/screens/profile/profile_page.dart';
+// import 'package:petwatch/screens/profile/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'auth_gate.dart';
 import 'package:petwatch/screens/auth_gate.dart';
@@ -39,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
   getCurrentUserIdandName() async {
     await DatabaseService.getUserNameFromSF().then((value) {
       setState(() {
-        userName = value!;
+        userName = value!.toString();
       });
     });
     user = FirebaseAuth.instance.currentUser;
@@ -57,10 +57,11 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text(
-          "Search",
+          "New Message",
           style: TextStyle(
               fontSize: 27, fontWeight: FontWeight.bold, color: Colors.white),
         ),
@@ -78,14 +79,14 @@ class _SearchPageState extends State<SearchPage> {
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
                         border: InputBorder.none,
-                        hintText: "Search users in your neighborhood...",
+                        hintText: "To:",
                         hintStyle:
                             TextStyle(color: Colors.white, fontSize: 16)),
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    searchMethod();
+                    initiateSearchMethod();
                   },
                   child: Container(
                     width: 40,
@@ -104,16 +105,17 @@ class _SearchPageState extends State<SearchPage> {
           ),
           isLoading
               ? Center(
-                  child: CircularProgressIndicator(
+                  child: Column(children: [
+                  CircularProgressIndicator(
                       color: Theme.of(context).primaryColor),
-                )
+                ]))
               : groupList(),
         ],
       ),
     );
   }
 
-  searchMethod() async {
+  initiateSearchMethod() async {
     if (searchController.text.isNotEmpty) {
       setState(() {
         isLoading = true;
