@@ -504,6 +504,7 @@ class _PetEditInfoState extends State<PetEditInfo>
                                 decoration: const InputDecoration(
                                   isDense: true,
                                   labelText: "Other information",
+                                  alignLabelWithHint: true,
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -584,29 +585,67 @@ class _PetEditInfoState extends State<PetEditInfo>
                                                     ))
                                               ],
                                             )
-                                      : ElevatedButton(
-                                          onPressed: () async {
-                                            FilePickerResult? result =
-                                                await FilePicker.platform
-                                                    .pickFiles(
-                                                        type: FileType.image);
-                                            debugPrint(result.toString());
-                                            if (result != null) {
-                                              file = File(result
-                                                  .files.single.path
-                                                  .toString());
-                                              setState(() {
-                                                _uploadedPicture = true;
-                                              });
-                                            } else {
-                                              // User canceled the picker
-                                            }
-                                          },
-                                          child: const Text(
-                                            "Upload Pet Picture",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ))),
+                                      : _uploadedPicture == false
+                                          ? ElevatedButton(
+                                              onPressed: () async {
+                                                FilePickerResult? result =
+                                                    await FilePicker.platform
+                                                        .pickFiles(
+                                                            type:
+                                                                FileType.image);
+                                                debugPrint(result.toString());
+                                                if (result != null) {
+                                                  file = File(result
+                                                      .files.single.path
+                                                      .toString());
+                                                  setState(() {
+                                                    _uploadedPicture = true;
+                                                  });
+                                                } else {
+                                                  // User canceled the picker
+                                                }
+                                              },
+                                              child: const Text(
+                                                "Upload Pet Picture",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ))
+                                          : Column(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 75,
+                                                  backgroundImage:
+                                                      FileImage(file),
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () async {
+                                                      FilePickerResult? result =
+                                                          await FilePicker
+                                                              .platform
+                                                              .pickFiles(
+                                                                  type: FileType
+                                                                      .image);
+                                                      debugPrint(
+                                                          result.toString());
+                                                      if (result != null) {
+                                                        file = File(result
+                                                            .files.single.path
+                                                            .toString());
+                                                        setState(() {
+                                                          _uploadedPicture =
+                                                              true;
+                                                        });
+                                                      } else {
+                                                        // User canceled the picker
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      "Change Pet Picture",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ))
+                                              ],
+                                            )),
                               const SizedBox(height: 32.0),
                               _isProcessing
                                   ? const CircularProgressIndicator()

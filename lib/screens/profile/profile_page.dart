@@ -103,11 +103,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 backgroundImage: user.hasPicture
                                     ? NetworkImage(
                                         user.pictureUrl['pictureUrl'])
-                                    : null,
-                                child: !user.hasPicture
-                                    ? Image.asset(
-                                        'assets/images/petwatch_logo_white.png')
-                                    : null,
+                                    : AssetImage(
+                                            'assets/images/petwatch_logo_white.png')
+                                        as ImageProvider,
                               )),
                           Positioned(
                               left: 100,
@@ -124,19 +122,22 @@ class _ProfilePageState extends State<ProfilePage> {
                                     shape: CircleBorder(),
                                     elevation: 2,
                                     child: CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primary,
-                                      backgroundImage: user.hasPet
-                                          ? NetworkImage(user.petInfo[0]
-                                                  ['pictureUrl']
-                                              .toString())
-                                          : null,
-                                      child: !user.hasPet
-                                          ? Image.asset(
-                                              'assets/images/petwatch_logo_white.png')
-                                          : null,
-                                    ),
+                                        radius: 25,
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        backgroundImage: user.hasPet
+                                            ? user.petInfo[0]['pictureUrl'] !=
+                                                    null
+                                                ? NetworkImage(user.petInfo[0]
+                                                        ['pictureUrl']
+                                                    .toString())
+                                                : AssetImage(
+                                                        'assets/images/petwatch_logo_white.png')
+                                                    as ImageProvider
+                                            : AssetImage(
+                                                    'assets/images/petwatch_logo_white.png')
+                                                as ImageProvider),
                                   )))
                         ],
                       ),

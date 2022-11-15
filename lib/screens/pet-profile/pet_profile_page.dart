@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/pet-profile/pet_edit_info.dart';
@@ -16,6 +17,22 @@ enum Menu { edit, delete, itemThree, itemFour }
 class PetProfilePage extends StatefulWidget {
   @override
   _PetProfilePageState createState() => _PetProfilePageState();
+}
+
+void DeletePet(index, value, context) async {
+  await FirebaseFirestore.instance
+      .doc(
+          "/building-codes/${value.buildingCode['buildingCode']}/users/${value.uid['uid']}/pets/${value.petInfo[index]['petId']}")
+      .delete()
+      .then(((result) async {
+    value.petInfo[index]['pictureUrl'] != null
+        ? await FirebaseStorage.instance
+            .ref()
+            .child('${value.uid['uid']}/${value.petInfo[index]['petId']}.jpg')
+            .delete()
+            .then(value.getUserData().then(Navigator.pop(context, 'Delete')))
+        : value.getUserData().then(Navigator.pop(context, 'Delete'));
+  }));
 }
 
 class _PetProfilePageState extends State<PetProfilePage> {
@@ -52,13 +69,14 @@ class _PetProfilePageState extends State<PetProfilePage> {
                           child: Center(
                             child: TextButton(
                                 onPressed: () {
+                                  Navigator.pop(context, 'Cancel');
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               PetEditInfo(value, index)));
                                 },
-                                child: Text('Edit Pet',
+                                child: Text('Edit\nPet Profile',
                                     textAlign: TextAlign.center)),
                           ),
                         ),
@@ -67,10 +85,44 @@ class _PetProfilePageState extends State<PetProfilePage> {
                           value: Menu.delete,
                           child: Center(
                             child: TextButton(
+                                // onPressed: () {
+                                //   debugPrint("Deleting pet at index ${index}");
+                                //   debugPrint(
+                                //       "Building Code: ${value.buildingCode['buildingCode']}");
+                                //   debugPrint("UID: ${value.uid['uid']}");
+                                //   debugPrint(
+                                //       "petID: ${value.petInfo[index]['petId']}");
+                                //   DeletePet(index, value);
+                                // },
                                 onPressed: () {
-                                  debugPrint("Deleting pet at index ${index}");
+                                  Navigator.pop(context, 'Cancel');
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                            title: Text("Delete Pet Profile"),
+                                            content: Text(
+                                                "Are you sure you wish to delete this pet's profile?"),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(
+                                                          context, 'Cancel'),
+                                                  child: Text("Cancel")),
+                                              TextButton(
+                                                  onPressed: (() {
+                                                    DeletePet(
+                                                        index, value, context);
+                                                  }),
+                                                  child: Text(
+                                                    "Delete",
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ))
+                                            ],
+                                          ));
                                 },
-                                child: Text("Delete Pet",
+                                child: Text("Delete\nPet Profile",
                                     textAlign: TextAlign.center)),
                           ),
                         )
@@ -81,13 +133,18 @@ class _PetProfilePageState extends State<PetProfilePage> {
                     elevation: 5,
                     shape: CircleBorder(),
                     child: CircleAvatar(
-                      radius: 75,
-                      backgroundColor: Colors.white,
-                      backgroundImage:
-                          value.petInfo[index]['pictureUrl'] != null
-                              ? NetworkImage(value.petInfo[index]['pictureUrl'])
-                              : null,
-                    ),
+                        radius: 75,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundImage: value.hasPet
+                            ? value.petInfo[index]['pictureUrl'] != null
+                                ? NetworkImage(
+                                    value.petInfo[index]['pictureUrl'])
+                                : AssetImage(
+                                        'assets/images/petwatch_logo_white.png')
+                                    as ImageProvider
+                            : AssetImage(
+                                    'assets/images/petwatch_logo_white.png')
+                                as ImageProvider),
                   ),
                   Text(
                     // value.petInfo['name'],
