@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/home-page/home_page.dart';
@@ -30,6 +31,13 @@ class _CreatePostState extends State<CreatePost> {
   final _PostContentsNode = FocusNode();
 
   bool postCreating = false;
+  final _multiSelectKey = GlobalKey<FormFieldState>();
+
+  List<Map<String, dynamic>> _selectedPets = [];
+
+  void initState() {
+    super.initState();
+  }
 
   Widget infoPostForm(BuildContext context, UserModel value) {
     return Padding(
@@ -47,6 +55,83 @@ class _CreatePostState extends State<CreatePost> {
             child: TextField(
               decoration: InputDecoration(
                   labelText: "Post",
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder()),
+              controller: _PostContents,
+              keyboardType: TextInputType.multiline,
+              focusNode: _PostContentsNode,
+              // minLines: 10,
+              maxLines: 20,
+            ),
+          ),
+          Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                  onPressed: () {
+                    List<Map<String, dynamic>> emptyCommentsArr = [];
+                    Map post = <String, dynamic>{
+                      "postedBy": <String, dynamic>{
+                        "name": value.name['name'],
+                        "UID": value.uid['uid'],
+                      },
+                      "title": _PostTitle.text,
+                      "desc": _PostContents.text,
+                      "postedTime": Timestamp.now(),
+                      "type": selectedPostValue,
+                      "comments": emptyCommentsArr
+                    };
+
+                    FirebaseFirestore.instance
+                        .collection(
+                            "/building-codes/${value.buildingCode["buildingCode"]}/posts/")
+                        .add({...post})
+                        .then((value) => {
+                              FirebaseFirestore.instance
+                                  .doc(value.path)
+                                  .update({"documentID": value.id}),
+                            })
+                        .then((_) => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Routes(0))),
+                              value.getPosts(),
+                            });
+                    // debugPrint("$post");
+                  },
+                  child: Text("Post")))
+        ],
+      ),
+    );
+  }
+
+  Widget requestPostForm(BuildContext context, UserModel value) {
+    // static List pets = value.petInfo;
+    final _pets =
+        value.petInfo.map((pet) => MultiSelectItem(pet, pet["name"])).toList();
+    // debugPrint("Pets: ${pets[0]["name"]}");
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          MultiSelectDialogField(
+              buttonText: Text("Select Your Pet"),
+              items: _pets,
+              title: Text("Select Your Pet"),
+              onConfirm: (results) {
+                debugPrint("$results");
+              }),
+          TextField(
+            decoration: InputDecoration(
+                labelText: "Title", border: OutlineInputBorder()),
+            controller: _PostTitle,
+            focusNode: _PostTitleNode,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: TextField(
+              decoration: InputDecoration(
+                  labelText: "More Info",
                   alignLabelWithHint: true,
                   border: OutlineInputBorder()),
               controller: _PostContents,
@@ -124,9 +209,10 @@ class _CreatePostState extends State<CreatePost> {
                           });
                         },
                       ),
-                      if (selectedPostValue == "Info") ...[
-                        infoPostForm(context, value)
-                      ]
+                      if (selectedPostValue == "Info")
+                        (infoPostForm(context, value)),
+                      if (selectedPostValue == "Request")
+                        (requestPostForm(context, value))
                     ],
                   ),
                 ),
