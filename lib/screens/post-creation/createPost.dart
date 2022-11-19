@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/home-page/home_page.dart';
@@ -23,13 +25,30 @@ class _CreatePostState extends State<CreatePost> {
     return menuItems;
   }
 
+  final _formKey = GlobalKey<FormState>();
+
   final _PostTitle = TextEditingController();
   final _PostContents = TextEditingController();
+  final _PriceForRequest = TextEditingController();
 
   final _PostTitleNode = FocusNode();
   final _PostContentsNode = FocusNode();
+  final _PriceForRequestNode = FocusNode();
 
   bool postCreating = false;
+  final _multiSelectKey = GlobalKey<FormFieldState>();
+  TextEditingController dateController = TextEditingController();
+
+  List<Map<String, dynamic>> _selectedPets = [];
+
+  late DateTimeRange selectedDates;
+
+  int numberOfDays = 0;
+
+  void initState() {
+    dateController.text = "";
+    super.initState();
+  }
 
   Widget infoPostForm(BuildContext context, UserModel value) {
     return Padding(
@@ -97,6 +116,142 @@ class _CreatePostState extends State<CreatePost> {
     );
   }
 
+  Widget requestPostForm(BuildContext context, UserModel value) {
+    // static List pets = value.petInfo;
+    final _pets =
+        value.petInfo.map((pet) => MultiSelectItem(pet, pet["name"])).toList();
+    // debugPrint("Pets: ${pets[0]["name"]}");
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: [
+            MultiSelectDialogField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please select a pet.";
+                  }
+                  return null;
+                },
+                buttonText: Text("Select Your Pet"),
+                items: _pets,
+                title: Text("Select Your Pet"),
+                onConfirm: (results) {
+                  debugPrint("$results");
+                }),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: TextFormField(
+                controller: dateController,
+                readOnly: true,
+                decoration: InputDecoration(
+                    labelText: "Select Dates",
+                    alignLabelWithHint: true,
+                    helperText:
+                        "Select which days you want your pet to be watched",
+                    border: OutlineInputBorder()),
+                onTap: () async {
+                  DateTimeRange? dateRange = await showDateRangePicker(
+                      context: context,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2101));
+                  if (dateRange != null) {
+                    String firstDate =
+                        DateFormat("MMMd").format(dateRange.start);
+                    String lastDate = DateFormat("MMMd").format(dateRange.end);
+                    setState(() {
+                      dateController.text = "$firstDate - $lastDate";
+                      selectedDates = dateRange;
+                      numberOfDays = dateRange.end.day - dateRange.start.day;
+                    });
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please select a date";
+                  }
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: "Price",
+                  hintText: numberOfDays > 0
+                      ? "Recommended: \$${numberOfDays * 20}"
+                      : "",
+                  helperText:
+                      "You won't be charged until you approve someones request",
+                  alignLabelWithHint: true,
+                  border: OutlineInputBorder(),
+                  prefixText: "\$",
+                ),
+                controller: _PriceForRequest,
+                focusNode: _PriceForRequestNode,
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                    labelText: "More Info",
+                    hintText: "Specify the time, and anything else",
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder()),
+                controller: _PostContents,
+                keyboardType: TextInputType.multiline,
+                focusNode: _PostContentsNode,
+                maxLines: 10,
+              ),
+            ),
+            Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        print("Success");
+                      }
+                      List<Map<String, dynamic>> emptyCommentsArr = [];
+                      Map post = <String, dynamic>{
+                        "postedBy": <String, dynamic>{
+                          "name": value.name['name'],
+                          "UID": value.uid['uid'],
+                        },
+                        "title": _PostTitle.text,
+                        "desc": _PostContents.text,
+                        "postedTime": Timestamp.now(),
+                        "type": selectedPostValue,
+                        "comments": emptyCommentsArr
+                      };
+
+                      await FirebaseFirestore.instance
+                          .collection(
+                              "/building-codes/${value.buildingCode["buildingCode"]}/posts/")
+                          .add({...post})
+                          .then((value) => {
+                                FirebaseFirestore.instance
+                                    .doc(value.path)
+                                    .update({"documentID": value.id}),
+                              })
+                          .then((_) => {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Routes(0))),
+                                value.getPosts(),
+                              });
+                      debugPrint("$post");
+                    },
+                    child: Text("Post"))),
+          ],
+        ),
+      ),
+    );
+  }
+
   String selectedPostValue = "Request";
 
   Widget build(BuildContext context) {
@@ -106,6 +261,7 @@ class _CreatePostState extends State<CreatePost> {
             onTap: (() {
               _PostTitleNode.unfocus();
               _PostContentsNode.unfocus();
+              _PriceForRequestNode.unfocus();
             }),
             child: Scaffold(
               appBar: MessageNavBar(),
@@ -124,9 +280,10 @@ class _CreatePostState extends State<CreatePost> {
                           });
                         },
                       ),
-                      if (selectedPostValue == "Info") ...[
-                        infoPostForm(context, value)
-                      ]
+                      if (selectedPostValue == "Info")
+                        (infoPostForm(context, value)),
+                      if (selectedPostValue == "Request")
+                        (requestPostForm(context, value))
                     ],
                   ),
                 ),

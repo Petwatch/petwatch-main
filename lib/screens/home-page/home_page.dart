@@ -89,7 +89,18 @@ class _HomePageState extends State<HomePage> {
                           child: Row(
                             children: [
                               Chip(
-                                  backgroundColor: Colors.yellow,
+                                  backgroundColor: (() {
+                                    switch (post["type"]) {
+                                      case "Info":
+                                        return Colors.yellow;
+                                      case "Request":
+                                        return Colors.green;
+                                      case "Available":
+                                        return Colors.blue;
+                                      default:
+                                        return Colors.yellow;
+                                    }
+                                  })(),
                                   label: Text(post['type'])),
                               const Spacer(),
                               Text("${post['comments'].length} comments"),

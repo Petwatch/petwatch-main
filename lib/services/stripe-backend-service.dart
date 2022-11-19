@@ -4,10 +4,12 @@ import 'package:http/http.dart' as http;
 class CreateAccountResponse {
   late String url;
   late bool success;
+  late String id;
 
-  CreateAccountResponse(String url, bool success) {
+  CreateAccountResponse(String url, bool success, String id) {
     this.url = url;
     this.success = success;
+    this.id = id;
   }
 }
 
@@ -29,6 +31,6 @@ class StripeBackendService {
     var url = Uri.parse(StripeBackendService.createAccountUrl);
     var response = await http.get(url, headers: StripeBackendService.headers);
     Map<String, dynamic> body = jsonDecode(response.body);
-    return new CreateAccountResponse(body['url'], true);
+    return new CreateAccountResponse(body['url'], true, body["id"]);
   }
 }
