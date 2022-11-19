@@ -32,12 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
         .doc(
             "/building-codes/${value.buildingCode['buildingCode']}/users/${value.uid['uid']}/")
         .update({"stripeExpressId": response.id});
-    // debugPrint("${res}");
     final Uri _url = Uri.parse(response.url);
-    // final Uri _tetURL =
-    //     Uri.https('petwatch-stripe-api.onrender.com', '/api/hello');
-    // var response = await http.get(_tetURL);
-    // debugPrint('${response.body}');
     if (!await launchUrl(_url)) {
       throw 'Could not launch $_url';
     }
@@ -47,7 +42,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget build(BuildContext context) {
-    // context = widget.context;
     return Consumer<UserModel>(builder: ((context, user, child) {
       debugPrint("${user}");
       return GestureDetector(
@@ -97,6 +91,24 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         TextAlign.center)),
                                           ),
                                         ),
+                                        (PopupMenuItem(
+                                          padding: EdgeInsets.zero,
+                                          child: Center(
+                                            child: TextButton(
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  // setState(() {
+                                                  //   isLoading = true;
+                                                  // });
+                                                  // await _launchStripeConnect(
+                                                  //     user);
+                                                },
+                                                child: const Text(
+                                                    "Payment Settings",
+                                                    textAlign:
+                                                        TextAlign.center)),
+                                          ),
+                                        )),
                                         if (user.stripeExpressId == "")
                                           (PopupMenuItem(
                                             padding: EdgeInsets.zero,
