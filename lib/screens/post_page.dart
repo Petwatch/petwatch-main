@@ -20,7 +20,8 @@ class PostPageState extends State<PostPage> {
   final Map<String, dynamic> post;
 
   PostPageState({required this.post});
-  // PostPage({required this.post});
+
+  // If the request post is not mine, and the person that clicks on it is a registered pet sitter, show the button
 
   Widget commentCard(
       BuildContext context, Map<String, dynamic> comment, int index) {
@@ -180,8 +181,18 @@ class PostPageState extends State<PostPage> {
                                           child: Row(
                                             children: [
                                               Chip(
-                                                  backgroundColor:
-                                                      Colors.yellow,
+                                                  backgroundColor: (() {
+                                                    switch (post["type"]) {
+                                                      case "Info":
+                                                        return Colors.yellow;
+                                                      case "Request":
+                                                        return Colors.green;
+                                                      case "Available":
+                                                        return Colors.blue;
+                                                      default:
+                                                        return Colors.yellow;
+                                                    }
+                                                  })(),
                                                   label: Text(post['type'])),
                                             ],
                                           ),
