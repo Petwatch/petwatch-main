@@ -92,11 +92,6 @@ class PostPageState extends State<PostPage> {
     });
 
     return Consumer<UserModel>(builder: ((context, user, child) {
-      // final test = Provider.of<UserModel>(context).posts;
-      // debugPrint("${test[0]["comments"].toString()}");
-      debugPrint("ReRendering");
-      // debugPrint("${post["comments"].length}");
-      // debugPrint("${post['comments'].length}");
       List<Widget> commentList = [];
 
       final Map<String, dynamic> thePost = user.posts.firstWhere(
