@@ -1,13 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
+import 'package:petwatch/screens/profile/edit_profile_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:http/http.dart' as http;
 import 'package:petwatch/services/stripe-backend-service.dart';
+import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 
 class ProfilePage extends StatefulWidget {
   // final BuildContext context;
@@ -204,5 +207,26 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
               )));
     }));
+  }
+}
+
+class SampleWidget extends StatelessWidget {
+  const SampleWidget({
+    Key? key,
+    required this.label,
+    required this.color,
+  }) : super(key: key);
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        elevation: 5,
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+        ));
   }
 }
