@@ -204,8 +204,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Padding(
                                     padding: const EdgeInsets.all(2.0),
                                     child: Text(
-                                      user.subTitle != ""
-                                          ? user.subTitle
+                                      user.subtitle != ""
+                                          ? user.subtitle
                                           : "Subtitle Placeholder",
                                       style: TextStyle(
                                           fontSize: 20,

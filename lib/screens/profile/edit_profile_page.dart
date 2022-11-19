@@ -32,10 +32,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   var url;
 
   var _nameTextController = TextEditingController();
-  var _subTitleTextController = TextEditingController();
+  var _subtitleTextController = TextEditingController();
   var _bioTextController = TextEditingController();
   final _focusName = FocusNode();
-  final _focusSubTitle = FocusNode();
+  final _focusSubtitle = FocusNode();
   final _focusBio = FocusNode();
 
   @override
@@ -43,8 +43,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
     _nameTextController =
         new TextEditingController(text: widget.user.name["name"]);
-    _subTitleTextController =
-        new TextEditingController(text: widget.user.subTitle);
+    _subtitleTextController =
+        new TextEditingController(text: widget.user.subtitle);
     _bioTextController = new TextEditingController(text: widget.user.bio);
   }
 
@@ -54,7 +54,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return GestureDetector(
           onTap: () {
             _focusName.unfocus();
-            _focusSubTitle.unfocus();
+            _focusSubtitle.unfocus();
             _focusBio.unfocus();
           },
           child: Scaffold(
@@ -239,8 +239,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           keyboardType: TextInputType.text,
-                          controller: _subTitleTextController,
-                          focusNode: _focusSubTitle,
+                          controller: _subtitleTextController,
+                          focusNode: _focusSubtitle,
                           decoration: const InputDecoration(
                             isDense: true,
                             labelText: "Subtitle",
@@ -289,7 +289,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   .doc(data['uid'])
                                   .update({
                                 "name": _nameTextController.text,
-                                "subTitle": _subTitleTextController.text,
+                                "subtitle": _subtitleTextController.text,
                                 "bio": _bioTextController.text,
                               });
                               final profilePictureRef = storageRef.child(

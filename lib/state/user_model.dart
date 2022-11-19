@@ -20,7 +20,7 @@ class UserModel extends ChangeNotifier {
   Map name = <String, String>{"name": ""};
   Map pictureUrl = <String, String>{"pictureUrl": ""};
   List<Map<String, dynamic>> petInfo = [];
-  String subTitle = "";
+  String subtitle = "";
   String bio = "";
   String stripeExpressId = "";
   bool hasPet = false;
@@ -48,7 +48,7 @@ class UserModel extends ChangeNotifier {
       for (var element in value.docs) {
         // debugPrint("name: ${element.data().toString()}");
         name["name"] = element['name'];
-        subTitle =
+        subtitle =
             element.data().containsKey("subtitle") ? element["subtitle"] : "";
         bio = element.data().containsKey("bio") ? element["bio"] : "";
         buildingCode["buildingCode"] = element["buildingCode"];
