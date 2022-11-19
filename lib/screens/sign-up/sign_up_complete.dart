@@ -30,7 +30,6 @@ class SignUpCompletePage extends StatelessWidget {
                           ),
                         );
                       },
-                      /*TODO: Send to Stripe Connect after confirming */
                       child: Text("Confirm"))
                 ]),
           ),
