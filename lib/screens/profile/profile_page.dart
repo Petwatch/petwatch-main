@@ -46,6 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     // context = widget.context;
     return Consumer<UserModel>(builder: ((context, user, child) {
+      debugPrint("${user}");
       return GestureDetector(
           onTap: () {},
           child: Scaffold(
@@ -81,19 +82,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                               textAlign: TextAlign.center)),
                                     ),
                                   ),
-                                  (PopupMenuItem(
-                                    padding: EdgeInsets.zero,
-                                    child: Center(
-                                      child: TextButton(
-                                          onPressed: () async {
-                                            Navigator.pop(context);
-
-                                            // await _launchStripeConnect(user);
-                                          },
-                                          child: const Text("Payment Settings",
-                                              textAlign: TextAlign.center)),
-                                    ),
-                                  )),
                                   if (user.stripeExpressId == "")
                                     (PopupMenuItem(
                                       padding: EdgeInsets.zero,
