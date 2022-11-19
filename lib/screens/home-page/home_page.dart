@@ -28,6 +28,9 @@ class _HomePageState extends State<HomePage> {
     var formattedDate = infoPostDateFormat.format(datePosted);
 
     var description = post['desc'] as String;
+    var pictureUrl = post['postedBy'].containsKey("pictureUrl")
+        ? post['postedBy']['pictureUrl'] as String
+        : "";
 
     return GestureDetector(
         onTap: (() {
@@ -48,13 +51,15 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(15),
                           child: Row(children: [
                             CircleAvatar(
-                              // radius: 75,
+                              radius: 15,
                               backgroundColor: Colors.white,
+                              backgroundImage: pictureUrl != ""
+                                  ? NetworkImage(pictureUrl)
+                                  : AssetImage(
+                                          'assets/images/petwatch_logo.png')
+                                      as ImageProvider,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.zero,
-                                child: Image.asset(
-                                  'assets/images/petwatch_logo.png',
-                                ),
                               ),
                             ),
                             Text(post['postedBy']['name']),

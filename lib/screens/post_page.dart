@@ -33,6 +33,9 @@ class PostPageState extends State<PostPage> {
 
     var commentText = comment['commentText'] as String;
     var commentAuthor = comment['commentAuthorName'] as String;
+    var pictureUrl = comment.containsKey("commentAuthorPictureUrl")
+        ? comment['commentAuthorPictureUrl'] as String
+        : "";
 
     return Card(
         elevation: 2,
@@ -42,13 +45,14 @@ class PostPageState extends State<PostPage> {
               padding: const EdgeInsets.all(0),
               child: Row(children: [
                 CircleAvatar(
-                  // radius: 75,
+                  radius: 15,
                   backgroundColor: Colors.white,
+                  backgroundImage: pictureUrl != ""
+                      ? NetworkImage(pictureUrl)
+                      : AssetImage('assets/images/petwatch_logo.png')
+                          as ImageProvider,
                   child: ClipRRect(
                     borderRadius: BorderRadius.zero,
-                    child: Image.asset(
-                      'assets/images/petwatch_logo.png',
-                    ),
                   ),
                 ),
                 Text("${commentAuthor}  |  "),
@@ -232,6 +236,9 @@ class PostPageState extends State<PostPage> {
                         Map comment = <String, dynamic>{
                           "commentAuthorName": user.name["name"],
                           "commentAuthorUID": user.uid["uid"],
+                          "commentAuthorPictureUrl": user.hasPicture
+                              ? user.pictureUrl["pictureUrl"]
+                              : "",
                           "commentText": _commentFieldController.text,
                           "postedTime": Timestamp.now()
                         };
