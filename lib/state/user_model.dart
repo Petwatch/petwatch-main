@@ -48,8 +48,9 @@ class UserModel extends ChangeNotifier {
       for (var element in value.docs) {
         // debugPrint("name: ${element.data().toString()}");
         name["name"] = element['name'];
-        subTitle = element['subTitle'];
-        bio = element['bio'];
+        subTitle =
+            element.data().containsKey("subtitle") ? element["subtitle"] : "";
+        bio = element.data().containsKey("bio") ? element["bio"] : "";
         buildingCode["buildingCode"] = element["buildingCode"];
         if (element.data().toString().contains("pictureUrl")) {
           pictureUrl["pictureUrl"] = element["pictureUrl"];
