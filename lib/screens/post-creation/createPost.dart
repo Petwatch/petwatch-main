@@ -84,9 +84,13 @@ class _CreatePostState extends State<CreatePost> {
                       "postedBy": <String, dynamic>{
                         "name": value.name['name'],
                         "UID": value.uid['uid'],
+                        "pictureUrl": value.hasPicture
+                            ? value.pictureUrl["pictureUrl"]
+                            : "",
                       },
                       "title": _PostTitle.text,
                       "desc": _PostContents.text,
+                      "price": _PriceForRequest.text,
                       "postedTime": Timestamp.now(),
                       "type": selectedPostValue,
                       "comments": emptyCommentsArr

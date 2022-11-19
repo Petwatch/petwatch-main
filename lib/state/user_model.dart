@@ -26,6 +26,7 @@ class UserModel extends ChangeNotifier {
   bool hasPet = false;
   bool postsLoading = true;
   bool hasPicture = false;
+  bool isSitter = false;
 
   List<Map<String, dynamic>> posts = [];
 
@@ -58,6 +59,7 @@ class UserModel extends ChangeNotifier {
         }
         if (element.data().containsKey("stripeExpressId")) {
           stripeExpressId = element["stripeExpressId"];
+          isSitter = true;
         }
       }
     }, onError: (e) => {"Name": "Error Getting Name"});
@@ -87,7 +89,11 @@ class UserModel extends ChangeNotifier {
         .then((value) => {
               debugPrint("${value.size}"),
               value.docs.forEach((element) {
-                posts.add({...element.data(), "id": element.id});
+                posts.add({
+                  ...element.data(),
+                  "id": element.id,
+                  "docPath": element.reference.path
+                });
               })
             })
         .then((value) => {

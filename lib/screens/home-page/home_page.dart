@@ -50,29 +50,35 @@ class _HomePageState extends State<HomePage> {
                         Padding(
                           padding: const EdgeInsets.all(15),
                           child: Row(children: [
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.white,
-                              backgroundImage: pictureUrl != ""
-                                  ? NetworkImage(pictureUrl)
-                                  : AssetImage(
-                                          'assets/images/petwatch_logo.png')
-                                      as ImageProvider,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.zero,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 8.0, top: 8.0),
+                              child: CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.white,
+                                backgroundImage: pictureUrl != ""
+                                    ? NetworkImage(pictureUrl)
+                                    : AssetImage(
+                                            'assets/images/petwatch_logo.png')
+                                        as ImageProvider,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.zero,
+                                ),
                               ),
                             ),
-                            Text(post['postedBy']['name']),
-                            Container(
-                              child: const VerticalDivider(
-                                width: 20,
-                                thickness: 1,
-                                indent: 20,
-                                endIndent: 0,
-                                color: Colors.grey,
-                              ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(post['postedBy']['name'] + " | "),
                             ),
-                            Text(formattedDate),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(formattedDate),
+                            ),
+                            if (post.containsKey("price"))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: (Text(" | \$${post["price"]}")),
+                              )
                           ]),
                         ),
                         Padding(
