@@ -51,6 +51,7 @@ dependencies:
   file_picker: ^5.2.2
   firebase_messaging: ^13.1.0
   firebase_analytics: ^9.3.8
+  animated_segmented_tab_control: ^1.0.1
 
 dev_dependencies:
   flutter_test:

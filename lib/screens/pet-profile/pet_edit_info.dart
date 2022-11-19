@@ -223,6 +223,7 @@ class _PetEditInfoState extends State<PetEditInfo>
                                     border: OutlineInputBorder()),
                               ),
                               RadioListTile(
+                                dense: true,
                                 title: const Text("Cat"),
                                 value: petTypeCharacter.Cat,
                                 groupValue: _character,
@@ -237,6 +238,7 @@ class _PetEditInfoState extends State<PetEditInfo>
                                     Theme.of(context).colorScheme.primary,
                               ),
                               RadioListTile(
+                                dense: true,
                                 title: const Text("Dog"),
                                 value: petTypeCharacter.Dog,
                                 groupValue: _character,
@@ -250,57 +252,66 @@ class _PetEditInfoState extends State<PetEditInfo>
                                 activeColor:
                                     Theme.of(context).colorScheme.primary,
                               ),
-                              TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: _weightTextController,
-                                focusNode: _focusWeight,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  labelText: "Weight (lbs)",
-                                  border: OutlineInputBorder(),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  controller: _weightTextController,
+                                  focusNode: _focusWeight,
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    labelText: "Weight (lbs)",
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: ListTile(
-                                    subtitle: TextFormField(
-                                      keyboardType: TextInputType.number,
-                                      controller: _ageTextController,
-                                      focusNode: _focusAge,
-                                      decoration: const InputDecoration(
-                                        isDense: true,
-                                        labelText: "Age",
-                                        border: OutlineInputBorder(),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                        child: ListTile(
+                                      subtitle: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        controller: _ageTextController,
+                                        focusNode: _focusAge,
+                                        decoration: const InputDecoration(
+                                          isDense: true,
+                                          labelText: "Age",
+                                          border: OutlineInputBorder(),
+                                        ),
                                       ),
+                                    )),
+                                    const SizedBox(
+                                      width: 5,
                                     ),
-                                  )),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Expanded(
-                                      child: ListTile(
-                                    subtitle: TextFormField(
-                                      keyboardType: TextInputType.text,
-                                      controller: _sexTextController,
-                                      focusNode: _focusSex,
-                                      decoration: const InputDecoration(
-                                        isDense: true,
-                                        labelText: "Sex",
-                                        border: OutlineInputBorder(),
+                                    Expanded(
+                                        child: ListTile(
+                                      subtitle: TextFormField(
+                                        keyboardType: TextInputType.text,
+                                        controller: _sexTextController,
+                                        focusNode: _focusSex,
+                                        decoration: const InputDecoration(
+                                          isDense: true,
+                                          labelText: "Sex",
+                                          border: OutlineInputBorder(),
+                                        ),
                                       ),
-                                    ),
-                                  )),
-                                ],
+                                    )),
+                                  ],
+                                ),
                               ),
-                              TextFormField(
-                                keyboardType: TextInputType.text,
-                                controller: _breedTextController,
-                                focusNode: _focusBreed,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  labelText: "Breed(s)",
-                                  border: OutlineInputBorder(),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: TextFormField(
+                                  keyboardType: TextInputType.text,
+                                  controller: _breedTextController,
+                                  focusNode: _focusBreed,
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    labelText: "Breed(s)",
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 32.0),
