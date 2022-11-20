@@ -236,7 +236,10 @@ class _ProfilePageState extends State<ProfilePage>
                                           : "Subtitle Placeholder",
                                       style: TextStyle(
                                           fontSize: 20,
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary),
                                     ),
                                   ),
                                   Padding(
