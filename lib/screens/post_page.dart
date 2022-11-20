@@ -44,15 +44,18 @@ class PostPageState extends State<PostPage> {
             Padding(
               padding: const EdgeInsets.all(0),
               child: Row(children: [
-                CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Colors.white,
-                  backgroundImage: commentpictureUrl != ""
-                      ? NetworkImage(commentpictureUrl)
-                      : AssetImage('assets/images/petwatch_logo.png')
-                          as ImageProvider,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.zero,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    radius: 15,
+                    backgroundColor: Colors.white,
+                    backgroundImage: commentpictureUrl != ""
+                        ? NetworkImage(commentpictureUrl)
+                        : AssetImage('assets/images/petwatch_logo.png')
+                            as ImageProvider,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.zero,
+                    ),
                   ),
                 ),
                 Text("${commentAuthor}  |  "),
@@ -201,13 +204,16 @@ class PostPageState extends State<PostPage> {
                                                     top: 10.0),
                                                 child: Text(formattedDate),
                                               ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 10),
-                                                child: Text(
-                                                  " | \$${post['price']}",
-                                                ),
-                                              )
+                                              if (post['type'] != "Info" &&
+                                                  post['price'] != null)
+                                                (Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10),
+                                                  child: Text(
+                                                    " | \$${post['price']}",
+                                                  ),
+                                                )),
                                             ]),
                                           ),
                                         ),

@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
+import 'package:petwatch/screens/post_page.dart';
 import 'package:petwatch/screens/profile/edit_profile_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +22,12 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   bool isLoading = false;
+  late TabController _tabController;
+  int _tabIndex = 0;
+
   _launchStripeConnect(value) async {
     // const url = Uri.encodeFull("https://google.com");
     CreateAccountResponse response =
@@ -39,6 +45,27 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_handleTabSelection);
+  }
+
+  _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        _tabIndex = _tabController.index;
+      });
+    }
   }
 
   Widget build(BuildContext context) {
@@ -227,56 +254,39 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ]),
                               ),
-                              DefaultTabController(
-                                  length: 2,
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: SegmentedTabControl(
-                                          radius: const Radius.circular(40),
-                                          backgroundColor: Colors.grey.shade300,
-                                          indicatorColor: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          tabTextColor: Colors.black45,
-                                          selectedTabTextColor: Colors.white,
-                                          squeezeIntensity: 2,
-                                          height: 45,
-                                          tabPadding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 8),
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1,
-                                          tabs: const [
-                                            SegmentTab(
-                                              label: 'Reviews',
-                                            ),
-                                            SegmentTab(
-                                              label: 'Posts',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 200,
-                                        child: TabBarView(
-                                          physics: BouncingScrollPhysics(),
-                                          children: [
-                                            SampleWidget(
-                                              label: 'Reviews',
-                                              color: Colors.white,
-                                            ),
-                                            SampleWidget(
-                                              label: 'Posts',
-                                              color: Colors.white,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )),
+                              Padding(
+                                padding: EdgeInsets.all(8),
+                                child: SegmentedTabControl(
+                                  controller: _tabController,
+                                  radius: const Radius.circular(40),
+                                  backgroundColor: Colors.grey.shade300,
+                                  indicatorColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  tabTextColor: Colors.black45,
+                                  selectedTabTextColor: Colors.white,
+                                  squeezeIntensity: 2,
+                                  height: 45,
+                                  tabPadding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  textStyle:
+                                      Theme.of(context).textTheme.bodyText1,
+                                  tabs: const [
+                                    SegmentTab(
+                                      label: 'Reviews',
+                                    ),
+                                    SegmentTab(
+                                      label: 'Posts',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Center(
+                                child: [
+                                  SampleWidget(
+                                      label: "Reviews Placeholder", user: user),
+                                  PostWidget(user: user),
+                                ][_tabIndex],
+                              ),
                             ],
                           ),
                         ),
@@ -290,19 +300,161 @@ class SampleWidget extends StatelessWidget {
   const SampleWidget({
     Key? key,
     required this.label,
-    required this.color,
+    required this.user,
   }) : super(key: key);
 
   final String label;
-  final Color color;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
     return Card(
         elevation: 5,
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
         ));
+  }
+}
+
+class PostWidget extends StatelessWidget {
+  const PostWidget({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  final UserModel user;
+
+  List<Widget> getUserPosts(context) {
+    List<Widget> postList = [];
+    for (var post in user.posts) {
+      if (post['postedBy']['name'] == user.name['name'])
+        postList.add(singlePost(context, post));
+    }
+
+    return postList;
+  }
+
+  Widget singlePost(BuildContext context, Map<String, dynamic> post) {
+    final infoPostDateFormat = new DateFormat('MMMd');
+    final timestamp = post['postedTime'] as Timestamp;
+    var datePosted =
+        DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
+
+    var formattedDate = infoPostDateFormat.format(datePosted);
+
+    var description = post['desc'] as String;
+    var pictureUrl = post['postedBy'].containsKey("pictureUrl")
+        ? post['postedBy']['pictureUrl'] as String
+        : "";
+
+    return GestureDetector(
+        onTap: (() {
+          // debugPrint("clicked");
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PostPage(post: post)));
+        }),
+        child: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: FractionallySizedBox(
+              widthFactor: .95,
+              child: Card(
+                  elevation: 2,
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 8.0, top: 8.0),
+                              child: CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.white,
+                                backgroundImage: pictureUrl != ""
+                                    ? NetworkImage(pictureUrl)
+                                    : AssetImage(
+                                            'assets/images/petwatch_logo.png')
+                                        as ImageProvider,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.zero,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(post['postedBy']['name'] + " | "),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(formattedDate),
+                            ),
+                            if (post['type'] != "Info" && post['price'] != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: (Text(" | \$${post["price"]}")),
+                              )
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                description,
+                                softWrap: false,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(
+                            children: [
+                              Chip(
+                                  backgroundColor: (() {
+                                    switch (post["type"]) {
+                                      case "Info":
+                                        return Colors.yellow;
+                                      case "Request":
+                                        return Colors.green;
+                                      case "Available":
+                                        return Colors.blue;
+                                      default:
+                                        return Colors.yellow;
+                                    }
+                                  })(),
+                                  label: Text(post['type'])),
+                              const Spacer(),
+                              Text("${post['comments'].length} comments"),
+                              const Icon(Icons.comment, color: Colors.black),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.black,
+                              )
+
+                              //Make text color white
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+            )));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> postList = getUserPosts(context);
+    return Column(
+      children: [...postList],
+    );
   }
 }

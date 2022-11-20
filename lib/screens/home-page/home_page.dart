@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(formattedDate),
                             ),
-                            if (post.containsKey("price"))
+                            if (post['type'] != "Info" && post['price'] != null)
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: (Text(" | \$${post["price"]}")),
