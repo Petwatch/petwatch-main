@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
+import 'package:petwatch/screens/profile/view_profile_page.dart';
+import 'package:petwatch/screens/routes.dart';
 import 'package:provider/provider.dart';
 
 import '../state/user_model.dart';
@@ -36,6 +38,13 @@ class PostPageState extends State<PostPage> {
     var commentpictureUrl = comment.containsKey("commentAuthorPictureUrl")
         ? comment['commentAuthorPictureUrl'] as String
         : "";
+    var commentAuthorUID = comment['commentAuthorUID'] as String;
+
+    Map<String, dynamic> commentedBy = {
+      'UID': commentAuthorUID,
+      'name': commentAuthor,
+      'pictureUrl': commentpictureUrl
+    };
 
     return Card(
         elevation: 2,
@@ -45,16 +54,29 @@ class PostPageState extends State<PostPage> {
               padding: const EdgeInsets.all(0),
               child: Row(children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Colors.white,
-                    backgroundImage: commentpictureUrl != ""
-                        ? NetworkImage(commentpictureUrl)
-                        : AssetImage('assets/images/petwatch_logo.png')
-                            as ImageProvider,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.zero,
+                  padding: const EdgeInsets.all(0.0),
+                  child: TextButton(
+                    onPressed: () {
+                      if (commentedBy['UID'] !=
+                          FirebaseAuth.instance.currentUser!.uid) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ViewProfilePage(commentedBy)));
+                      }
+                    },
+                    child: Card(
+                      shape: CircleBorder(),
+                      elevation: 2,
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.white,
+                        backgroundImage: commentpictureUrl != ""
+                            ? NetworkImage(commentpictureUrl)
+                            : AssetImage('assets/images/petwatch_logo.png')
+                                as ImageProvider,
+                      ),
                     ),
                   ),
                 ),
@@ -89,8 +111,8 @@ class PostPageState extends State<PostPage> {
       requestSent = false;
     } else {
       widget.post["requests"].forEach((val) => {
-            debugPrint(val.toString()),
-            debugPrint(val["petSitterUid"]),
+            // debugPrint(val.toString()),
+            // debugPrint(val["petSitterUid"]),
             if (val["petSitterUid"] == FirebaseAuth.instance.currentUser!.uid)
               {
                 requestSent = true,
@@ -172,50 +194,67 @@ class PostPageState extends State<PostPage> {
                                     child: Column(
                                       children: [
                                         Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(15),
-                                            child: Row(children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 8.0, top: 8.0),
-                                                child: CircleAvatar(
-                                                  radius: 25,
-                                                  backgroundColor: Colors.white,
-                                                  backgroundImage: pictureUrl !=
-                                                          ""
-                                                      ? NetworkImage(pictureUrl)
-                                                      : AssetImage(
-                                                              'assets/images/petwatch_logo.png')
-                                                          as ImageProvider,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.zero,
+                                          child: Row(children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 8.0),
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  if (post['postedBy']['UID'] !=
+                                                      FirebaseAuth.instance
+                                                          .currentUser!.uid) {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                ViewProfilePage(
+                                                                    post[
+                                                                        'postedBy'])));
+                                                  }
+                                                },
+                                                child: Card(
+                                                  shape: CircleBorder(),
+                                                  elevation: 2,
+                                                  child: CircleAvatar(
+                                                    radius: 25,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    backgroundImage: pictureUrl !=
+                                                            ""
+                                                        ? NetworkImage(
+                                                            pictureUrl)
+                                                        : AssetImage(
+                                                                'assets/images/petwatch_logo.png')
+                                                            as ImageProvider,
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.zero,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                              Padding(
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10.0),
+                                              child: Text(
+                                                  "${post['postedBy']['name']} | "),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10.0),
+                                              child: Text(formattedDate),
+                                            ),
+                                            if (post['type'] != "Info" &&
+                                                post['price'] != null)
+                                              (Padding(
                                                 padding: const EdgeInsets.only(
-                                                    top: 10.0),
+                                                    top: 10),
                                                 child: Text(
-                                                    "${post['postedBy']['name']} | "),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 10.0),
-                                                child: Text(formattedDate),
-                                              ),
-                                              if (post['type'] != "Info" &&
-                                                  post['price'] != null)
-                                                (Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 10),
-                                                  child: Text(
-                                                    " | \$${post['price']}",
-                                                  ),
-                                                )),
-                                            ]),
-                                          ),
+                                                  " | \$${post['price']}",
+                                                ),
+                                              )),
+                                          ]),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.all(15),

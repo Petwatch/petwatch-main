@@ -2,49 +2,70 @@ import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
+import 'package:petwatch/screens/pet-profile/view_pet_profile_page.dart';
 import 'package:petwatch/screens/post_page.dart';
 import 'package:petwatch/screens/profile/edit_profile_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:http/http.dart' as http;
-import 'package:petwatch/services/stripe-backend-service.dart';
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
 
-class ProfilePage extends StatefulWidget {
+class ViewProfilePage extends StatefulWidget {
+  Map<String, dynamic> UserReference;
   // final BuildContext context;
-  ProfilePage();
+  ViewProfilePage(this.UserReference);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ViewProfilePageState createState() => _ViewProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
+class _ViewProfilePageState extends State<ViewProfilePage>
     with SingleTickerProviderStateMixin {
   bool isLoading = false;
   late TabController _tabController;
   int _tabIndex = 0;
+  Map<String, dynamic> userData = {};
+  List<Map<String, dynamic>> petData = [];
+  bool hasPicture = false;
+  bool hasPet = false;
 
-  _launchStripeConnect(value) async {
-    // const url = Uri.encodeFull("https://google.com");
-    CreateAccountResponse response =
-        await StripeBackendService.createSellerAccount();
-    debugPrint("${response.id}");
-    debugPrint("${value.uid['uid']}");
-    var res = await FirebaseFirestore.instance
-        .doc(
-            "/building-codes/${value.buildingCode['buildingCode']}/users/${value.uid['uid']}/")
-        .update({"stripeExpressId": response.id});
-    final Uri _url = Uri.parse(response.url);
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
-    }
-    setState(() {
-      isLoading = false;
+  Future getUserData() async {
+    await FirebaseFirestore.instance
+        .collectionGroup('users')
+        .where('uid', isEqualTo: widget.UserReference['UID'])
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        if (element.data().toString().contains("pictureUrl")) {
+          setState(() {
+            hasPicture = true;
+          });
+        }
+        userData.addAll(element.data());
+      }
+      debugPrint(widget.UserReference.toString());
+      debugPrint(userData.toString());
     });
+    await FirebaseFirestore.instance
+        .collectionGroup('pets')
+        .where('uid', isEqualTo: widget.UserReference['UID'])
+        .get()
+        .then((value) {
+      if (value.docs.length != 0) {
+        setState(() {
+          hasPet = true;
+        });
+      }
+      for (var element in value.docs) {
+        petData.add(element.data());
+      }
+    });
+    debugPrint(petData.toString());
   }
 
   @override
@@ -58,6 +79,7 @@ class _ProfilePageState extends State<ProfilePage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
+    getUserData();
   }
 
   _handleTabSelection() {
@@ -74,7 +96,20 @@ class _ProfilePageState extends State<ProfilePage>
       return GestureDetector(
           onTap: () {},
           child: Scaffold(
-              appBar: TopNavBar(),
+              appBar: AppBar(
+                leading: IconButton(
+                  color: Colors.white,
+                  iconSize: 35,
+                  icon: const Icon(Icons.keyboard_arrow_left),
+                  onPressed: () => {Navigator.pop(context)},
+                ),
+                title: Text(
+                  "View Profile",
+                  style: TextStyle(color: Colors.white),
+                ),
+                centerTitle: true,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
               body: SingleChildScrollView(
                 child: Center(
                   child: isLoading
@@ -88,86 +123,6 @@ class _ProfilePageState extends State<ProfilePage>
                                 child: Card(
                                   elevation: 5,
                                   child: Column(children: [
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: PopupMenuButton(
-                                        offset: Offset.fromDirection(270, 12),
-                                        elevation: 10,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0),
-                                          ),
-                                        ),
-                                        position: PopupMenuPosition.under,
-                                        icon: Icon(Icons.menu),
-                                        itemBuilder: (BuildContext context) =>
-                                            <PopupMenuEntry>[
-                                          PopupMenuItem(
-                                            padding: EdgeInsets.zero,
-                                            child: Center(
-                                              child: TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                EditProfilePage(
-                                                                    user)));
-                                                  },
-                                                  child: Text("Edit\nProfile",
-                                                      textAlign:
-                                                          TextAlign.center)),
-                                            ),
-                                          ),
-                                          (PopupMenuItem(
-                                            padding: EdgeInsets.zero,
-                                            child: Center(
-                                              child: TextButton(
-                                                  onPressed: () async {
-                                                    Navigator.pop(context);
-                                                    // setState(() {
-                                                    //   isLoading = true;
-                                                    // });
-                                                    // await _launchStripeConnect(
-                                                    //     user);
-                                                  },
-                                                  child: const Text(
-                                                      "Payment Settings",
-                                                      textAlign:
-                                                          TextAlign.center)),
-                                            ),
-                                          )),
-                                          if (user.stripeExpressId == "")
-                                            (PopupMenuItem(
-                                              padding: EdgeInsets.zero,
-                                              child: Center(
-                                                child: TextButton(
-                                                    onPressed: () async {
-                                                      Navigator.pop(context);
-                                                      setState(() {
-                                                        isLoading = true;
-                                                      });
-                                                      await _launchStripeConnect(
-                                                          user);
-                                                    },
-                                                    child: const Text(
-                                                        "Become\na pet sitter",
-                                                        textAlign:
-                                                            TextAlign.center)),
-                                              ),
-                                            )),
-                                          PopupMenuItem(
-                                            padding: EdgeInsets.zero,
-                                            child: Center(
-                                              child: SignOutButton(
-                                                variant: ButtonVariant.text,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                     Stack(
                                       clipBehavior: Clip.none,
                                       children: [
@@ -179,9 +134,10 @@ class _ProfilePageState extends State<ProfilePage>
                                               backgroundColor: Theme.of(context)
                                                   .colorScheme
                                                   .primary,
-                                              backgroundImage: user.hasPicture
-                                                  ? NetworkImage(user
-                                                      .pictureUrl['pictureUrl'])
+                                              backgroundImage: hasPicture
+                                                  ? NetworkImage(
+                                                      userData['pictureUrl']
+                                                          .toString())
                                                   : AssetImage(
                                                           'assets/images/petwatch_logo_white.png')
                                                       as ImageProvider,
@@ -195,7 +151,9 @@ class _ProfilePageState extends State<ProfilePage>
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              PetProfilePage()));
+                                                              ViewPetProfilePage(
+                                                                  petData,
+                                                                  hasPet)));
                                                 }),
                                                 child: Card(
                                                   shape: CircleBorder(),
@@ -206,14 +164,14 @@ class _ProfilePageState extends State<ProfilePage>
                                                           Theme.of(context)
                                                               .colorScheme
                                                               .primary,
-                                                      backgroundImage: user
-                                                              .hasPet
-                                                          ? user.petInfo[0][
-                                                                      'pictureUrl'] !=
+                                                      backgroundImage: hasPet
+                                                          ? petData[0]['pictureUrl']
+                                                                      .toString() !=
                                                                   null
-                                                              ? NetworkImage(user
-                                                                  .petInfo[0][
+                                                              ? NetworkImage(petData[
+                                                                          0][
                                                                       'pictureUrl']
+                                                                  .toString()
                                                                   .toString())
                                                               : AssetImage(
                                                                       'assets/images/petwatch_logo_white.png')
@@ -227,15 +185,15 @@ class _ProfilePageState extends State<ProfilePage>
                                     Padding(
                                       padding: const EdgeInsets.all(2.0),
                                       child: Text(
-                                        "${user.name["name"]}",
+                                        "${userData["name"].toString()}",
                                         style: TextStyle(fontSize: 40),
                                       ),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(2.0),
                                       child: Text(
-                                        user.subtitle != ""
-                                            ? user.subtitle
+                                        userData['subtitle'].toString() != ""
+                                            ? userData['subtitle'].toString()
                                             : "Subtitle Placeholder",
                                         style: TextStyle(
                                             fontSize: 20,
@@ -252,8 +210,8 @@ class _ProfilePageState extends State<ProfilePage>
                                           right: 15.0,
                                           bottom: 15),
                                       child: Text(
-                                        user.bio != ""
-                                            ? user.bio
+                                        userData['bio'].toString() != ""
+                                            ? userData['bio'].toString()
                                             : "More information placeholder",
                                         textAlign: TextAlign.justify,
                                       ),
@@ -290,8 +248,10 @@ class _ProfilePageState extends State<ProfilePage>
                               Center(
                                 child: [
                                   SampleWidget(
-                                      label: "Reviews Placeholder", user: user),
-                                  PostWidget(user: user),
+                                      label: "Reviews Placeholder",
+                                      user: user,
+                                      userData: userData),
+                                  PostWidget(user: user, userData: userData),
                                 ][_tabIndex],
                               ),
                             ],
@@ -308,10 +268,12 @@ class SampleWidget extends StatelessWidget {
     Key? key,
     required this.label,
     required this.user,
+    required this.userData,
   }) : super(key: key);
 
   final String label;
   final UserModel user;
+  final Map<String, dynamic> userData;
 
   @override
   Widget build(BuildContext context) {
@@ -331,14 +293,16 @@ class PostWidget extends StatelessWidget {
   const PostWidget({
     Key? key,
     required this.user,
+    required this.userData,
   }) : super(key: key);
 
   final UserModel user;
+  final Map<String, dynamic> userData;
 
   List<Widget> getUserPosts(context) {
     List<Widget> postList = [];
     for (var post in user.posts) {
-      if (post['postedBy']['name'] == user.name['name'])
+      if (post['postedBy']['name'] == userData['name'].toString())
         postList.add(singlePost(context, post));
     }
 
