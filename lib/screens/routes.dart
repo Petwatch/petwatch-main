@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
+import 'package:petwatch/screens/notifications/notificationCenter.dart';
 import 'package:petwatch/screens/profile/profile_page.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
@@ -36,7 +38,9 @@ class _RoutesState extends State<Routes> {
     } else if (index == 2) {
       return ProfilePage();
     }
-    return Text("data");
+    return Scaffold(
+        appBar: const TopNavBar(),
+        body: Align(alignment: Alignment.center, child: Text("data")));
   }
 
   void _onItemTapped(int index) {
@@ -51,8 +55,33 @@ class _RoutesState extends State<Routes> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    requestPermission();
     CheckDeviceId();
+    initInfo();
     _selectedIndex = widget.initialIndex;
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('permission granted');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('provisional permission granted');
+    } else {
+      print('permission not accepted');
+    }
   }
 
   void CheckDeviceId() async {
@@ -77,6 +106,63 @@ class _RoutesState extends State<Routes> {
                 }
               })
             });
+  }
+
+  initInfo() {
+    var androidInitialize =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOSInitialize = const DarwinInitializationSettings();
+    var initializationSettings =
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    FlutterLocalNotificationsPlugin().initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        try {
+          if (details.payload != null && details.payload!.isNotEmpty) {
+            print("Payload Not Null: ${details.payload?.toString()}");
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => NotificationsCenter()));
+          } else {
+            print("Payload Null: ${details.payload?.toString()}");
+          }
+        } catch (e) {
+          print('Error: ${e.toString()}');
+        }
+        return;
+      },
+    );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print('........onMessage........');
+      print(
+          'onMessage: ${message.notification?.title}/${message.notification?.body}');
+      print('DATA: ${message.data.toString()}');
+
+      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+        message.notification!.body.toString(),
+        htmlFormatBigText: true,
+        contentTitle: message.notification!.title.toString(),
+        htmlFormatContentTitle: true,
+      );
+      AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'petwatch',
+        'petwatch',
+        importance: Importance.high,
+        styleInformation: bigTextStyleInformation,
+        priority: Priority.high,
+        playSound: true,
+      );
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+          android: androidPlatformChannelSpecifics,
+          iOS: const DarwinNotificationDetails());
+      await FlutterLocalNotificationsPlugin().show(
+          0,
+          message.notification?.title,
+          message.notification?.body,
+          platformChannelSpecifics,
+          payload: message.data['body']);
+    });
   }
 
   @override
