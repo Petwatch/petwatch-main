@@ -111,8 +111,6 @@ class PostPageState extends State<PostPage> {
       requestSent = false;
     } else {
       widget.post["requests"].forEach((val) => {
-            // debugPrint(val.toString()),
-            // debugPrint(val["petSitterUid"]),
             if (val["petSitterUid"] == FirebaseAuth.instance.currentUser!.uid)
               {
                 requestSent = true,
@@ -120,11 +118,9 @@ class PostPageState extends State<PostPage> {
           });
     }
   }
-  // List<dynamic> requests = post["requests"];
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint("$post");
     final infoPostDateFormat = new DateFormat('MMMd');
     final timestamp = post['postedTime'] as Timestamp;
     final _commentFieldController = TextEditingController();
@@ -298,86 +294,104 @@ class PostPageState extends State<PostPage> {
                                       ],
                                     ),
                                   )),
-                              Tooltip(
-                                key: tooltipkey,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 5,
-                                        blurRadius: 7,
-                                        offset: Offset(
-                                            0, 3), // changes position of shadow
-                                      ),
-                                    ]),
-                                triggerMode: TooltipTriggerMode.manual,
-                                showDuration: const Duration(seconds: 1),
-                                richMessage: TextSpan(
-                                    text:
-                                        "Become a pet sitter to accept requests.",
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary)),
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (!user.isSitter) {
-                                      tooltipkey.currentState
-                                          ?.ensureTooltipVisible();
-                                    } else if (!requestSent) {
-                                      setState(() {
-                                        requestLoading = true;
-                                      });
-                                      await FirebaseFirestore.instance
-                                          .doc(post["docPath"])
-                                          .update({
-                                        "requests": [
-                                          {
-                                            "petSitterUid": user.uid['uid'],
-                                            "name": user.name["name"],
-                                            "stripeExpressId":
-                                                user.stripeExpressId,
-                                            "petSitterPictureUrl":
-                                                user.pictureUrl["pictureUrl"],
-                                            "status": "pending"
-                                          }
-                                        ]
-                                      }).then((value) {
-                                        setState(() {
-                                          requestLoading = false;
-                                          requestSent = true;
-                                        });
-                                      });
-                                    }
-                                  },
-                                  child: requestLoading
-                                      ? CircularProgressIndicator()
-                                      : Text(
-                                          requestSent
-                                              ? "Request Pending"
-                                              : "Accept Request",
-                                          style: TextStyle(
-                                              color: user.isSitter
-                                                  ? Colors.white
-                                                  : Colors.grey[600]),
+                              if (post["type"] == "Request" &&
+                                  post["postedBy"]["UID"] !=
+                                      FirebaseAuth.instance.currentUser!.uid)
+                                (Tooltip(
+                                  key: tooltipkey,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 5,
+                                          blurRadius: 7,
+                                          offset: Offset(0,
+                                              3), // changes position of shadow
                                         ),
+                                      ]),
+                                  triggerMode: TooltipTriggerMode.manual,
+                                  showDuration: const Duration(seconds: 1),
+                                  richMessage: TextSpan(
+                                      text:
+                                          "Become a pet sitter to accept requests.",
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary)),
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      if (!user.isSitter) {
+                                        tooltipkey.currentState
+                                            ?.ensureTooltipVisible();
+                                      } else if (!requestSent) {
+                                        setState(() {
+                                          requestLoading = true;
+                                        });
+                                        await FirebaseFirestore.instance
+                                            .doc(post["docPath"])
+                                            .update({
+                                          "requests": [
+                                            {
+                                              "petSitterUid": user.uid['uid'],
+                                              "name": user.name["name"],
+                                              "stripeExpressId":
+                                                  user.stripeExpressId,
+                                              "petSitterPictureUrl":
+                                                  user.pictureUrl["pictureUrl"],
+                                              "status": "pending"
+                                            }
+                                          ]
+                                        }).then((value) {
+                                          setState(() {
+                                            requestLoading = false;
+                                            requestSent = true;
+                                          });
+                                        });
+                                      }
+                                    },
+                                    child: requestLoading
+                                        ? CircularProgressIndicator()
+                                        : Text(
+                                            requestSent
+                                                ? "Request Pending"
+                                                : "Accept Request",
+                                            style: TextStyle(
+                                                color: user.isSitter
+                                                    ? Colors.white
+                                                    : Colors.grey[600]),
+                                          ),
+                                    style: ButtonStyle(
+                                        fixedSize: MaterialStateProperty.all(
+                                            Size(350, 30)),
+                                        backgroundColor: user.isSitter
+                                            ? requestSent
+                                                ? MaterialStateProperty.all(
+                                                    Colors.orange[400])
+                                                : MaterialStateProperty.all(
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .primary)
+                                            : MaterialStateProperty.all(
+                                                Colors.grey[400])),
+                                    // enabled: false
+                                  ),
+                                )),
+                              if (post["type"] == "Request" &&
+                                  post["postedBy"]["UID"] ==
+                                      FirebaseAuth.instance.currentUser!.uid)
+                                (ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text("See In Transactions"),
                                   style: ButtonStyle(
                                       fixedSize: MaterialStateProperty.all(
                                           Size(350, 30)),
-                                      backgroundColor: user.isSitter
-                                          ? requestSent
-                                              ? MaterialStateProperty.all(
-                                                  Colors.orange[400])
-                                              : MaterialStateProperty.all(
-                                                  Theme.of(context)
-                                                      .colorScheme
-                                                      .primary)
-                                          : MaterialStateProperty.all(
-                                              Colors.grey[400])),
-                                  // enabled: false
-                                ),
-                              ),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary)),
+                                )),
                               Divider(
                                 thickness: 2,
                                 color: Theme.of(context).colorScheme.primary,

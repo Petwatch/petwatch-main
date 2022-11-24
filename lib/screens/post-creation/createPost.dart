@@ -238,10 +238,32 @@ class _CreatePostState extends State<CreatePost> {
                           .collection(
                               "/building-codes/${value.buildingCode["buildingCode"]}/posts/")
                           .add({...post})
-                          .then((value) => {
+                          .then((doc) => {
                                 FirebaseFirestore.instance
-                                    .doc(value.path)
-                                    .update({"documentID": value.id}),
+                                    .doc(doc.path)
+                                    .update({"documentID": doc.id}),
+                                // FirebaseFirestore.instance.doc()
+                                FirebaseFirestore.instance
+                                    .collectionGroup('users')
+                                    .where('uid', isEqualTo: value.uid['uid'])
+                                    .get()
+                                    .then((value) {
+                                  value.docs.forEach((element) {
+                                    var currentTransactions = [];
+                                    if (element
+                                        .data()
+                                        .containsKey("transactions")) {
+                                      currentTransactions =
+                                          element["transactions"];
+                                    }
+                                    element.reference.update({
+                                      "transactions": [
+                                        ...currentTransactions,
+                                        {"path": doc.path}
+                                      ]
+                                    });
+                                  });
+                                })
                               })
                           .then((_) => {
                                 Navigator.push(
