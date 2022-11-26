@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:petwatch/components/components.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseService {
   final String? uid;
@@ -70,11 +71,12 @@ class DatabaseService {
       "groupIcon": "",
       "admin": "${id}_$userName",
       "members": [],
-      "groupId": "",
+      "groupId": Uuid().v1(),
       "recentMessage": "",
       "recentMessageSender": "",
     });
     // update the members
+    //update 'groups' collections
     await groupDocumentReference.update({
       "members":
           FieldValue.arrayUnion(["${id}_$userName", '${uid}_$getUserName']),
@@ -91,13 +93,13 @@ class DatabaseService {
       "groups":
           FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
-    //update seender groups doc
+    //update sender groups doc
     DocumentReference userDocumentReference = FirebaseFirestore.instance
         .collection('building-codes')
         .doc('123456789')
         .collection('users')
         .doc(uid);
-    return await userDocumentReference.update({
+    await userDocumentReference.update({
       "groups":
           FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });

@@ -15,6 +15,7 @@ import 'package:petwatch/components/components.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -166,10 +167,10 @@ class _SearchPageState extends State<SearchPage> {
           );
   }
 
-  joinedOrNot(
-      String userName, String groupId, String groupname, String admin) async {
+  joinedOrNot(String userName, String recipientId, String groupname,
+      String admin) async {
     await DatabaseService(uid: user!.uid)
-        .isUserJoined(groupname, groupId, userName)
+        .isUserJoined(groupname, recipientId, userName)
         .then((value) {
       setState(() {
         isJoined = value;
@@ -179,7 +180,7 @@ class _SearchPageState extends State<SearchPage> {
 
   ///USER TILE
   Widget userTile(
-      String userName, String groupId, String groupName, String admin) {
+      String userName, String recipientId, String groupName, String admin) {
     // function to check whether user already exists in group
     joinedOrNot(userName, admin, groupName, groupName);
     return ListTile(
@@ -209,7 +210,7 @@ class _SearchPageState extends State<SearchPage> {
               nextScreen(
                   context,
                   ChatPage(
-                      groupId: groupId,
+                      groupId: recipientId,
                       groupName: groupName,
                       userName: userName));
             });
@@ -218,13 +219,20 @@ class _SearchPageState extends State<SearchPage> {
               // _isLoading = true;
             });
             DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-                .createGroup(userName, groupId, groupName)
+                .createGroup(userName, recipientId, groupName)
                 .whenComplete(() {
-              // _isLoading = false;
+              //_isLoading = false;
               isJoined = !isJoined;
-              showSnackbar(context, Colors.red, "Left the group $groupName");
+              //showSnackbar(context, Colors.red, "Left the group $groupName");
             });
-            Navigator.of(context).pop();
+
+            nextScreen(
+                context,
+                ChatPage(
+                    groupId: recipientId,
+                    groupName: groupName,
+                    userName: userName));
+            // Navigator.of(context).pop();
             showSnackbar(context, Colors.green, "chat created successfully.");
           }
         },
