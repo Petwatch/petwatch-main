@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/profile/view_profile_page.dart';
 import 'package:petwatch/screens/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 import '../state/user_model.dart';
 
@@ -419,7 +422,7 @@ class PostPageState extends State<PostPage> {
                     ),
                   )),
                   IconButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // debugPrint("${post["id"]}");
                         Map comment = <String, dynamic>{
                           "commentAuthorName": user.name["name"],
@@ -443,12 +446,26 @@ class PostPageState extends State<PostPage> {
                                     user.getPost(thePost["documentID"],
                                         user.buildingCode["buildingCode"]);
                                   }),
+
                                   // Navigator.push(
                                   //     context,
                                   //     MaterialPageRoute(
                                   //         builder: (context) =>
                                   //             PostPage(post: post)))
                                 });
+                        var res = await http.post(
+                            Uri.parse(
+                                "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/posts/${post['id']}/comment"),
+                            headers: <String, String>{
+                              'Content-Type': 'application/json',
+                            },
+                            body: jsonEncode(<String, String>{
+                              "path": "${post['docPath']}",
+                              "commentText": _commentFieldController.text,
+                              "commentAuthorName": user.name["name"],
+                              "commentAuthorUID": user.uid["uid"] ?? ""
+                            }));
+                        // debugPrint("${res.body} ${res.statusCode}");
                       },
                       icon: Icon(Icons.send))
                 ],
