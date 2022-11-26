@@ -74,12 +74,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ViewPendingPage(
-                                              transaction:
-                                                  snapshot.data![index],
-                                              transactionWidget:
-                                                  selfTransaction(
-                                                      snapshot, index),
-                                            )));
+                                            transaction: snapshot.data![index],
+                                            transactionWidget: selfTransaction(
+                                                snapshot, index),
+                                            amount: int.parse(snapshot
+                                                .data![index]['price']))));
                               },
                               child: selfTransaction(snapshot, index),
                             ));

@@ -381,6 +381,24 @@ class PostPageState extends State<PostPage> {
                                             }
                                           ])
                                         });
+                                        var res = await http.post(
+                                            Uri.parse(
+                                                "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/request"),
+                                            headers: <String, String>{
+                                              'Content-Type':
+                                                  'application/json',
+                                            },
+                                            body: jsonEncode(<String, String>{
+                                              "path": "${post['docPath']}",
+                                              "petSitterName":
+                                                  user.name["name"],
+                                              "petSitterUID":
+                                                  user.uid["uid"] ?? "",
+                                              "petSitterUrl": user.hasPicture
+                                                  ? user
+                                                      .pictureUrl["pictureUrl"]
+                                                  : "",
+                                            }));
                                       }
                                     },
                                     child: requestLoading

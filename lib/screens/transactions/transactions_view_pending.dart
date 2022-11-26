@@ -4,30 +4,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/profile/view_profile_page.dart';
 import 'package:petwatch/screens/routes.dart';
+import 'package:petwatch/services/stripe-backend-service.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 class ViewPendingPage extends StatefulWidget {
+  final int amount;
   final Map<String, dynamic> transaction;
   final Widget transactionWidget;
 
   ViewPendingPage(
-      {super.key, required this.transaction, required this.transactionWidget});
+      {super.key,
+      required this.transaction,
+      required this.transactionWidget,
+      required this.amount});
   @override
   ViewPendingPageState createState() => ViewPendingPageState(
-      transaction: this.transaction, transactionWidget: this.transactionWidget);
+      transaction: this.transaction,
+      transactionWidget: this.transactionWidget,
+      amount: this.amount);
 }
 
 class ViewPendingPageState extends State<ViewPendingPage> {
   final Map<String, dynamic> transaction;
   final Widget transactionWidget;
+  final int amount;
 
   ViewPendingPageState(
-      {required this.transaction, required this.transactionWidget});
+      {required this.transaction,
+      required this.transactionWidget,
+      required this.amount});
 
   Widget commentCard(
       BuildContext context, List<dynamic> transaction, int index) {
@@ -70,7 +81,28 @@ class ViewPendingPageState extends State<ViewPendingPage> {
             Text(transaction[index]['name']),
             Spacer(),
             IconButton(
-                onPressed: (() {}),
+                onPressed: (() async {
+                  var data = await CreatePaymentSheet.getPaymentIntent(
+                      transaction[index]["stripeExpressId"], amount);
+                  await stripe.Stripe.instance.initPaymentSheet(
+                      paymentSheetParameters:
+                          stripe.SetupPaymentSheetParameters(
+                    merchantDisplayName: "Petwatch",
+                    paymentIntentClientSecret: data["paymentIntent"],
+                    customerEphemeralKeySecret: data['ephemeralKey'],
+                    customerId: data["customer"],
+                    // applePay: PaymentSheetApplePay,
+                    // googlePay: true,
+                  ));
+
+                  try {
+                    await stripe.Stripe.instance.presentPaymentSheet();
+                    // Technically we don't need a webook.
+                    debugPrint("Hello");
+                  } catch (e) {
+                    debugPrint(e.toString());
+                  }
+                }),
                 icon: Icon(
                   Icons.check,
                   color: Colors.green,
