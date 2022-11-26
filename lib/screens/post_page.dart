@@ -334,7 +334,7 @@ class PostPageState extends State<PostPage> {
                                         await FirebaseFirestore.instance
                                             .doc(post["docPath"])
                                             .update({
-                                          "requests": [
+                                          "requests": FieldValue.arrayUnion([
                                             {
                                               "petSitterUid": user.uid['uid'],
                                               "name": user.name["name"],
@@ -344,7 +344,7 @@ class PostPageState extends State<PostPage> {
                                                   user.pictureUrl["pictureUrl"],
                                               "status": "pending"
                                             }
-                                          ]
+                                          ])
                                         }).then((value) {
                                           setState(() {
                                             requestLoading = false;
