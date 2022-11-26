@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:petwatch/screens/message_screen.dart';
 
+import '../../screens/notifications/notificationCenter.dart';
+
 class TopNavBar extends StatefulWidget implements PreferredSizeWidget {
   const TopNavBar({Key? key}) : super(key: key);
 
@@ -26,8 +28,11 @@ class _TopNavBarState extends State<TopNavBar> {
       leading: IconButton(
         color: Colors.white,
         iconSize: 35,
-        icon: const Icon(Icons.filter_alt_rounded),
-        onPressed: () => {},
+        icon: const Icon(Icons.notifications),
+        onPressed: () => {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => NotificationsCenter()))
+        },
       ),
       title: Container(
         width: 75,

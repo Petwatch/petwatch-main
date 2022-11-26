@@ -14,9 +14,12 @@ import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 
-class PetSetupInfo extends StatefulWidget {
+class PetEditInfo extends StatefulWidget {
+  final UserModel userModel;
+  final int index;
+  const PetEditInfo(this.userModel, this.index);
   @override
-  _PetSetupInfoState createState() => _PetSetupInfoState();
+  _PetEditInfoState createState() => _PetEditInfoState();
 }
 // PetSetupInfo() or PetSetupInfo(value)
 
@@ -29,7 +32,7 @@ enum petSpayedCharacter { yes, no }
 
 enum microChipCharacter { yes, no }
 
-class _PetSetupInfoState extends State<PetSetupInfo>
+class _PetEditInfoState extends State<PetEditInfo>
     with SingleTickerProviderStateMixin {
   // FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -37,12 +40,12 @@ class _PetSetupInfoState extends State<PetSetupInfo>
   final _stepTwoFormKey = GlobalKey<FormState>();
   final _stepThreeFormKey = GlobalKey<FormState>();
 
-  final _nameTextController = TextEditingController();
-  final _weightTextController = TextEditingController();
-  final _ageTextController = TextEditingController();
-  final _sexTextController = TextEditingController();
-  final _breedTextController = TextEditingController();
-  final _otherTextController = TextEditingController();
+  var _nameTextController = TextEditingController();
+  var _weightTextController = TextEditingController();
+  var _ageTextController = TextEditingController();
+  var _sexTextController = TextEditingController();
+  var _breedTextController = TextEditingController();
+  var _otherTextController = TextEditingController();
   final _focusName = FocusNode();
   final _focusWeight = FocusNode();
   final _focusAge = FocusNode();
@@ -76,6 +79,37 @@ class _PetSetupInfoState extends State<PetSetupInfo>
     super.initState();
     _tabController = new TabController(vsync: this, length: 3);
     _tabController!.addListener(_handleTabSelection);
+
+    _nameTextController = new TextEditingController(
+        text: widget.userModel.petInfo[widget.index]['name']);
+    _weightTextController = new TextEditingController(
+        text: widget.userModel.petInfo[widget.index]['weight']);
+    _ageTextController = new TextEditingController(
+        text: widget.userModel.petInfo[widget.index]['age']);
+    _sexTextController = new TextEditingController(
+        text: widget.userModel.petInfo[widget.index]['sex']);
+    _breedTextController = new TextEditingController(
+        text: widget.userModel.petInfo[widget.index]['breed']);
+    _otherTextController = new TextEditingController(
+        text: widget.userModel.petInfo[widget.index]['other']);
+    values = {
+      'Children': widget.userModel.petInfo[widget.index]['friendlyWith']
+          ['Children'],
+      'Dogs': widget.userModel.petInfo[widget.index]['friendlyWith']['Dogs'],
+      'Cats': widget.userModel.petInfo[widget.index]['friendlyWith']['Cats'],
+    };
+    widget.userModel.petInfo[widget.index]['type'] == "Cat"
+        ? _character = petTypeCharacter.Cat
+        : _character = petTypeCharacter.Dog;
+    widget.userModel.petInfo[widget.index]['houseTrained'] == "yes"
+        ? _trainedCharacter = houseTrainedCharacter.yes
+        : _trainedCharacter = houseTrainedCharacter.no;
+    widget.userModel.petInfo[widget.index]['spayedOrNeutered'] == "yes"
+        ? _spayedCharacter = petSpayedCharacter.yes
+        : _spayedCharacter = petSpayedCharacter.no;
+    widget.userModel.petInfo[widget.index]['microChipped'] == "yes"
+        ? _chipCharacter = microChipCharacter.yes
+        : _chipCharacter = microChipCharacter.no;
   }
 
   void _handleTabSelection() {
@@ -117,7 +151,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
-              title: const Text("Pet Profile Setup"),
+              title: const Text("Edit Pet Profile"),
               bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(25),
                   child: IgnorePointer(
@@ -184,12 +218,12 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                 controller: _nameTextController,
                                 focusNode: _focusName,
                                 decoration: const InputDecoration(
-                                  isDense: true,
-                                  labelText: "Name",
-                                  border: OutlineInputBorder(),
-                                ),
+                                    isDense: true,
+                                    labelText: "Name",
+                                    border: OutlineInputBorder()),
                               ),
                               RadioListTile(
+                                dense: true,
                                 title: const Text("Cat"),
                                 value: petTypeCharacter.Cat,
                                 groupValue: _character,
@@ -204,6 +238,7 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                     Theme.of(context).colorScheme.primary,
                               ),
                               RadioListTile(
+                                dense: true,
                                 title: const Text("Dog"),
                                 value: petTypeCharacter.Dog,
                                 groupValue: _character,
@@ -217,57 +252,66 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                 activeColor:
                                     Theme.of(context).colorScheme.primary,
                               ),
-                              TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: _weightTextController,
-                                focusNode: _focusWeight,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  labelText: "Weight (lbs)",
-                                  border: OutlineInputBorder(),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: TextFormField(
+                                  keyboardType: TextInputType.number,
+                                  controller: _weightTextController,
+                                  focusNode: _focusWeight,
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    labelText: "Weight (lbs)",
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: ListTile(
-                                    subtitle: TextFormField(
-                                      keyboardType: TextInputType.number,
-                                      controller: _ageTextController,
-                                      focusNode: _focusAge,
-                                      decoration: const InputDecoration(
-                                        isDense: true,
-                                        labelText: "Age",
-                                        border: OutlineInputBorder(),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                        child: ListTile(
+                                      subtitle: TextFormField(
+                                        keyboardType: TextInputType.number,
+                                        controller: _ageTextController,
+                                        focusNode: _focusAge,
+                                        decoration: const InputDecoration(
+                                          isDense: true,
+                                          labelText: "Age",
+                                          border: OutlineInputBorder(),
+                                        ),
                                       ),
+                                    )),
+                                    const SizedBox(
+                                      width: 5,
                                     ),
-                                  )),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Expanded(
-                                      child: ListTile(
-                                    subtitle: TextFormField(
-                                      keyboardType: TextInputType.text,
-                                      controller: _sexTextController,
-                                      focusNode: _focusSex,
-                                      decoration: const InputDecoration(
-                                        isDense: true,
-                                        labelText: "Sex",
-                                        border: OutlineInputBorder(),
+                                    Expanded(
+                                        child: ListTile(
+                                      subtitle: TextFormField(
+                                        keyboardType: TextInputType.text,
+                                        controller: _sexTextController,
+                                        focusNode: _focusSex,
+                                        decoration: const InputDecoration(
+                                          isDense: true,
+                                          labelText: "Sex",
+                                          border: OutlineInputBorder(),
+                                        ),
                                       ),
-                                    ),
-                                  )),
-                                ],
+                                    )),
+                                  ],
+                                ),
                               ),
-                              TextFormField(
-                                keyboardType: TextInputType.text,
-                                controller: _breedTextController,
-                                focusNode: _focusBreed,
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  labelText: "Breed(s)",
-                                  border: OutlineInputBorder(),
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: TextFormField(
+                                  keyboardType: TextInputType.text,
+                                  controller: _breedTextController,
+                                  focusNode: _focusBreed,
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    labelText: "Breed(s)",
+                                    border: OutlineInputBorder(),
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 32.0),
@@ -477,62 +521,142 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                               ),
                               Padding(
                                   padding: EdgeInsets.only(top: 50),
-                                  child: _uploadedPicture == true
-                                      ? Column(
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 75,
-                                              backgroundImage: FileImage(file),
-                                            ),
-                                            ElevatedButton(
-                                                onPressed: () async {
-                                                  FilePickerResult? result =
-                                                      await FilePicker.platform
-                                                          .pickFiles(
-                                                              type: FileType
-                                                                  .image);
-                                                  debugPrint(result.toString());
-                                                  if (result != null) {
-                                                    file = File(result
-                                                        .files.single.path
-                                                        .toString());
-                                                    setState(() {
-                                                      _uploadedPicture = true;
-                                                    });
-                                                  } else {
-                                                    // User canceled the picker
-                                                  }
-                                                },
-                                                child: const Text(
-                                                  "Change Pet Picture",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ))
-                                          ],
-                                        )
-                                      : ElevatedButton(
-                                          onPressed: () async {
-                                            FilePickerResult? result =
-                                                await FilePicker.platform
-                                                    .pickFiles(
-                                                        type: FileType.image);
-                                            debugPrint(result.toString());
-                                            if (result != null) {
-                                              file = File(result
-                                                  .files.single.path
-                                                  .toString());
-                                              setState(() {
-                                                _uploadedPicture = true;
-                                              });
-                                            } else {
-                                              // User canceled the picker
-                                            }
-                                          },
-                                          child: const Text(
-                                            "Upload Pet Picture",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ))),
+                                  child: value.petInfo[0]['pictureUrl'] != null
+                                      ? _uploadedPicture == false
+                                          ? Column(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 75,
+                                                  backgroundImage: NetworkImage(
+                                                      value.petInfo[0]
+                                                          ['pictureUrl']),
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () async {
+                                                      FilePickerResult? result =
+                                                          await FilePicker
+                                                              .platform
+                                                              .pickFiles(
+                                                                  type: FileType
+                                                                      .image);
+                                                      debugPrint(
+                                                          result.toString());
+                                                      if (result != null) {
+                                                        file = File(result
+                                                            .files.single.path
+                                                            .toString());
+                                                        setState(() {
+                                                          _uploadedPicture =
+                                                              true;
+                                                        });
+                                                      } else {
+                                                        // User canceled the picker
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      "Change Pet Picture",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ))
+                                              ],
+                                            )
+                                          : Column(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 75,
+                                                  backgroundImage:
+                                                      FileImage(file),
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () async {
+                                                      FilePickerResult? result =
+                                                          await FilePicker
+                                                              .platform
+                                                              .pickFiles(
+                                                                  type: FileType
+                                                                      .image);
+                                                      debugPrint(
+                                                          result.toString());
+                                                      if (result != null) {
+                                                        file = File(result
+                                                            .files.single.path
+                                                            .toString());
+                                                        setState(() {
+                                                          _uploadedPicture =
+                                                              true;
+                                                        });
+                                                      } else {
+                                                        // User canceled the picker
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      "Change Pet Picture",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ))
+                                              ],
+                                            )
+                                      : _uploadedPicture == false
+                                          ? ElevatedButton(
+                                              onPressed: () async {
+                                                FilePickerResult? result =
+                                                    await FilePicker.platform
+                                                        .pickFiles(
+                                                            type:
+                                                                FileType.image);
+                                                debugPrint(result.toString());
+                                                if (result != null) {
+                                                  file = File(result
+                                                      .files.single.path
+                                                      .toString());
+                                                  setState(() {
+                                                    _uploadedPicture = true;
+                                                  });
+                                                } else {
+                                                  // User canceled the picker
+                                                }
+                                              },
+                                              child: const Text(
+                                                "Upload Pet Picture",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ))
+                                          : Column(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 75,
+                                                  backgroundImage:
+                                                      FileImage(file),
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () async {
+                                                      FilePickerResult? result =
+                                                          await FilePicker
+                                                              .platform
+                                                              .pickFiles(
+                                                                  type: FileType
+                                                                      .image);
+                                                      debugPrint(
+                                                          result.toString());
+                                                      if (result != null) {
+                                                        file = File(result
+                                                            .files.single.path
+                                                            .toString());
+                                                        setState(() {
+                                                          _uploadedPicture =
+                                                              true;
+                                                        });
+                                                      } else {
+                                                        // User canceled the picker
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      "Change Pet Picture",
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ))
+                                              ],
+                                            )),
                               const SizedBox(height: 32.0),
                               _isProcessing
                                   ? const CircularProgressIndicator()
@@ -571,8 +695,9 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                     .collection('users')
                                                     .doc(data['uid'])
                                                     .collection("pets")
-                                                    .doc();
-                                                await docRef.set({
+                                                    .doc(value.petInfo[
+                                                        widget.index]['petId']);
+                                                docRef.update({
                                                   "name":
                                                       _nameTextController.text,
                                                   "type":
@@ -598,29 +723,39 @@ class _PetSetupInfoState extends State<PetSetupInfo>
                                                       _otherTextController.text,
                                                   "uid": FirebaseAuth.instance
                                                       .currentUser!.uid,
-                                                  "pictureUrl": url,
-                                                  "petId": docRef.id,
                                                 });
                                                 final petPictureRef =
                                                     storageRef.child(
-                                                        "${FirebaseAuth.instance.currentUser?.uid}/${docRef.id}.jpg");
+                                                        "${FirebaseAuth.instance.currentUser?.uid}/${value.petInfo[widget.index]['petId']}.jpg");
                                                 try {
-                                                  await petPictureRef
-                                                      .putFile(file);
-                                                  url = await petPictureRef
-                                                      .getDownloadURL();
-                                                  _uploadedPicture = true;
+                                                  if (_uploadedPicture ==
+                                                      true) {
+                                                    await petPictureRef
+                                                        .putFile(file);
+                                                    url = await petPictureRef
+                                                        .getDownloadURL();
+                                                    _uploadedPicture = true;
+                                                  }
                                                 } catch (error) {
                                                   debugPrint(error.toString());
                                                 }
                                                 if (_uploadedPicture == true) {
-                                                  docRef.update(
-                                                      {"pictureUrl": url});
+                                                  FirebaseFirestore.instance
+                                                      .collection(
+                                                          "building-codes")
+                                                      .doc(data['buildingCode'])
+                                                      .collection('users')
+                                                      .doc(data['uid'])
+                                                      .collection("pets")
+                                                      .doc(value.petInfo[widget
+                                                          .index]['petId'])
+                                                      .update(
+                                                          {"pictureUrl": url});
                                                 }
                                                 setState(() {
                                                   _isProcessing = false;
                                                 });
-                                                value.getUserData();
+                                                await value.getUserData();
                                                 Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
