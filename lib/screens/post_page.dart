@@ -331,6 +331,22 @@ class PostPageState extends State<PostPage> {
                                         setState(() {
                                           requestLoading = true;
                                         });
+                                        /* 
+                                          needs to also change the status of this transaction
+                                        */
+
+                                        /* 
+                        Different Status: 
+                          Waiting (No Requests Yet)
+                          Review (Someone accepted your request, review it)
+                          Scheduled (You accepted someones request)
+                          In Progress (Happening now)
+                          Complete
+
+                          So in transactions, if I accepted someones request, it also needs to show up.
+                          but how should it look like? 
+
+                        */
                                         await FirebaseFirestore.instance
                                             .doc(post["docPath"])
                                             .update({
@@ -344,12 +360,26 @@ class PostPageState extends State<PostPage> {
                                                   user.pictureUrl["pictureUrl"],
                                               "status": "pending"
                                             }
-                                          ])
+                                          ]),
+                                          "status": "review"
                                         }).then((value) {
                                           setState(() {
                                             requestLoading = false;
                                             requestSent = true;
                                           });
+                                        });
+                                        await FirebaseFirestore.instance
+                                            .doc(
+                                                "/building-codes/${user.buildingCode["buildingCode"]}/users/${user.uid['uid']}")
+                                            .update({
+                                          "transactions":
+                                              FieldValue.arrayUnion([
+                                            {
+                                              "path": post["docPath"],
+                                              "type": "sitter",
+                                              "status": "waiting"
+                                            }
+                                          ])
                                         });
                                       }
                                     },

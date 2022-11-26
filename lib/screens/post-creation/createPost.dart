@@ -242,15 +242,6 @@ class _CreatePostState extends State<CreatePost> {
                         "status": "waiting"
                       };
 
-                      /* 
-                        Different Status: 
-                          Waiting (No Requests Yet)
-                          Review (Someone accepted your request, review it)
-                          Scheduled (You accepted someones request)
-                          In Progress (Happening now)
-                          Complete
-
-                        */
                       await FirebaseFirestore.instance
                           .collection(
                               "/building-codes/${value.buildingCode["buildingCode"]}/posts/")

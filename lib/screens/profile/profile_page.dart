@@ -396,10 +396,21 @@ class PostWidget extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(post['postedBy']['name'] + " | "),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(formattedDate),
-                            ),
+                            if (post['type'] == 'Request')
+                              Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(infoPostDateFormat.format(
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              post['dateRange']['startTime'])) +
+                                      " - " +
+                                      infoPostDateFormat.format(
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              post['dateRange']['endTime']))))
+                            else
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Text(formattedDate),
+                              ),
                             if (post['type'] != "Info" && post['price'] != null)
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
