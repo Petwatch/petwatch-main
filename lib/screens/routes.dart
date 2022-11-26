@@ -13,6 +13,7 @@ import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/components/bottom_nav_bar.dart';
 import 'package:petwatch/screens/home-page/home_page.dart';
+import 'package:petwatch/screens/transactions/transactions_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -33,14 +34,16 @@ class _RoutesState extends State<Routes> {
     'ProfilePage',
   ];
   Widget gotoPage(int index) {
-    if (index == 0) {
-      return HomePage();
-    } else if (index == 2) {
-      return ProfilePage();
+    switch (index) {
+      case 0:
+        return HomePage();
+      case 1:
+        return const TransactionsPage();
+      case 2:
+        return ProfilePage();
+      default:
+        return HomePage();
     }
-    return Scaffold(
-        appBar: const TopNavBar(),
-        body: Align(alignment: Alignment.center, child: Text("data")));
   }
 
   void _onItemTapped(int index) {
@@ -53,7 +56,6 @@ class _RoutesState extends State<Routes> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     requestPermission();
     CheckDeviceId();
