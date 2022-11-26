@@ -53,6 +53,10 @@ class NotificationsCenterState extends State<NotificationsCenter> {
                           height: 100,
                           child: GestureDetector(
                             onTap: () {
+                              if (snapshot.data![index]["read"] == false) {
+                                debugPrint(
+                                    "Set this to true, also need to update state here");
+                              }
                               if (snapshot.data![index]['type'] == "comment") {
                                 for (var post in value.posts) {
                                   if (post['docPath'] ==
