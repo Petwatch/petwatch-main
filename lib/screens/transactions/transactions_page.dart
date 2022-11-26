@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
+import 'package:petwatch/screens/transactions/transactions_view_pending.dart';
 import 'package:provider/provider.dart';
 
 import '../../state/user_model.dart';
@@ -45,43 +46,53 @@ class _TransactionsPageState extends State<TransactionsPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<UserModel>(builder: ((context, value, child) {
-      return GestureDetector(
-        onTap: () {},
-        child: Scaffold(
-          appBar: const TopNavBar(),
-          body: FutureBuilder(
-            future: getTransactions(value.transactions),
-            builder: (context, snapshot) {
-              // debugPrint("${snapshot.data}");
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                  return const Center(child: CircularProgressIndicator());
-                default:
-                  if (snapshot.hasError) {
-                    return Text("There has been an error: ${snapshot.error}");
-                  } else {
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(10),
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (context, index) {
-                        debugPrint(
-                            "${snapshot.data![index]['transactionType']}");
-                        if (snapshot.data![index]['transactionType'] == null) {
-                          return Padding(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: selfTransaction(snapshot, index));
-                        } else {
-                          return Padding(
-                              padding: const EdgeInsets.only(top: 24),
-                              child: otherTransaction(snapshot, index));
-                        }
-                      },
-                    );
-                  }
-              }
-            },
-          ),
+      return Scaffold(
+        appBar: const TopNavBar(),
+        body: FutureBuilder(
+          future: getTransactions(value.transactions),
+          builder: (context, snapshot) {
+            // debugPrint("${snapshot.data}");
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+                return const Center(child: CircularProgressIndicator());
+              default:
+                if (snapshot.hasError) {
+                  return Text("There has been an error: ${snapshot.error}");
+                } else {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(10),
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: (context, index) {
+                      debugPrint("${snapshot.data![index]['transactionType']}");
+                      if (snapshot.data![index]['transactionType'] == null) {
+                        return Padding(
+                            padding: const EdgeInsets.only(top: 24),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ViewPendingPage(
+                                              transaction:
+                                                  snapshot.data![index],
+                                              transactionWidget:
+                                                  selfTransaction(
+                                                      snapshot, index),
+                                            )));
+                              },
+                              child: selfTransaction(snapshot, index),
+                            ));
+                      } else {
+                        return Padding(
+                            padding: const EdgeInsets.only(top: 24),
+                            child: otherTransaction(snapshot, index));
+                      }
+                    },
+                  );
+                }
+            }
+          },
         ),
       );
     }));
