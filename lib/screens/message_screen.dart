@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:petwatch/screens/profile/profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:petwatch/components/user_tile.dart';
 import 'package:petwatch/screens/search.dart';
 import 'auth_gate.dart';
 import 'package:petwatch/screens/auth_gate.dart';
@@ -29,7 +30,7 @@ class _MessageScreenState extends State<MessageScreen> {
   Map name = <String, String>{"Name": ""};
   Map petInfo = <String, String>{};
   bool hasPet = false;
-
+  Map messageGroups = <String, dynamic>{"groups": ""};
   String groupName = "";
   String userName = "";
   AuthGate authGate = AuthGate();
@@ -42,6 +43,8 @@ class _MessageScreenState extends State<MessageScreen> {
   bool hasUserSearched = false;
   bool isJoined = false;
   User? user;
+  final CollectionReference groupCollection =
+      FirebaseFirestore.instance.collection('groups');
 
   @override
   void initState() {
@@ -70,11 +73,11 @@ class _MessageScreenState extends State<MessageScreen> {
         groups = snapshot;
       });
     });
-    // await DatabaseService.getUserNameFromSF().then((val) {
-    //   setState(() {
-    //     userName = val!;
-    //   });
-    // });
+    await DatabaseService.getUserNameFromSF().then((val) {
+      setState(() {
+        userName = val!;
+      });
+    });
   }
 
   // @override
@@ -239,7 +242,7 @@ class _MessageScreenState extends State<MessageScreen> {
                 ),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text("Join Now",
+                child: const Text("Send Message",
                     style: TextStyle(color: Colors.white)),
               ),
       ),
@@ -254,7 +257,7 @@ class _MessageScreenState extends State<MessageScreen> {
           return StatefulBuilder(builder: ((context, setState) {
             return AlertDialog(
               title: const Text(
-                "Start a new chat!",
+                "search for a user",
                 textAlign: TextAlign.left,
               ),
               content: Column(
@@ -267,9 +270,8 @@ class _MessageScreenState extends State<MessageScreen> {
                         )
                       : TextField(
                           onChanged: (val) {
-                            setState(() {
-                              groupName = val;
-                            });
+                            dynamic tempName = initiateSearchMethod(val);
+                            // groupName = tempName.toString();
                           },
                           style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
@@ -323,7 +325,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     style: ElevatedButton.styleFrom(
                         primary: Theme.of(context).primaryColor),
                     child: const Text(
-                      "Create chat",
+                      "Search",
                       style: TextStyle(color: Colors.white),
                     ))
               ],
@@ -332,12 +334,65 @@ class _MessageScreenState extends State<MessageScreen> {
         });
   }
 
+  Stream<DocumentSnapshot> provideDocumentFieldStream() {
+    return FirebaseFirestore.instance
+        .collection('building-codes')
+        .doc('123456789')
+        .snapshots();
+  }
+
+  initiateSearchMethod(value) async {
+    if ((value != null) && (value.length > 0)) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final Stream searchedName = FirebaseFirestore.instance
+          .collection('building-codes')
+          .doc('123456789')
+          .collection('users')
+          .where('name', isGreaterThanOrEqualTo: value)
+          .where('name', isLessThan: value + 'z')
+          .snapshots();
+      (context, snapshot) {
+        if ((snapshot.hasData) && (snapshot.data['name'].exists)) {
+          if (snapshot.data['name'] != null) {
+            if (snapshot.data['name'].length != 0) {
+              Text(searchedName.toString());
+              print(searchedName.toString());
+              groupName = searchedName.toString();
+            }
+          }
+        }
+      };
+    }
+    // print(searchSnapshot!.docs[].data().toString());
+    // print(userSnapshotReference.snapshots());
+    // return userSnapshotReference;
+
+    // if (searchController.text.isNotEmpty) {
+    //   setState(() {
+    //     isLoading = true;
+    //   });
+    //   await DatabaseService()
+    //       .searchByName(searchController.text)
+    //       .then((snapshot) {
+    //     setState(() {
+    //       searchSnapshot = snapshot;
+    //       isLoading = false;
+    //       hasUserSearched = true;
+    //     });
+    //   });
+    //   print('hello from initiateSearch!! <3');
+    // }
+  }
+
   groupList() {
     return StreamBuilder(
         stream: groups,
         builder: (context, AsyncSnapshot snapshot) {
           // make some checks
-          if ((snapshot.hasData) && (snapshot.data.exists ?? '')) {
+          if ((snapshot.hasData) && (snapshot.data.exists)) {
             if (snapshot.data['groups'] != null) {
               if (snapshot.data['groups'].length != 0) {
                 return ListView.builder(
@@ -376,26 +431,13 @@ class _MessageScreenState extends State<MessageScreen> {
 
   noGroupWidget() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GestureDetector(
-            onTap: () {
-              popupDialogue(context);
-            },
-            // child: Icon(
-            //   Icons.add_circle,
-            //   color: Colors.grey[700],
-            //   size: 75,
-            // ),
-          ),
           const SizedBox(
             height: 20,
           ),
           const Text(
-            "Tap the '+' icon to start a new chat!",
+            "Tap the icon to start a new chat!",
             textAlign: TextAlign.center,
           )
         ],

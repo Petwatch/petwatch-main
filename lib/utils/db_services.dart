@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:petwatch/components/components.dart';
+import 'package:petwatch/screens/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseService {
@@ -74,10 +76,22 @@ class DatabaseService {
     });
     // update the members
     await groupDocumentReference.update({
-      "members": FieldValue.arrayUnion(["${uid}_$userName"]),
+      "members":
+          FieldValue.arrayUnion(["${id}_$userName", '${uid}_$getUserName']),
       "groupId": groupDocumentReference.id,
     });
 
+    //Update recipient docs
+    DocumentReference recipientDocumentReference = FirebaseFirestore.instance
+        .collection('building-codes')
+        .doc('123456789')
+        .collection('users')
+        .doc(id);
+    await recipientDocumentReference.update({
+      "groups":
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+    });
+    //update seender groups doc
     DocumentReference userDocumentReference = FirebaseFirestore.instance
         .collection('building-codes')
         .doc('123456789')
@@ -106,13 +120,16 @@ class DatabaseService {
   }
 
   // get group members
-  getGroupMembers(groupId) async {
+  Future getGroupMembers(groupId) async {
     return groupCollection.doc(groupId).snapshots();
   }
 
   // search
-  searchByName(String groupName) {
-    return userCollection.where("name", isEqualTo: groupName).get();
+  Future searchByName(String groupName) async {
+    return userCollection
+        .where('name', isGreaterThanOrEqualTo: groupName)
+        .where('name', isLessThan: groupName + 'z')
+        .get();
   }
 
   // function -> bool
@@ -132,29 +149,38 @@ class DatabaseService {
   // toggling the group join/exit
   Future toggleGroupJoin(
       String groupId, String userName, String groupName) async {
-    // doc reference
     DocumentReference userDocumentReference = userCollection.doc(uid);
-    DocumentReference groupDocumentReference = groupCollection.doc(groupId);
-
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
     List<dynamic> groups = await documentSnapshot['groups'];
-
-    // if user has our groups -> then remove then or also in other part re join
     if (groups.contains("${groupId}_$groupName")) {
-      await userDocumentReference.update({
-        "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
-      });
-      await groupDocumentReference.update({
-        "members": FieldValue.arrayRemove(["${uid}_$userName"])
-      });
+      return 1;
+      //open group maybe return group?
     } else {
-      await userDocumentReference.update({
-        "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
-      });
-      await groupDocumentReference.update({
-        "members": FieldValue.arrayUnion(["${uid}_$userName"])
-      });
+      return 0;
     }
+    // // doc reference
+    // DocumentReference userDocumentReference = userCollection.doc(uid);
+    // DocumentReference groupDocumentReference = groupCollection.doc(groupId);
+
+    // DocumentSnapshot documentSnapshot = await userDocumentReference.get();
+    // List<dynamic> groups = await documentSnapshot['groups'];
+
+    // // if user has our groups -> then remove then or also in other part re join
+    // if (groups.contains("${groupId}_$groupName")) {
+    //   await userDocumentReference.update({
+    //     "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
+    //   });
+    //   await groupDocumentReference.update({
+    //     "members": FieldValue.arrayRemove(["${uid}_$userName"])
+    //   });
+    // } else {
+    //   await userDocumentReference.update({
+    //     "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
+    //   });
+    //   await groupDocumentReference.update({
+    //     "members": FieldValue.arrayUnion(["${uid}_$userName"])
+    //   });
+    // }
   }
 
   // send message
