@@ -63,7 +63,7 @@ class UserModel extends ChangeNotifier {
           isSitter = true;
         }
         if (element.data().containsKey("transactions")) {
-          transactions.add(element["transactions"]);
+          transactions = (element["transactions"]);
         }
       }
     }, onError: (e) => {"Name": "Error Getting Name"});

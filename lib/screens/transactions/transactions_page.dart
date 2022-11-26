@@ -17,40 +17,54 @@ class _TransactionsPageState extends State<TransactionsPage> {
   late List transactionData;
   @override
   void initState() {
-    // debugPrint("${transaction}");
     super.initState();
   }
 
-  // Future<List<Widget>> getTransactions(List<dynamic> paths) async {
-  //   debugPrint("$paths");
-  //   for (var path in paths) {
-  //     FirebaseFirestore.instance
-  //         .doc(path)
-  //         .get()
-  //         .then((value) => {debugPrint("${value.data().toString()}")});
-  //   }
-  //   return [];
-  // }
+  Future<List<dynamic>> getTransactions(List<dynamic> paths) async {
+    List<dynamic> transactions = [];
+    for (var path in paths) {
+      debugPrint("${path['path']}");
+      await FirebaseFirestore.instance.doc(path['path']).get().then((value) {
+        transactions.add(value.data());
+        debugPrint("Here:  ${value.data().toString()}");
+      });
+    }
+    return transactions;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<UserModel>(builder: ((context, value, child) {
-      // if (value.transactions != []) {
-      // setState(() {
-      //   isLoading = false;
-      // });
-      // ignore: unused_local_variable
-      // Future<List<Widget>> test = getTransactions(value.transactions);
-
       return GestureDetector(
         onTap: () {},
         child: Scaffold(
-          appBar: TopNavBar(),
-          body: SingleChildScrollView(
-              child: Center(
-                  child: isLoading
-                      ? CircularProgressIndicator()
-                      : Text("Loaded Transactions"))),
+          appBar: const TopNavBar(),
+          body: FutureBuilder(
+            future: getTransactions(value.transactions),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return const Center(child: CircularProgressIndicator());
+                default:
+                  if (snapshot.hasError) {
+                    return Text("There has been an error: ${snapshot.error}");
+                  } else {
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 50,
+                          child: Center(
+                              child: Text("${snapshot.data?[0]['status']}")),
+                        );
+                      },
+                    );
+                  }
+              }
+            },
+          ),
         ),
       );
     }));

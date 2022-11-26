@@ -384,7 +384,13 @@ class PostPageState extends State<PostPage> {
                                   post["postedBy"]["UID"] ==
                                       FirebaseAuth.instance.currentUser!.uid)
                                 (ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Routes(1)));
+                                  },
                                   child: Text("See In Transactions"),
                                   style: ButtonStyle(
                                       fixedSize: MaterialStateProperty.all(
@@ -463,7 +469,10 @@ class PostPageState extends State<PostPage> {
                               "path": "${post['docPath']}",
                               "commentText": _commentFieldController.text,
                               "commentAuthorName": user.name["name"],
-                              "commentAuthorUID": user.uid["uid"] ?? ""
+                              "commentAuthorUID": user.uid["uid"] ?? "",
+                              "commentAuthorPictureUrl": user.hasPicture
+                                  ? user.pictureUrl["pictureUrl"]
+                                  : "",
                             }));
                         // debugPrint("${res.body} ${res.statusCode}");
                       },

@@ -219,6 +219,7 @@ class _CreatePostState extends State<CreatePost> {
                         print("Success");
                       }
                       List<Map<String, dynamic>> emptyCommentsArr = [];
+                      debugPrint("${selectedDates.start}");
                       Map post = <String, dynamic>{
                         "postedBy": <String, dynamic>{
                           "name": value.name['name'],
@@ -229,11 +230,27 @@ class _CreatePostState extends State<CreatePost> {
                         },
                         "title": _PostTitle.text,
                         "desc": _PostContents.text,
+                        "price": _PriceForRequest.text,
                         "postedTime": Timestamp.now(),
+                        "dateRange": <String, dynamic>{
+                          "startTime":
+                              selectedDates.start.millisecondsSinceEpoch,
+                          "endTime": selectedDates.end.millisecondsSinceEpoch
+                        },
                         "type": selectedPostValue,
-                        "comments": emptyCommentsArr
+                        "comments": emptyCommentsArr,
+                        "status": "waiting"
                       };
 
+                      /* 
+                        Different Status: 
+                          Waiting (No Requests Yet)
+                          Review (Someone accepted your request, review it)
+                          Scheduled (You accepted someones request)
+                          In Progress (Happening now)
+                          Complete
+
+                        */
                       await FirebaseFirestore.instance
                           .collection(
                               "/building-codes/${value.buildingCode["buildingCode"]}/posts/")
