@@ -47,6 +47,7 @@ class ViewPendingPageState extends State<ViewPendingPage> {
       'name': transaction[index]['name'],
       'pictureUrl': transaction[index]['petSitterPictureUrl']
     };
+
     return Card(
         elevation: 2,
         child: Row(
@@ -97,8 +98,36 @@ class ViewPendingPageState extends State<ViewPendingPage> {
 
                   try {
                     await stripe.Stripe.instance.presentPaymentSheet();
-                    // Technically we don't need a webook.
-                    debugPrint("Hello");
+                    // debugPrint(this.transaction.toString());
+                    await FirebaseFirestore.instance
+                        .doc(this.transaction['documentPath'])
+                        .get()
+                        .then((value) {
+                      debugPrint(value.toString());
+                      List<dynamic> requestsArr = value.data()?['requests'];
+                      for (var request in requestsArr) {
+                        if (request['petSitterUid'] !=
+                            transaction[index]['petSitterUid']) {
+                          request['status'] = "rejected";
+                        } else {
+                          request['status'] = "approved";
+                        }
+                      }
+                      // debugPrint(requestsArr.toString());
+                      value.reference.update(
+                          {"status": "scheduled", "requests": requestsArr});
+                    });
+                    Navigator.pop(context);
+
+                    /*
+                    So, on success, we need to: 
+                      - Update the post from review to scheduled - DONE
+                      - Update the array of requests, every single array that - DONE
+                      - On click event can't be the same now, it is no longer pending
+                      - Create a message thread between the two people - Will Temporarily just do navigator.pop, but will do this later.
+                      - Send notification to the pet sitter. - need to do this, should be simple
+                      - Schedule the notifications to be sent out day before and day of, to both parties.
+                     */
                   } catch (e) {
                     debugPrint(e.toString());
                   }
@@ -126,6 +155,7 @@ class ViewPendingPageState extends State<ViewPendingPage> {
       transactionList.insert(
           0, commentCard(context, transaction['requests'], i));
     }
+
     return GestureDetector(
       onTap: () {},
       child: Scaffold(

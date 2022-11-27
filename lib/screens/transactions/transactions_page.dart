@@ -19,24 +19,23 @@ class _TransactionsPageState extends State<TransactionsPage> {
   late List transactionData;
   @override
   void initState() {
+    // getTransactions(paths)
     super.initState();
   }
 
   Future<List<dynamic>> getTransactions(List<dynamic> paths) async {
     List<dynamic> transactions = [];
     for (var path in paths) {
-      debugPrint("Type: ${path["type"]}");
       await FirebaseFirestore.instance.doc(path['path']).get().then((value) {
+        Map<String, dynamic>? postData = value.data();
+        postData?.putIfAbsent("documentPath", () => value.reference.path);
         if (path["type"] != null) {
-          debugPrint("This is happening");
-          Map<String, dynamic>? test = value.data();
+          Map<String, dynamic>? test = postData;
           test?.putIfAbsent("transactionType", () => path['type']);
           test?.putIfAbsent("transactionStatus", () => path['status']);
           transactions.insert(0, test);
-          debugPrint(test.toString());
         } else {
-          transactions.insert(0, value.data());
-          debugPrint(value.data().toString());
+          transactions.insert(0, postData);
         }
       });
     }
@@ -51,7 +50,6 @@ class _TransactionsPageState extends State<TransactionsPage> {
         body: FutureBuilder(
           future: getTransactions(value.transactions),
           builder: (context, snapshot) {
-            // debugPrint("${snapshot.data}");
             switch (snapshot.connectionState) {
               case ConnectionState.none:
               case ConnectionState.waiting:
@@ -64,21 +62,25 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     padding: const EdgeInsets.all(10),
                     itemCount: snapshot.data?.length,
                     itemBuilder: (context, index) {
-                      debugPrint("${snapshot.data![index]['transactionType']}");
                       if (snapshot.data![index]['transactionType'] == null) {
                         return Padding(
                             padding: const EdgeInsets.only(top: 24),
                             child: GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ViewPendingPage(
-                                            transaction: snapshot.data![index],
-                                            transactionWidget: selfTransaction(
-                                                snapshot, index),
-                                            amount: int.parse(snapshot
-                                                .data![index]['price']))));
+                                if (snapshot.data![index]['status'] ==
+                                    'waiting') {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ViewPendingPage(
+                                              transaction:
+                                                  snapshot.data![index],
+                                              transactionWidget:
+                                                  selfTransaction(
+                                                      snapshot, index),
+                                              amount: int.parse(snapshot
+                                                  .data![index]['price']))));
+                                }
                               },
                               child: selfTransaction(snapshot, index),
                             ));
@@ -165,7 +167,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                 return Colors.yellow;
                               case "review":
                                 return Colors.green;
-                              case "in progress":
+                              case "scheduled":
                                 return Colors.blue;
                               default:
                                 return Colors.yellow;
