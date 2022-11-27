@@ -9,10 +9,12 @@ import 'package:petwatch/screens/post_page.dart';
 import 'package:petwatch/screens/profile/edit_profile_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:http/http.dart' as http;
 import 'package:petwatch/services/stripe-backend-service.dart';
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
+import '../../components/CustomRatingDialog.dart';
 
 class ProfilePage extends StatefulWidget {
   // final BuildContext context;
@@ -160,8 +162,13 @@ class _ProfilePageState extends State<ProfilePage>
                                           PopupMenuItem(
                                             padding: EdgeInsets.zero,
                                             child: Center(
-                                              child: SignOutButton(
-                                                variant: ButtonVariant.text,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: SignOutButton(
+                                                  variant: ButtonVariant.text,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -290,7 +297,10 @@ class _ProfilePageState extends State<ProfilePage>
                               Center(
                                 child: [
                                   SampleWidget(
-                                      label: "Reviews Placeholder", user: user),
+                                    label: "Reviews Placeholder",
+                                    user: user,
+                                    context: context,
+                                  ),
                                   PostWidget(user: user),
                                 ][_tabIndex],
                               ),
@@ -308,22 +318,101 @@ class SampleWidget extends StatelessWidget {
     Key? key,
     required this.label,
     required this.user,
+    required this.context,
   }) : super(key: key);
 
   final String label;
   final UserModel user;
+  final BuildContext context;
+
+  void _showRatingAppDialog() {
+    final _ratingDialog = CustomRatingDialog(
+      starColor: Colors.amber,
+      starSize: 30,
+      title: [Center(child: Text('Reviewing ${user.name['name']}'))],
+      submitButtonText: 'Submit',
+      submitButtonTextStyle: TextStyle(color: Colors.white),
+      onCancelled: () => print('cancelled'),
+      onSubmitted: (response) {
+        print('rating: ${response.rating}, '
+            'comment: ${response.comment}');
+
+        if (response.rating < 3.0) {
+          print('response.rating: ${response.rating}');
+        } else {
+          Container();
+        }
+      },
+      commentHint: "Tell us about your sitter",
+    );
+
+    showDialog(
+      useSafeArea: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _ratingDialog,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
+    return Column(
+      children: [
+        ElevatedButton(
+            onPressed: (() {
+              _showRatingAppDialog();
+            }),
+            child: Text("Review this sitter",
+                style: TextStyle(color: Colors.white))),
+        FractionallySizedBox(
+          widthFactor: .95,
+          child: CustomRatingDialog(
+            starColor: Colors.amber,
+            title: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.white,
+                  backgroundImage: user.pictureUrl['pictureUrl'] != ""
+                      ? NetworkImage(user.pictureUrl['pictureUrl'])
+                      : AssetImage('assets/images/petwatch_logo.png')
+                          as ImageProvider,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),
+              ),
+              Text(user.name['name'])
+            ],
+            starSize: 20,
+            submitButtonText: 'Submit',
+            onCancelled: () => print('cancelled'),
+            onSubmitted: (response) {
+              print('rating: ${response.rating}, '
+                  'comment: ${response.comment}');
+
+              if (response.rating < 3.0) {
+                print('response.rating: ${response.rating}');
+              } else {
+                Container();
+              }
+            },
+            message: Text(
+              'Would hire again!',
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            enableComment: false,
+            showCloseButton: false,
+            showSubmitButton: false,
+            disableEdit: true,
+            initialRating: 5,
+            isAlert: false,
           ),
-        ));
+        ),
+      ],
+    );
   }
 }
 
