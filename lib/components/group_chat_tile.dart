@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:petwatch/components/components.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class GroupTile extends StatefulWidget {
   final String userName;
@@ -51,6 +53,7 @@ class _GroupTileState extends State<GroupTile> {
             "Join the conversation",
             style: const TextStyle(fontSize: 13),
           ),
+          trailing: Container(child: Icon(Icons.arrow_forward_ios)),
         ),
       ),
     );

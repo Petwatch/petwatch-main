@@ -14,6 +14,7 @@ import 'package:petwatch/components/group_chat_tile.dart';
 import 'package:petwatch/utils/db_services.dart';
 import 'package:petwatch/components/bottom_nav_bar.dart';
 import 'package:petwatch/components/components.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({Key? key}) : super(key: key);
@@ -136,36 +137,7 @@ class _MessageScreenState extends State<MessageScreen> {
         ),
       ),
       body: groupList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          popupDialogue(context);
-        },
-        elevation: 0,
-        backgroundColor: Theme.of(context).primaryColor,
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 30,
-        ),
-      ),
     );
-  }
-
-  searchGroupList() {
-    return hasUserSearched
-        ? ListView.builder(
-            shrinkWrap: true,
-            itemCount: searchSnapshot!.docs.length,
-            itemBuilder: (context, index) {
-              return groupTile(
-                userName,
-                searchSnapshot!.docs[index]['groupId'],
-                searchSnapshot!.docs[index]['groupName'],
-                searchSnapshot!.docs[index]['admin'],
-              );
-            },
-          )
-        : Container();
   }
 
   joinedOrNot(
@@ -177,161 +149,6 @@ class _MessageScreenState extends State<MessageScreen> {
         isJoined = value;
       });
     });
-  }
-
-  Widget groupTile(
-      String userName, String groupId, String groupName, String admin) {
-    // function to check whether user already exists in group
-    joinedOrNot(userName, groupId, groupName, admin);
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      leading: CircleAvatar(
-        radius: 30,
-        backgroundColor: Theme.of(context).primaryColor,
-        child: Text(
-          groupName.substring(0, 1).toUpperCase(),
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      title:
-          Text(groupName, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text("Admin: ${getName(admin)}"),
-      trailing: InkWell(
-        onTap: () async {
-          await DatabaseService(uid: user!.uid)
-              .toggleGroupJoin(groupId, userName, groupName);
-          if (isJoined) {
-            setState(() {
-              isJoined = !isJoined;
-            });
-            showSnackbar(
-                context, Colors.green, "Successfully joined the group");
-            Future.delayed(const Duration(seconds: 2), () {
-              nextScreen(
-                  context,
-                  ChatPage(
-                      groupId: groupId,
-                      groupName: groupName,
-                      userName: userName));
-            });
-          } else {
-            setState(() {
-              isJoined = !isJoined;
-              showSnackbar(context, Colors.red, "Left the group $groupName");
-            });
-          }
-        },
-        child: isJoined
-            ? Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.black,
-                  border: Border.all(color: Colors.white, width: 1),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text(
-                  "Joined",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).primaryColor,
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text("Send Message",
-                    style: TextStyle(color: Colors.white)),
-              ),
-      ),
-    );
-  }
-
-  popupDialogue(BuildContext context) {
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: ((context, setState) {
-            return AlertDialog(
-              title: const Text(
-                "search for a user",
-                textAlign: TextAlign.left,
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _isLoading == true
-                      ? Center(
-                          child: CircularProgressIndicator(
-                              color: Theme.of(context).primaryColor),
-                        )
-                      : TextField(
-                          onChanged: (val) {
-                            dynamic tempName = initiateSearchMethod(val);
-                            // groupName = tempName.toString();
-                          },
-                          style: const TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius: BorderRadius.circular(20)),
-                              errorBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.red),
-                                  borderRadius: BorderRadius.circular(20)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor),
-                                  borderRadius: BorderRadius.circular(20))),
-                        ),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor),
-                  child: const Text(
-                    "Cancel",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      if (groupName != "") {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        DatabaseService(
-                                uid: FirebaseAuth.instance.currentUser!.uid)
-                            .createGroup(
-                                name.toString(),
-                                FirebaseAuth.instance.currentUser!.uid,
-                                groupName)
-                            .whenComplete(() {
-                          _isLoading = false;
-                        });
-                        Navigator.of(context).pop();
-                        showSnackbar(context, Colors.green,
-                            "chat created successfully.");
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).primaryColor),
-                    child: const Text(
-                      "Search",
-                      style: TextStyle(color: Colors.white),
-                    ))
-              ],
-            );
-          }));
-        });
   }
 
   Stream<DocumentSnapshot> provideDocumentFieldStream() {
@@ -366,25 +183,6 @@ class _MessageScreenState extends State<MessageScreen> {
         }
       };
     }
-    // print(searchSnapshot!.docs[].data().toString());
-    // print(userSnapshotReference.snapshots());
-    // return userSnapshotReference;
-
-    // if (searchController.text.isNotEmpty) {
-    //   setState(() {
-    //     isLoading = true;
-    //   });
-    //   await DatabaseService()
-    //       .searchByName(searchController.text)
-    //       .then((snapshot) {
-    //     setState(() {
-    //       searchSnapshot = snapshot;
-    //       isLoading = false;
-    //       hasUserSearched = true;
-    //     });
-    //   });
-    //   print('hello from initiateSearch!! <3');
-    // }
   }
 
   groupList() {
@@ -395,9 +193,16 @@ class _MessageScreenState extends State<MessageScreen> {
           if ((snapshot.hasData) && (snapshot.data.exists)) {
             if (snapshot.data['groups'] != null) {
               if (snapshot.data['groups'].length != 0) {
-                return ListView.builder(
+                return ListView.separated(
                   itemCount: snapshot.data['groups'].length,
+                  separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(Icons.arrow_forward_ios),
+                    );
                     int reverseIndex =
                         snapshot.data['groups'].length - index - 1;
                     return GroupTile(
@@ -421,7 +226,8 @@ class _MessageScreenState extends State<MessageScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Text("Tap the '+' icon to start a new chat"),
+                      Icon(Icons.arrow_forward_ios),
+                      Text("No messages :("),
                     ]),
               ),
             );
