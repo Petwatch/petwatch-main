@@ -10,6 +10,7 @@ import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/profile/view_profile_page.dart';
 import 'package:petwatch/screens/routes.dart';
 import 'package:petwatch/services/stripe-backend-service.dart';
+import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -40,8 +41,8 @@ class ViewPendingPageState extends State<ViewPendingPage> {
       required this.transactionWidget,
       required this.amount});
 
-  Widget commentCard(
-      BuildContext context, List<dynamic> transaction, int index) {
+  Widget commentCard(BuildContext context, List<dynamic> transaction, int index,
+      UserModel user) {
     Map<String, dynamic> postedBy = {
       'UID': transaction[index]['petSitterUid'],
       'name': transaction[index]['name'],
@@ -84,7 +85,10 @@ class ViewPendingPageState extends State<ViewPendingPage> {
             IconButton(
                 onPressed: (() async {
                   var data = await CreatePaymentSheet.getPaymentIntent(
-                      transaction[index]["stripeExpressId"], amount);
+                    transaction[index]["stripeExpressId"],
+                    amount,
+                    "building-codes/${user.buildingCode['buildingCode']}/users/${user.uid['uid']}",
+                  );
                   await stripe.Stripe.instance.initPaymentSheet(
                       paymentSheetParameters:
                           stripe.SetupPaymentSheetParameters(
@@ -117,7 +121,8 @@ class ViewPendingPageState extends State<ViewPendingPage> {
                       value.reference.update(
                           {"status": "scheduled", "requests": requestsArr});
                     });
-                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Routes(1)));
 
                     /*
                     So, on success, we need to: 
@@ -149,48 +154,50 @@ class ViewPendingPageState extends State<ViewPendingPage> {
 
   @override
   Widget build(BuildContext context) {
-    var transactionList = [];
+    return Consumer<UserModel>(builder: ((context, user, child) {
+      var transactionList = [];
 
-    for (var i = 0; i < transaction['requests'].length; i++) {
-      transactionList.insert(
-          0, commentCard(context, transaction['requests'], i));
-    }
+      for (var i = 0; i < transaction['requests'].length; i++) {
+        transactionList.insert(
+            0, commentCard(context, transaction['requests'], i, user));
+      }
 
-    return GestureDetector(
-      onTap: () {},
-      child: Scaffold(
-        appBar: MessageNavBar(),
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              Align(alignment: Alignment.center, child: transactionWidget),
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child:
-                    Text("Available Sitters:", style: TextStyle(fontSize: 25)),
-              ),
-              Divider(
-                thickness: 2,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [...transactionList],
+      return GestureDetector(
+        onTap: () {},
+        child: Scaffold(
+          appBar: MessageNavBar(),
+          body: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                Align(alignment: Alignment.center, child: transactionWidget),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text("Available Sitters:",
+                      style: TextStyle(fontSize: 25)),
+                ),
+                Divider(
+                  thickness: 2,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [...transactionList],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }));
   }
 }

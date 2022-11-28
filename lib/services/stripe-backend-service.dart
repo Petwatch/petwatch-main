@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -43,11 +44,25 @@ class CreatePaymentSheet {
   // static String createPaymentIntentUrl =
   //     "${CreatePaymentSheet.apiBase}/payment-intent?account_id=$expressId&";
   static Future<Map<String, dynamic>> getPaymentIntent(
-      String expressId, int amount) async {
-    var response = await http.get(Uri.parse(
-        '${CreatePaymentSheet.apiBase}/payment-intent?account_id=$expressId&amount=$amount'));
+      String expressId, int amount, String path) async {
+    bool hasAccount = false;
+    String url =
+        '${CreatePaymentSheet.apiBase}/payment-intent?account_id=$expressId&amount=$amount';
+    await FirebaseFirestore.instance.doc(path).get().then((value) {
+      if (value.data()!['stripeCustomerId'] != null) {
+        url += "&customer=${value.data()!['stripeCustomerId']}";
+        debugPrint(url);
+        hasAccount = true;
+      }
+    });
+    var response = await http.get(Uri.parse(url));
 
     Map<String, dynamic> params = json.decode(response.body);
+    if (!hasAccount) {
+      FirebaseFirestore.instance
+          .doc(path)
+          .update({"stripeCustomerId": params['customer']});
+    }
 
     return params;
   }

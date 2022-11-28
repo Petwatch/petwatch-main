@@ -68,7 +68,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                             child: GestureDetector(
                               onTap: () {
                                 if (snapshot.data![index]['status'] ==
-                                    'waiting') {
+                                    'review') {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
