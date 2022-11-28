@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
+import 'package:petwatch/screens/pet-profile/view_pet_profile_page.dart';
 import 'package:petwatch/screens/transactions/transactions_view_pending.dart';
 import 'package:provider/provider.dart';
 
@@ -47,6 +48,36 @@ class _TransactionsPageState extends State<TransactionsPage> {
       });
     }
     return transactions;
+  }
+
+  Widget displayPet(Map<String, dynamic> petData) {
+    List<Map<String, dynamic>> petDataList = [petData];
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ViewPetProfilePage(petDataList, true)));
+          },
+          child: Card(
+            shape: CircleBorder(),
+            elevation: 2,
+            child: CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.white,
+              backgroundImage: petData["pictureUrl"] != ""
+                  ? NetworkImage(petData["pictureUrl"])
+                  : AssetImage('assets/images/petwatch_logo.png')
+                      as ImageProvider,
+            ),
+          ),
+        ),
+        Text(petData['name'])
+      ],
+    );
   }
 
   @override
@@ -110,6 +141,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
   FractionallySizedBox selfTransaction(
       AsyncSnapshot<List<dynamic>> snapshot, int index) {
     final requestPostDateFormat = new DateFormat('MMMd');
+    List<Widget> petList = [];
+    if (snapshot.data![index]['type'] != "Info" &&
+        snapshot.data![index]['price'] != null) {
+      for (var petData in snapshot.data![index]['petInfo']) {
+        petList.add(displayPet(petData));
+      }
+    }
+
     return FractionallySizedBox(
       widthFactor: .95,
       child: Card(
@@ -182,7 +221,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                             }
                           })(),
                           label: Text(snapshot.data![index]["status"])),
-                      //Make text color white
+                      Spacer(),
+                      ...petList
                     ],
                   ),
                 )
@@ -274,22 +314,52 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           })(),
                           label: Text(transactionStatus)),
                       Spacer(),
-                      Card(
-                        shape: CircleBorder(),
-                        elevation: 2,
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Colors.white,
-                          backgroundImage: snapshot.data![index]["postedBy"]
-                                      ["pictureUrl"] !=
-                                  ""
-                              ? NetworkImage(snapshot.data![index]["postedBy"]
-                                  ["pictureUrl"])
-                              : AssetImage('assets/images/petwatch_logo.png')
-                                  as ImageProvider,
-                        ),
-                      ),
-                      Text(snapshot.data![index]["postedBy"]["name"])
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Card(
+                                shape: CircleBorder(),
+                                elevation: 2,
+                                child: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: snapshot.data![index]
+                                              ["postedBy"]["pictureUrl"] !=
+                                          ""
+                                      ? NetworkImage(snapshot.data![index]
+                                          ["postedBy"]["pictureUrl"])
+                                      : AssetImage(
+                                              'assets/images/petwatch_logo.png')
+                                          as ImageProvider,
+                                ),
+                              ),
+                              Text(snapshot.data![index]["postedBy"]["name"]),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Card(
+                                shape: CircleBorder(),
+                                elevation: 2,
+                                child: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: snapshot.data![index]
+                                              ["postedBy"]["pictureUrl"] !=
+                                          ""
+                                      ? NetworkImage(snapshot.data![index]
+                                          ["postedBy"]["pictureUrl"])
+                                      : AssetImage(
+                                              'assets/images/petwatch_logo.png')
+                                          as ImageProvider,
+                                ),
+                              ),
+                              Text("Pet")
+                            ],
+                          )
+                        ],
+                      )
 
                       //Make text color white
                     ],
