@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:petwatch/components/components.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class UserTile extends StatefulWidget {
   final String userName;
   final String recipientId;
   final String recipientName;
-  const UserTile(
+  const UserTile(String string,
       {Key? key,
       required this.recipientId,
       required this.recipientName,
@@ -51,6 +52,7 @@ class _UserTileState extends State<UserTile> {
             "Join the conversation",
             style: const TextStyle(fontSize: 13),
           ),
+          trailing: Container(child: Icon(Icons.arrow_forward_ios)),
         ),
       ),
     );

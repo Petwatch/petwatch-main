@@ -91,7 +91,7 @@ class DatabaseService {
         .doc(id);
     await recipientDocumentReference.update({
       "groups":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$userName"])
     });
     //update sender groups doc
     DocumentReference userDocumentReference = FirebaseFirestore.instance

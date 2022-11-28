@@ -62,7 +62,7 @@ class _ChatPageState extends State<ChatPage> {
 
     await FirebaseFirestore.instance
         .collection('groups')
-        .doc('groupId')
+        .doc(widget.groupId)
         .collection('messages')
         .doc(fileName)
         .set({
@@ -78,7 +78,7 @@ class _ChatPageState extends State<ChatPage> {
     var uploadTask = await ref.putFile(imageFile!).catchError((error) async {
       await FirebaseFirestore.instance
           .collection('groups')
-          .doc('groupId')
+          .doc(widget.groupId)
           .collection('messages')
           .doc(fileName)
           .delete();
@@ -91,12 +91,12 @@ class _ChatPageState extends State<ChatPage> {
 
       await FirebaseFirestore.instance
           .collection('groups')
-          .doc('groupId')
+          .doc(widget.groupId)
           .collection('messages')
           .doc(fileName)
           .update({"message": imageUrl});
 
-      print(imageUrl);
+      print(imageFile);
     }
   }
 
@@ -112,7 +112,7 @@ class _ChatPageState extends State<ChatPage> {
       messageController.clear();
       await FirebaseFirestore.instance
           .collection('groups')
-          .doc('groupId')
+          .doc(widget.groupId)
           .collection('messages')
           .add(messages);
     } else {
@@ -239,7 +239,7 @@ class _ChatPageState extends State<ChatPage> {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
         "sender": widget.userName,
-        "time": DateTime.now().millisecondsSinceEpoch,
+        "time": FieldValue.serverTimestamp(),
         "type": "text",
       };
 
