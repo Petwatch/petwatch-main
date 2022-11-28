@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:petwatch/components/CustomRatingDialog.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/post-creation/createPost.dart';
 import 'package:petwatch/screens/post_page.dart';
@@ -19,7 +20,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget singlePost(BuildContext context, Map<String, dynamic> post) {
+  Widget singlePost(
+      BuildContext context, Map<String, dynamic> post, UserModel user) {
     final infoPostDateFormat = new DateFormat('MMMd');
     final requestPostDateFormat = new DateFormat("MMMd-MMMd");
     final timestamp = post['postedTime'] as Timestamp;
@@ -34,6 +36,50 @@ class _HomePageState extends State<HomePage> {
     var pictureUrl = post['postedBy'].containsKey("pictureUrl")
         ? post['postedBy']['pictureUrl'] as String
         : "";
+
+    String completedSitterUid = "";
+    if (post.containsKey('requests')) {
+      for (var request in post['requests']) {
+        if (request['status'] == "approved" &&
+            user.uid['uid'] == request['petSitterUid']) {
+          completedSitterUid = request['petSitterUid'];
+        }
+      }
+    }
+
+    void _showRatingAppDialog() {
+      final _ratingDialog = CustomRatingDialog(
+        starColor: Colors.amber,
+        starSize: 30,
+        title: [Center(child: Text('Reviewing ${post['postedBy']['name']}'))],
+        submitButtonText: 'Submit',
+        submitButtonTextStyle: TextStyle(color: Colors.white),
+        onCancelled: () => print('cancelled'),
+        onSubmitted: (response) async {
+          await FirebaseFirestore.instance
+              .doc(
+                  'building-codes/${user.buildingCode['buildingCode']}/users/${post['postedBy']['UID']}')
+              .update({
+            "reviews": FieldValue.arrayUnion([
+              {
+                "reviewerName": user.name['name'],
+                "reviewerPictureUrl": user.pictureUrl['pictureUrl'],
+                "comment": response.comment,
+                "stars": response.rating
+              }
+            ])
+          });
+        },
+        commentHint: "Tell us about your sitter",
+      );
+
+      showDialog(
+        useSafeArea: false,
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => _ratingDialog,
+      );
+    }
 
     return GestureDetector(
         onTap: (() {
@@ -117,16 +163,22 @@ class _HomePageState extends State<HomePage> {
                                   backgroundColor: (() {
                                     switch (post["type"]) {
                                       case "Info":
-                                        return Colors.yellow;
+                                        return Colors.blue;
                                       case "Request":
                                         return Colors.green;
-                                      case "Available":
-                                        return Colors.blue;
                                       default:
                                         return Colors.yellow;
                                     }
                                   })(),
-                                  label: Text(post['type'])),
+                                  label: post['status'] == 'complete'
+                                      ? Text(
+                                          "Complete",
+                                          style: TextStyle(color: Colors.white),
+                                        )
+                                      : Text(
+                                          post['type'],
+                                          style: TextStyle(color: Colors.white),
+                                        )),
                               const Spacer(),
                               Text("${post['comments'].length} comments"),
                               const Icon(Icons.comment, color: Colors.black),
@@ -138,7 +190,27 @@ class _HomePageState extends State<HomePage> {
                               //Make text color white
                             ],
                           ),
-                        )
+                        ),
+                        if (post['status'] == 'complete' &&
+                            completedSitterUid == user.uid['uid'])
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
+                            child: (ElevatedButton(
+                              onPressed: () {
+                                _showRatingAppDialog();
+                              },
+                              child: Text(
+                                "Leave a review",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ButtonStyle(
+                                  fixedSize:
+                                      MaterialStateProperty.all(Size(350, 30)),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Theme.of(context).colorScheme.primary)),
+                            )),
+                          )
                       ],
                     ),
                   )),
@@ -164,7 +236,7 @@ class _HomePageState extends State<HomePage> {
     return Consumer<UserModel>(builder: (context, value, child) {
       List<Widget> postList = [];
       for (var post in value.posts) {
-        postList.add(singlePost(context, post));
+        postList.add(singlePost(context, post, value));
       }
       // debugPrint("${postList.length}");
 

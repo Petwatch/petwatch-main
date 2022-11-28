@@ -248,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage>
                                       child: Text(
                                         user.subtitle != ""
                                             ? user.subtitle
-                                            : "Subtitle Placeholder",
+                                            : "User",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
@@ -264,9 +264,7 @@ class _ProfilePageState extends State<ProfilePage>
                                           right: 15.0,
                                           bottom: 15),
                                       child: Text(
-                                        user.bio != ""
-                                            ? user.bio
-                                            : "More information placeholder",
+                                        user.bio != "" ? user.bio : "Bio...",
                                         textAlign: TextAlign.justify,
                                       ),
                                     ),
@@ -301,8 +299,7 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               Center(
                                 child: [
-                                  SampleWidget(
-                                    label: "Reviews Placeholder",
+                                  RatingWidget(
                                     user: user,
                                     context: context,
                                   ),
@@ -318,104 +315,81 @@ class _ProfilePageState extends State<ProfilePage>
   }
 }
 
-class SampleWidget extends StatelessWidget {
-  const SampleWidget({
+class RatingWidget extends StatelessWidget {
+  const RatingWidget({
     Key? key,
-    required this.label,
     required this.user,
     required this.context,
   }) : super(key: key);
 
-  final String label;
   final UserModel user;
   final BuildContext context;
 
-  void _showRatingAppDialog() {
-    final _ratingDialog = CustomRatingDialog(
-      starColor: Colors.amber,
-      starSize: 30,
-      title: [Center(child: Text('Reviewing ${user.name['name']}'))],
-      submitButtonText: 'Submit',
-      submitButtonTextStyle: TextStyle(color: Colors.white),
-      onCancelled: () => print('cancelled'),
-      onSubmitted: (response) {
-        print('rating: ${response.rating}, '
-            'comment: ${response.comment}');
+  Widget singleReview(context, review) {
+    String pictureUrl = review['reviewerPictureUrl'].toString();
+    String name = review['reviewerName'].toString();
+    String stars = review['stars'].toString();
+    String message = review['comment'].toString();
 
-        if (response.rating < 3.0) {
-          print('response.rating: ${response.rating}');
-        } else {
-          Container();
-        }
-      },
-      commentHint: "Tell us about your sitter",
+    return FractionallySizedBox(
+      widthFactor: .95,
+      child: CustomRatingDialog(
+        starColor: Colors.amber,
+        title: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              backgroundImage: pictureUrl != ""
+                  ? NetworkImage(pictureUrl)
+                  : AssetImage('assets/images/petwatch_logo.png')
+                      as ImageProvider,
+              child: ClipRRect(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          Text(name)
+        ],
+        starSize: 20,
+        submitButtonText: 'Submit',
+        onCancelled: () => print('cancelled'),
+        onSubmitted: (response) {
+          print('rating: ${response.rating}, '
+              'comment: ${response.comment}');
+        },
+        message: Text(
+          message,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        enableComment: false,
+        showCloseButton: false,
+        showSubmitButton: false,
+        disableEdit: true,
+        initialRating: double.parse(stars),
+        isAlert: false,
+      ),
     );
+  }
 
-    showDialog(
-      useSafeArea: false,
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => _ratingDialog,
-    );
+  List<Widget> getUserReviews(context) {
+    List<Widget> reviewList = [];
+    if (user.reviews != null) {
+      for (var review in user.reviews) {
+        reviewList.insert(0, singleReview(context, review));
+      }
+    }
+    return reviewList;
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> reviewList = getUserReviews(context);
     return Column(
       children: [
-        ElevatedButton(
-            onPressed: (() {
-              _showRatingAppDialog();
-            }),
-            child: Text("Review this sitter",
-                style: TextStyle(color: Colors.white))),
-        FractionallySizedBox(
-          widthFactor: .95,
-          child: CustomRatingDialog(
-            starColor: Colors.amber,
-            title: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.white,
-                  backgroundImage: user.pictureUrl['pictureUrl'] != ""
-                      ? NetworkImage(user.pictureUrl['pictureUrl'])
-                      : AssetImage('assets/images/petwatch_logo.png')
-                          as ImageProvider,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                ),
-              ),
-              Text(user.name['name'])
-            ],
-            starSize: 20,
-            submitButtonText: 'Submit',
-            onCancelled: () => print('cancelled'),
-            onSubmitted: (response) {
-              print('rating: ${response.rating}, '
-                  'comment: ${response.comment}');
-
-              if (response.rating < 3.0) {
-                print('response.rating: ${response.rating}');
-              } else {
-                Container();
-              }
-            },
-            message: Text(
-              'Would hire again!',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            enableComment: false,
-            showCloseButton: false,
-            showSubmitButton: false,
-            disableEdit: true,
-            initialRating: 5,
-            isAlert: false,
-          ),
-        ),
+        ...reviewList,
       ],
     );
   }

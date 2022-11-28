@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:petwatch/components/CustomRatingDialog.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:petwatch/screens/pet-profile/view_pet_profile_page.dart';
@@ -48,8 +49,8 @@ class _ViewProfilePageState extends State<ViewProfilePage>
         }
         userData.addAll(element.data());
       }
-      debugPrint(widget.UserReference.toString());
-      debugPrint(userData.toString());
+      // debugPrint(widget.UserReference.toString());
+      // debugPrint(userData.toString());
     });
     await FirebaseFirestore.instance
         .collectionGroup('pets')
@@ -65,7 +66,7 @@ class _ViewProfilePageState extends State<ViewProfilePage>
         petData.add(element.data());
       }
     });
-    debugPrint(petData.toString());
+    // debugPrint(petData.toString());
   }
 
   @override
@@ -92,7 +93,7 @@ class _ViewProfilePageState extends State<ViewProfilePage>
 
   Widget build(BuildContext context) {
     return Consumer<UserModel>(builder: ((context, user, child) {
-      debugPrint("${user}");
+      // debugPrint("${user}");
       return GestureDetector(
           onTap: () {},
           child: Scaffold(
@@ -194,7 +195,7 @@ class _ViewProfilePageState extends State<ViewProfilePage>
                                       child: Text(
                                         userData['subtitle'].toString() != ""
                                             ? userData['subtitle'].toString()
-                                            : "Subtitle Placeholder",
+                                            : "User",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
@@ -212,7 +213,7 @@ class _ViewProfilePageState extends State<ViewProfilePage>
                                       child: Text(
                                         userData['bio'].toString() != ""
                                             ? userData['bio'].toString()
-                                            : "More information placeholder",
+                                            : "Bio...",
                                         textAlign: TextAlign.justify,
                                       ),
                                     ),
@@ -247,10 +248,10 @@ class _ViewProfilePageState extends State<ViewProfilePage>
                               ),
                               Center(
                                 child: [
-                                  SampleWidget(
-                                      label: "Reviews Placeholder",
-                                      user: user,
-                                      userData: userData),
+                                  RatingWidget(
+                                    user: userData,
+                                    context: context,
+                                  ),
                                   PostWidget(user: user, userData: userData),
                                 ][_tabIndex],
                               ),
@@ -263,29 +264,84 @@ class _ViewProfilePageState extends State<ViewProfilePage>
   }
 }
 
-class SampleWidget extends StatelessWidget {
-  const SampleWidget({
+class RatingWidget extends StatelessWidget {
+  const RatingWidget({
     Key? key,
-    required this.label,
     required this.user,
-    required this.userData,
+    required this.context,
   }) : super(key: key);
 
-  final String label;
-  final UserModel user;
-  final Map<String, dynamic> userData;
+  final Map<String, dynamic> user;
+  final BuildContext context;
+
+  Widget singleReview(context, review) {
+    String pictureUrl = review['reviewerPictureUrl'].toString();
+    String name = review['reviewerName'].toString();
+    String stars = review['stars'].toString();
+    String message = review['comment'].toString();
+
+    return FractionallySizedBox(
+      widthFactor: .95,
+      child: CustomRatingDialog(
+        starColor: Colors.amber,
+        title: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              backgroundImage: pictureUrl != ""
+                  ? NetworkImage(pictureUrl)
+                  : AssetImage('assets/images/petwatch_logo.png')
+                      as ImageProvider,
+              child: ClipRRect(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          Text(name)
+        ],
+        starSize: 20,
+        submitButtonText: 'Submit',
+        onCancelled: () => print('cancelled'),
+        onSubmitted: (response) {
+          print('rating: ${response.rating}, '
+              'comment: ${response.comment}');
+        },
+        message: Text(
+          message,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        enableComment: false,
+        showCloseButton: false,
+        showSubmitButton: false,
+        disableEdit: true,
+        initialRating: double.parse(stars),
+        isAlert: false,
+      ),
+    );
+  }
+
+  List<Widget> getUserReviews(context) {
+    List<Widget> reviewList = [];
+    if (user['reviews'] != null) {
+      for (var review in user['reviews']) {
+        reviewList.insert(0, singleReview(context, review));
+      }
+    }
+
+    return reviewList;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-          ),
-        ));
+    List<Widget> reviewList = getUserReviews(context);
+    return Column(
+      children: [
+        ...reviewList,
+      ],
+    );
   }
 }
 

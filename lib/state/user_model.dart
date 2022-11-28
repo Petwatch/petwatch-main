@@ -28,6 +28,7 @@ class UserModel extends ChangeNotifier {
   bool hasPicture = false;
   bool isSitter = false;
   List<dynamic> transactions = [];
+  List<dynamic> reviews = [];
 
   List<Map<String, dynamic>> posts = [];
 
@@ -64,6 +65,9 @@ class UserModel extends ChangeNotifier {
         }
         if (element.data().containsKey("transactions")) {
           transactions = (element["transactions"]);
+        }
+        if (element.data().containsKey("reviews")) {
+          reviews = element['reviews'];
         }
       }
     }, onError: (e) => {"Name": "Error Getting Name"});

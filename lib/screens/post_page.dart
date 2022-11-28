@@ -277,20 +277,27 @@ class PostPageState extends State<PostPage> {
                                                   backgroundColor: (() {
                                                     switch (post["type"]) {
                                                       case "Info":
-                                                        return Colors.yellow;
+                                                        return Colors.blue;
                                                       case "Request":
                                                         return Colors.green;
-                                                      case "Available":
-                                                        return Colors.blue;
                                                       default:
                                                         return Colors.yellow;
                                                     }
                                                   })(),
-                                                  label: Text(
-                                                    post['type'],
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  )),
+                                                  label: post['status'] !=
+                                                          'complete'
+                                                      ? Text(
+                                                          post['type'],
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )
+                                                      : Text(
+                                                          'Complete',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )),
                                             ],
                                           ),
                                         )
@@ -299,7 +306,8 @@ class PostPageState extends State<PostPage> {
                                   )),
                               if (post["type"] == "Request" &&
                                   post["postedBy"]["UID"] !=
-                                      FirebaseAuth.instance.currentUser!.uid)
+                                      FirebaseAuth.instance.currentUser!.uid &&
+                                  post['status'] != 'complete')
                                 (Tooltip(
                                   key: tooltipkey,
                                   decoration: BoxDecoration(
@@ -439,7 +447,10 @@ class PostPageState extends State<PostPage> {
                                             builder: (context) =>
                                                 const Routes(1)));
                                   },
-                                  child: Text("See In Transactions"),
+                                  child: Text(
+                                    "See In Transactions",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   style: ButtonStyle(
                                       fixedSize: MaterialStateProperty.all(
                                           Size(350, 30)),
