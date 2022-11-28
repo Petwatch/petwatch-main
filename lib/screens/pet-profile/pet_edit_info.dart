@@ -521,142 +521,162 @@ class _PetEditInfoState extends State<PetEditInfo>
                               ),
                               Padding(
                                   padding: EdgeInsets.only(top: 50),
-                                  child: value.petInfo[0]['pictureUrl'] != null
-                                      ? _uploadedPicture == false
-                                          ? Column(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 75,
-                                                  backgroundImage: NetworkImage(
-                                                      value.petInfo[0]
-                                                          ['pictureUrl']),
-                                                ),
-                                                ElevatedButton(
-                                                    onPressed: () async {
-                                                      FilePickerResult? result =
-                                                          await FilePicker
-                                                              .platform
-                                                              .pickFiles(
-                                                                  type: FileType
-                                                                      .image);
-                                                      debugPrint(
-                                                          result.toString());
-                                                      if (result != null) {
-                                                        file = File(result
-                                                            .files.single.path
-                                                            .toString());
-                                                        setState(() {
-                                                          _uploadedPicture =
-                                                              true;
-                                                        });
-                                                      } else {
-                                                        // User canceled the picker
-                                                      }
-                                                    },
-                                                    child: const Text(
-                                                      "Change Pet Picture",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ))
-                                              ],
-                                            )
-                                          : Column(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 75,
-                                                  backgroundImage:
-                                                      FileImage(file),
-                                                ),
-                                                ElevatedButton(
-                                                    onPressed: () async {
-                                                      FilePickerResult? result =
-                                                          await FilePicker
-                                                              .platform
-                                                              .pickFiles(
-                                                                  type: FileType
-                                                                      .image);
-                                                      debugPrint(
-                                                          result.toString());
-                                                      if (result != null) {
-                                                        file = File(result
-                                                            .files.single.path
-                                                            .toString());
-                                                        setState(() {
-                                                          _uploadedPicture =
-                                                              true;
-                                                        });
-                                                      } else {
-                                                        // User canceled the picker
-                                                      }
-                                                    },
-                                                    child: const Text(
-                                                      "Change Pet Picture",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ))
-                                              ],
-                                            )
-                                      : _uploadedPicture == false
-                                          ? ElevatedButton(
-                                              onPressed: () async {
-                                                FilePickerResult? result =
-                                                    await FilePicker.platform
-                                                        .pickFiles(
-                                                            type:
-                                                                FileType.image);
-                                                debugPrint(result.toString());
-                                                if (result != null) {
-                                                  file = File(result
-                                                      .files.single.path
-                                                      .toString());
-                                                  setState(() {
-                                                    _uploadedPicture = true;
-                                                  });
-                                                } else {
-                                                  // User canceled the picker
-                                                }
-                                              },
-                                              child: const Text(
-                                                "Upload Pet Picture",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ))
-                                          : Column(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 75,
-                                                  backgroundImage:
-                                                      FileImage(file),
-                                                ),
-                                                ElevatedButton(
-                                                    onPressed: () async {
-                                                      FilePickerResult? result =
-                                                          await FilePicker
-                                                              .platform
-                                                              .pickFiles(
-                                                                  type: FileType
-                                                                      .image);
-                                                      debugPrint(
-                                                          result.toString());
-                                                      if (result != null) {
-                                                        file = File(result
-                                                            .files.single.path
-                                                            .toString());
-                                                        setState(() {
-                                                          _uploadedPicture =
-                                                              true;
-                                                        });
-                                                      } else {
-                                                        // User canceled the picker
-                                                      }
-                                                    },
-                                                    child: const Text(
-                                                      "Change Pet Picture",
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ))
-                                              ],
-                                            )),
+                                  child: value.petInfo.isNotEmpty
+                                      ? value.petInfo[widget.index]
+                                                  ['pictureUrl'] !=
+                                              null
+                                          ? _uploadedPicture == false
+                                              ? Column(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 75,
+                                                      backgroundImage:
+                                                          NetworkImage(value
+                                                                      .petInfo[
+                                                                  widget.index]
+                                                              ['pictureUrl']),
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () async {
+                                                          FilePickerResult?
+                                                              result =
+                                                              await FilePicker
+                                                                  .platform
+                                                                  .pickFiles(
+                                                                      type: FileType
+                                                                          .image);
+                                                          debugPrint(result
+                                                              .toString());
+                                                          if (result != null) {
+                                                            file = File(result
+                                                                .files
+                                                                .single
+                                                                .path
+                                                                .toString());
+                                                            setState(() {
+                                                              _uploadedPicture =
+                                                                  true;
+                                                            });
+                                                          } else {
+                                                            // User canceled the picker
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                          "Change Pet Picture",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ))
+                                                  ],
+                                                )
+                                              : Column(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 75,
+                                                      backgroundImage:
+                                                          FileImage(file),
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () async {
+                                                          FilePickerResult?
+                                                              result =
+                                                              await FilePicker
+                                                                  .platform
+                                                                  .pickFiles(
+                                                                      type: FileType
+                                                                          .image);
+                                                          debugPrint(result
+                                                              .toString());
+                                                          if (result != null) {
+                                                            file = File(result
+                                                                .files
+                                                                .single
+                                                                .path
+                                                                .toString());
+                                                            setState(() {
+                                                              _uploadedPicture =
+                                                                  true;
+                                                            });
+                                                          } else {
+                                                            // User canceled the picker
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                          "Change Pet Picture",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ))
+                                                  ],
+                                                )
+                                          : _uploadedPicture == false
+                                              ? ElevatedButton(
+                                                  onPressed: () async {
+                                                    FilePickerResult? result =
+                                                        await FilePicker
+                                                            .platform
+                                                            .pickFiles(
+                                                                type: FileType
+                                                                    .image);
+                                                    debugPrint(
+                                                        result.toString());
+                                                    if (result != null) {
+                                                      file = File(result
+                                                          .files.single.path
+                                                          .toString());
+                                                      setState(() {
+                                                        _uploadedPicture = true;
+                                                      });
+                                                    } else {
+                                                      // User canceled the picker
+                                                    }
+                                                  },
+                                                  child: const Text(
+                                                    "Upload Pet Picture",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ))
+                                              : Column(
+                                                  children: [
+                                                    CircleAvatar(
+                                                      radius: 75,
+                                                      backgroundImage:
+                                                          FileImage(file),
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () async {
+                                                          FilePickerResult?
+                                                              result =
+                                                              await FilePicker
+                                                                  .platform
+                                                                  .pickFiles(
+                                                                      type: FileType
+                                                                          .image);
+                                                          debugPrint(result
+                                                              .toString());
+                                                          if (result != null) {
+                                                            file = File(result
+                                                                .files
+                                                                .single
+                                                                .path
+                                                                .toString());
+                                                            setState(() {
+                                                              _uploadedPicture =
+                                                                  true;
+                                                            });
+                                                          } else {
+                                                            // User canceled the picker
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                          "Change Pet Picture",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ))
+                                                  ],
+                                                )
+                                      : null),
                               const SizedBox(height: 32.0),
                               _isProcessing
                                   ? const CircularProgressIndicator()
@@ -687,16 +707,19 @@ class _PetEditInfoState extends State<PetEditInfo>
                                                 var data =
                                                     snapshot.docs[0].data()
                                                         as Map<String, dynamic>;
-                                                var docRef = FirebaseFirestore
-                                                    .instance
-                                                    .collection(
-                                                        "building-codes")
-                                                    .doc(data['buildingCode'])
-                                                    .collection('users')
-                                                    .doc(data['uid'])
-                                                    .collection("pets")
-                                                    .doc(value.petInfo[
-                                                        widget.index]['petId']);
+                                                var docRef =
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection(
+                                                            "building-codes")
+                                                        .doc(data[
+                                                            'buildingCode'])
+                                                        .collection('users')
+                                                        .doc(data['uid'])
+                                                        .collection("pets")
+                                                        .doc(value.petInfo[
+                                                                widget.index]
+                                                            ['petId']);
                                                 docRef.update({
                                                   "name":
                                                       _nameTextController.text,
@@ -740,7 +763,8 @@ class _PetEditInfoState extends State<PetEditInfo>
                                                   debugPrint(error.toString());
                                                 }
                                                 if (_uploadedPicture == true) {
-                                                  FirebaseFirestore.instance
+                                                  await FirebaseFirestore
+                                                      .instance
                                                       .collection(
                                                           "building-codes")
                                                       .doc(data['buildingCode'])

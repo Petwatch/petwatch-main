@@ -7,6 +7,7 @@ import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:petwatch/screens/post_page.dart';
 import 'package:petwatch/screens/profile/edit_profile_page.dart';
+import 'package:petwatch/screens/settings-page/settings_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
 import 'package:rating_dialog/rating_dialog.dart';
@@ -133,9 +134,13 @@ class _ProfilePageState extends State<ProfilePage>
                                                     // });
                                                     // await _launchStripeConnect(
                                                     //     user);
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                SettingsPage()));
                                                   },
-                                                  child: const Text(
-                                                      "Payment Settings",
+                                                  child: const Text("Settings",
                                                       textAlign:
                                                           TextAlign.center)),
                                             ),

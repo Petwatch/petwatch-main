@@ -38,11 +38,7 @@ class StripeBackendService {
 }
 
 class CreatePaymentSheet {
-  // CreatePaymentSheet(String this.expressId, int this.amount);
-
   static String apiBase = "http://petwatch-stripe-api.onrender.com/api/stripe";
-  // static String createPaymentIntentUrl =
-  //     "${CreatePaymentSheet.apiBase}/payment-intent?account_id=$expressId&";
   static Future<Map<String, dynamic>> getPaymentIntent(
       String expressId, int amount, String path) async {
     bool hasAccount = false;

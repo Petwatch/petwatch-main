@@ -121,10 +121,8 @@ class _CreatePostState extends State<CreatePost> {
   }
 
   Widget requestPostForm(BuildContext context, UserModel value) {
-    // static List pets = value.petInfo;
     final _pets =
         value.petInfo.map((pet) => MultiSelectItem(pet, pet["name"])).toList();
-    // debugPrint("Pets: ${pets[0]["name"]}");
     return Form(
       key: _formKey,
       child: Padding(
@@ -165,9 +163,15 @@ class _CreatePostState extends State<CreatePost> {
                         DateFormat("MMMd").format(dateRange.start);
                     String lastDate = DateFormat("MMMd").format(dateRange.end);
                     setState(() {
+                      debugPrint(
+                          "start: ${dateRange.start.millisecondsSinceEpoch}");
+                      debugPrint(
+                          "end: ${dateRange.end.millisecondsSinceEpoch}");
+
                       dateController.text = "$firstDate - $lastDate";
                       selectedDates = dateRange;
-                      numberOfDays = dateRange.end.day - dateRange.start.day;
+                      numberOfDays =
+                          dateRange.end.difference(dateRange.start).inDays;
                     });
                   }
                 },

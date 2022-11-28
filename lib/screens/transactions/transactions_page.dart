@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
@@ -23,7 +24,13 @@ class _TransactionsPageState extends State<TransactionsPage> {
     super.initState();
   }
 
-  Future<List<dynamic>> getTransactions(List<dynamic> paths) async {
+  Future<List<dynamic>> getTransactions(String path) async {
+    List<dynamic> paths = [];
+    await FirebaseFirestore.instance.doc(path).get().then((value) {
+      if (value.data()!['transactions'] != null) {
+        paths = value.data()!['transactions'];
+      }
+    });
     List<dynamic> transactions = [];
     for (var path in paths) {
       await FirebaseFirestore.instance.doc(path['path']).get().then((value) {
@@ -48,7 +55,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
       return Scaffold(
         appBar: const TopNavBar(),
         body: FutureBuilder(
-          future: getTransactions(value.transactions),
+          future: getTransactions(
+              "building-codes/${value.buildingCode['buildingCode']}/users/${value.uid['uid']}"),
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
@@ -186,6 +194,12 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
   FractionallySizedBox otherTransaction(
       AsyncSnapshot<List<dynamic>> snapshot, int index) {
+    var transactionStatus = "";
+    for (var request in snapshot.data![index]['requests']) {
+      if (request["petSitterUid"] == FirebaseAuth.instance.currentUser!.uid) {
+        transactionStatus = request['status'];
+      }
+    }
     final requestPostDateFormat = new DateFormat('MMMd');
     return FractionallySizedBox(
       widthFactor: .95,
@@ -245,20 +259,20 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     children: [
                       Chip(
                           backgroundColor: (() {
-                            switch (snapshot.data![index]
-                                ["transactionStatus"]) {
+                            switch (transactionStatus) {
                               case "waiting":
                                 return Colors.yellow;
-                              case "in progress":
-                                return Colors.green;
-                              case "scheduled":
+                              case "in_progress":
                                 return Colors.blue;
+                              case "approved":
+                                return Colors.green;
+                              case "denied":
+                                return Colors.red;
                               default:
                                 return Colors.yellow;
                             }
                           })(),
-                          label:
-                              Text(snapshot.data![index]["transactionStatus"])),
+                          label: Text(transactionStatus)),
                       Spacer(),
                       Card(
                         shape: CircleBorder(),
