@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../state/user_model.dart';
+import 'pet-profile/view_pet_profile_page.dart';
 
 class PostPage extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -27,6 +28,36 @@ class PostPageState extends State<PostPage> {
   PostPageState({required this.post});
 
   // If the request post is not mine, and the person that clicks on it is a registered pet sitter, show the button
+
+  Widget displayPet(Map<String, dynamic> petData) {
+    List<Map<String, dynamic>> petDataList = [petData];
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ViewPetProfilePage(petDataList, true)));
+          },
+          child: Card(
+            shape: CircleBorder(),
+            elevation: 2,
+            child: CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.white,
+              backgroundImage: petData["pictureUrl"] != ""
+                  ? NetworkImage(petData["pictureUrl"])
+                  : AssetImage('assets/images/petwatch_logo.png')
+                      as ImageProvider,
+            ),
+          ),
+        ),
+        Text(petData['name'])
+      ],
+    );
+  }
 
   Widget commentCard(
       BuildContext context, Map<String, dynamic> comment, int index) {
@@ -164,6 +195,14 @@ class PostPageState extends State<PostPage> {
         }
       }
 
+      List<Widget> petList = [];
+
+      if (thePost['type'] != "Info" && thePost['price'] != null) {
+        for (var petData in thePost['petInfo']) {
+          petList.add(displayPet(petData));
+        }
+      }
+
       return GestureDetector(
         onTap: () {
           _focusCommentField.unfocus();
@@ -298,6 +337,8 @@ class PostPageState extends State<PostPage> {
                                                               color:
                                                                   Colors.white),
                                                         )),
+                                              Spacer(),
+                                              ...petList
                                             ],
                                           ),
                                         )
