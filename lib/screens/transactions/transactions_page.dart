@@ -95,7 +95,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 return const Center(child: CircularProgressIndicator());
               default:
                 if (snapshot.hasError) {
-                  return Text("There has been an error: ${snapshot.error}");
+                  return Text("");
                 } else {
                   return ListView.builder(
                     padding: const EdgeInsets.all(10),

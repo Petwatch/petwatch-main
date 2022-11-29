@@ -24,7 +24,7 @@ class CheckoutSessionResponse {
 }
 
 class StripeBackendService {
-  static String apiBase = 'http://petwatch-stripe-api.onrender.com/api/stripe';
+  static String apiBase = 'https://petwatch-stripe-api.netlify.app/api/stripe';
   static String createAccountUrl =
       '${StripeBackendService.apiBase}/account?mobile=true';
   static Map<String, String> headers = {'Content-Type': 'application/json'};
@@ -38,7 +38,7 @@ class StripeBackendService {
 }
 
 class CreatePaymentSheet {
-  static String apiBase = "http://petwatch-stripe-api.onrender.com/api/stripe";
+  static String apiBase = "https://petwatch-stripe-api.netlify.app/api/stripe";
   static Future<Map<String, dynamic>> getPaymentIntent(
       String expressId, int amount, String path) async {
     bool hasAccount = false;
