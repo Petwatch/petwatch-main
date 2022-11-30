@@ -138,7 +138,7 @@ class ViewPendingPageState extends State<ViewPendingPage> {
                         headers: <String, String>{
                           'Content-Type': 'application/json',
                         },
-                        body: scheduleApiBody);
+                        body: jsonEncode(scheduleApiBody));
 
                     debugPrint("${res.statusCode}");
 
