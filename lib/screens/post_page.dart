@@ -31,6 +31,7 @@ class PostPageState extends State<PostPage> {
 
   Widget displayPet(Map<String, dynamic> petData) {
     List<Map<String, dynamic>> petDataList = [petData];
+    debugPrint("$petData");
     return Row(
       children: [
         GestureDetector(

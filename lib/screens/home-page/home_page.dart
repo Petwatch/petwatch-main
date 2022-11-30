@@ -88,39 +88,40 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(builder: (context) => PostPage(post: post)));
         }),
         child: Padding(
-            padding: const EdgeInsets.only(top: 24),
-            child: FractionallySizedBox(
-              widthFactor: .95,
-              child: Card(
-                  elevation: 2,
-                  child: IntrinsicHeight(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Row(children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 8.0, top: 8.0),
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.white,
-                                backgroundImage: pictureUrl != ""
-                                    ? NetworkImage(pictureUrl)
-                                    : AssetImage(
-                                            'assets/images/petwatch_logo.png')
-                                        as ImageProvider,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.zero,
-                                ),
+            padding: const EdgeInsets.only(top: 24, left: 5, right: 5),
+            child: Card(
+                elevation: 2,
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(right: 8.0, top: 8.0),
+                            child: CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Colors.white,
+                              backgroundImage: pictureUrl != ""
+                                  ? NetworkImage(pictureUrl)
+                                  : AssetImage(
+                                          'assets/images/petwatch_logo.png')
+                                      as ImageProvider,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.zero,
                               ),
                             ),
-                            Padding(
+                          ),
+                          Flexible(
+                            child: Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(post['postedBy']['name'] + " | "),
                             ),
-                            if (post['type'] == 'Request')
-                              Padding(
+                          ),
+                          if (post['type'] == 'Request')
+                            Flexible(
+                              child: Padding(
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Text(infoPostDateFormat.format(
                                           DateTime.fromMillisecondsSinceEpoch(
@@ -128,20 +129,24 @@ class _HomePageState extends State<HomePage> {
                                       " - " +
                                       infoPostDateFormat.format(
                                           DateTime.fromMillisecondsSinceEpoch(
-                                              post['dateRange']['endTime']))))
-                            else
-                              Padding(
+                                              post['dateRange']['endTime'])))),
+                            )
+                          else
+                            Flexible(
+                              child: Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: Text(formattedDate),
                               ),
-                            if (post['type'] != "Info" && post['price'] != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: (Text(" | \$${post["price"]}")),
-                              )
-                          ]),
-                        ),
-                        Padding(
+                            ),
+                          if (post['type'] != "Info" && post['price'] != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: (Text(" | \$${post["price"]}")),
+                            )
+                        ]),
+                      ),
+                      Flexible(
+                        child: Padding(
                           padding: const EdgeInsets.all(15),
                           child: Row(
                             children: [
@@ -155,66 +160,66 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Row(
-                            children: [
-                              Chip(
-                                  backgroundColor: (() {
-                                    switch (post["type"]) {
-                                      case "Info":
-                                        return Colors.blue;
-                                      case "Request":
-                                        return Colors.green;
-                                      default:
-                                        return Colors.yellow;
-                                    }
-                                  })(),
-                                  label: post['status'] == 'complete'
-                                      ? Text(
-                                          "Complete",
-                                          style: TextStyle(color: Colors.white),
-                                        )
-                                      : Text(
-                                          post['type'],
-                                          style: TextStyle(color: Colors.white),
-                                        )),
-                              const Spacer(),
-                              Text("${post['comments'].length} comments"),
-                              const Icon(Icons.comment, color: Colors.black),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.black,
-                              )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          children: [
+                            Chip(
+                                backgroundColor: (() {
+                                  switch (post["type"]) {
+                                    case "Info":
+                                      return Colors.blue;
+                                    case "Request":
+                                      return Colors.green;
+                                    default:
+                                      return Colors.yellow;
+                                  }
+                                })(),
+                                label: post['status'] == 'complete'
+                                    ? Text(
+                                        "Complete",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : Text(
+                                        post['type'],
+                                        style: TextStyle(color: Colors.white),
+                                      )),
+                            const Spacer(),
+                            Text("${post['comments'].length} comments"),
+                            const Icon(Icons.comment, color: Colors.black),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.black,
+                            )
 
-                              //Make text color white
-                            ],
-                          ),
+                            //Make text color white
+                          ],
                         ),
-                        if (post['status'] == 'complete' &&
-                            completedSitterUid == user.uid['uid'])
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
-                            child: (ElevatedButton(
-                              onPressed: () {
-                                _showRatingAppDialog();
-                              },
-                              child: Text(
-                                "Leave a review",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ButtonStyle(
-                                  fixedSize:
-                                      MaterialStateProperty.all(Size(350, 30)),
-                                  backgroundColor: MaterialStateProperty.all(
-                                      Theme.of(context).colorScheme.primary)),
-                            )),
-                          )
-                      ],
-                    ),
-                  )),
-            )));
+                      ),
+                      if (post['status'] == 'complete' &&
+                          completedSitterUid == user.uid['uid'])
+                        Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
+                          child: (ElevatedButton(
+                            onPressed: () {
+                              _showRatingAppDialog();
+                            },
+                            child: Text(
+                              "Leave a review",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            style: ButtonStyle(
+                                fixedSize:
+                                    MaterialStateProperty.all(Size(350, 30)),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Theme.of(context).colorScheme.primary)),
+                          )),
+                        )
+                    ],
+                  ),
+                ))));
   }
 
   late FirebaseMessaging messaging;
