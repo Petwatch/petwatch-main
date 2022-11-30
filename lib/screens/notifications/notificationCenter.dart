@@ -1,7 +1,10 @@
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/post_page.dart';
+import 'package:petwatch/screens/routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../state/user_model.dart';
@@ -54,7 +57,7 @@ class NotificationsCenterState extends State<NotificationsCenter> {
                           return CommentNotification(snapshot, index, value);
                         } else if (snapshot.data![index]['type'] ==
                             "sitterRequest") {
-                          return Text("sitterRequest");
+                          return CommentNotification(snapshot, index, value);
                         } else {
                           return Text("Notification type not handled yet.");
                         }
@@ -82,18 +85,32 @@ class CommentNotification extends StatelessWidget {
     return SizedBox(
       height: 100,
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (snapshot.data![index]["read"] == false) {
-            debugPrint("Set this to true, also need to update state here");
+            await FirebaseFirestore.instance
+                .doc(
+                    "/building-codes/${value.buildingCode["buildingCode"]}/users/${value.uid["uid"]}")
+                .get()
+                .then((value) {
+              // Map<String, dynamic>? test = value.data();
+              snapshot.data![index]['read'] = true;
+              value.reference.update({"notifications": snapshot.data});
+            });
           }
 
-          for (var post in value.posts) {
-            if (post['docPath'] == snapshot.data![index]['postPath']) {
-              // debugPrint("We have found the post");
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PostPage(post: post)));
+          // if(value.posts[index])
+          if (snapshot.data![index]['type'] == "sitterRequest") {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Routes(1)));
+          } else {
+            for (var post in value.posts) {
+              if (post['docPath'] == snapshot.data![index]['postPath']) {
+                // debugPrint("We have found the post");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PostPage(post: post)));
+              }
             }
           }
         },
@@ -107,7 +124,7 @@ class CommentNotification extends StatelessWidget {
                     backgroundColor: Colors.white,
                     backgroundImage: snapshot.data![index]
                                 ['commentAuthorPictureUrl'] !=
-                            ""
+                            null
                         ? NetworkImage(
                             snapshot.data![index]['commentAuthorPictureUrl'])
                         : AssetImage('assets/images/petwatch_logo.png')
@@ -116,6 +133,14 @@ class CommentNotification extends StatelessWidget {
                   Center(child: Text("${snapshot.data?[index]['title']}")),
                 ],
               ),
+              Row(
+                children: [
+                  Text("${snapshot.data?[index]['body']}"),
+                  Spacer(),
+                  if (snapshot.data?[index]['read'] == false) Badge(),
+                  // Spacer(flex: 1)
+                ],
+              )
             ],
           ),
         ),

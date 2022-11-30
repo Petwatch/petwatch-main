@@ -82,6 +82,7 @@ class _TopNavBarState extends State<TopNavBar> {
                           child: const Icon(Icons.notifications),
                           badgeContent: Text(snapshot.data.toString(),
                               style: TextStyle(color: Colors.white)),
+                          showBadge: !(snapshot.data == 0),
                           // showBadge: false,
                         );
                       }
