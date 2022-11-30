@@ -102,12 +102,10 @@ class ViewPendingPageState extends State<ViewPendingPage> {
 
                   try {
                     await stripe.Stripe.instance.presentPaymentSheet();
-                    // debugPrint(this.transaction.toString());
                     await FirebaseFirestore.instance
                         .doc(this.transaction['documentPath'])
                         .get()
                         .then((value) {
-                      debugPrint(value.toString());
                       List<dynamic> requestsArr = value.data()?['requests'];
                       for (var request in requestsArr) {
                         if (request['petSitterUid'] !=
@@ -117,10 +115,33 @@ class ViewPendingPageState extends State<ViewPendingPage> {
                           request['status'] = "approved";
                         }
                       }
-                      // debugPrint(requestsArr.toString());
                       value.reference.update(
                           {"status": "scheduled", "requests": requestsArr});
                     });
+
+                    var petNames =
+                        this.transaction['petInfo'].map((pet) => pet['name']);
+                    Map<String, dynamic> scheduleApiBody = {
+                      "postType": "scheduledNotification",
+                      "startTimeStamp": this.transaction['dateRange']
+                          ['startTime'],
+                      "endTimeStamp": this.transaction['dateRange']['endTime'],
+                      "petSitterUID": transaction[index]['petSitterUid'],
+                      "customerUID": this.transaction['postedBy']["UID"],
+                      "petNames": petNames.toList(),
+                      "sitterName": transaction[index]["name"],
+                      "ownerName": this.transaction['postedBy']["name"]
+                    };
+                    var res = await http.post(
+                        Uri.parse(
+                            "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/schedule"),
+                        headers: <String, String>{
+                          'Content-Type': 'application/json',
+                        },
+                        body: scheduleApiBody);
+
+                    debugPrint("${res.statusCode}");
+
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Routes(1)));
 

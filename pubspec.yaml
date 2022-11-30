@@ -53,6 +53,7 @@ dependencies:
   google_sign_in: ^5.4.2
   flutterfire_ui: ^0.4.3+14
   rating_dialog: ^2.0.0
+  badges: ^2.0.3
 
 flutter_icons:
   #  image_path: "assets/images/icon-128x128.png"
