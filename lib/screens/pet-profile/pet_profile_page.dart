@@ -345,21 +345,40 @@ class _PetProfilePageState extends State<PetProfilePage> {
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
             body: SingleChildScrollView(
-              child: Column(children: [
-                ...petList,
-                ElevatedButton(
-                    onPressed: (() {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PetSetupInfo()));
-                    }),
-                    child: Text(
-                      "Add Pet",
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-                    ))
-              ]),
+              child: petList.length > 0
+                  ? Column(children: [
+                      ...petList,
+                      Center(
+                        child: ElevatedButton(
+                            onPressed: (() {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PetSetupInfo()));
+                            }),
+                            child: Text(
+                              "Add Pet",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255)),
+                            )),
+                      )
+                    ])
+                  : Center(
+                      child: Column(children: [
+                        ElevatedButton(
+                            onPressed: (() {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PetSetupInfo()));
+                            }),
+                            child: Text(
+                              "Add Pet",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255)),
+                            ))
+                      ]),
+                    ),
             ),
           ));
     });

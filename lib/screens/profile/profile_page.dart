@@ -264,7 +264,9 @@ class _ProfilePageState extends State<ProfilePage>
                                           right: 15.0,
                                           bottom: 15),
                                       child: Text(
-                                        user.bio != "" ? user.bio : "Bio...",
+                                        user.bio != ""
+                                            ? user.bio
+                                            : "Edit your profile to fill out your bio",
                                         textAlign: TextAlign.justify,
                                       ),
                                     ),

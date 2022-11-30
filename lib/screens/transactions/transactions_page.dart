@@ -6,6 +6,7 @@ import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/view_pet_profile_page.dart';
 import 'package:petwatch/screens/transactions/transactions_view_pending.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 import '../../state/user_model.dart';
 
@@ -68,7 +69,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
             child: CircleAvatar(
               radius: 15,
               backgroundColor: Colors.white,
-              backgroundImage: petData["pictureUrl"] != ""
+              backgroundImage: petData["pictureUrl"] != null
                   ? NetworkImage(petData["pictureUrl"])
                   : AssetImage('assets/images/petwatch_logo.png')
                       as ImageProvider,
@@ -211,16 +212,21 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           backgroundColor: (() {
                             switch (snapshot.data![index]["status"]) {
                               case "waiting":
-                                return Colors.yellow;
+                                return Colors.orange;
                               case "review":
                                 return Colors.green;
                               case "scheduled":
                                 return Colors.blue;
                               default:
-                                return Colors.yellow;
+                                return Colors.orange;
                             }
                           })(),
-                          label: Text(snapshot.data![index]["status"])),
+                          label: Text(
+                            toBeginningOfSentenceCase(
+                                    snapshot.data![index]["status"])
+                                .toString(),
+                            style: TextStyle(color: Colors.white),
+                          )),
                       Spacer(),
                       ...petList
                     ],
@@ -241,6 +247,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
       }
     }
     final requestPostDateFormat = new DateFormat('MMMd');
+
+    List<Widget> petList = [];
+    if (snapshot.data![index]['type'] != "Info" &&
+        snapshot.data![index]['price'] != null) {
+      for (var petData in snapshot.data![index]['petInfo']) {
+        petList.add(displayPet(petData));
+      }
+    }
     return FractionallySizedBox(
       widthFactor: .95,
       child: Card(
@@ -301,7 +315,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           backgroundColor: (() {
                             switch (transactionStatus) {
                               case "waiting":
-                                return Colors.yellow;
+                                return Colors.orange;
                               case "in_progress":
                                 return Colors.blue;
                               case "approved":
@@ -309,10 +323,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
                               case "denied":
                                 return Colors.red;
                               default:
-                                return Colors.yellow;
+                                return Colors.orange;
                             }
                           })(),
-                          label: Text(transactionStatus)),
+                          label: Text(
+                            toBeginningOfSentenceCase(transactionStatus)
+                                .toString(),
+                            style: TextStyle(color: Colors.white),
+                          )),
                       Spacer(),
                       Column(
                         children: [
@@ -338,25 +356,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                             ],
                           ),
                           Row(
-                            children: [
-                              Card(
-                                shape: CircleBorder(),
-                                elevation: 2,
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: Colors.white,
-                                  backgroundImage: snapshot.data![index]
-                                              ["postedBy"]["pictureUrl"] !=
-                                          ""
-                                      ? NetworkImage(snapshot.data![index]
-                                          ["postedBy"]["pictureUrl"])
-                                      : AssetImage(
-                                              'assets/images/petwatch_logo.png')
-                                          as ImageProvider,
-                                ),
-                              ),
-                              Text("Pet")
-                            ],
+                            children: [...petList],
                           )
                         ],
                       )

@@ -347,9 +347,11 @@ class _PetEditInfoState extends State<PetEditInfo>
                       Form(
                           key: _stepTwoFormKey,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 35, top: 0),
+                            padding: const EdgeInsets.only(
+                                left: 35, top: 0, bottom: 24),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 const Text(
                                     "Is your pet friendly with any of the following?"),

@@ -47,7 +47,7 @@ class PostPageState extends State<PostPage> {
             child: CircleAvatar(
               radius: 15,
               backgroundColor: Colors.white,
-              backgroundImage: petData["pictureUrl"] != ""
+              backgroundImage: petData["pictureUrl"] != null
                   ? NetworkImage(petData["pictureUrl"])
                   : AssetImage('assets/images/petwatch_logo.png')
                       as ImageProvider,

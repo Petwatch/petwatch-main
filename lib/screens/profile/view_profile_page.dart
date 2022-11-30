@@ -213,7 +213,7 @@ class _ViewProfilePageState extends State<ViewProfilePage>
                                       child: Text(
                                         userData['bio'].toString() != ""
                                             ? userData['bio'].toString()
-                                            : "Bio...",
+                                            : "No bio",
                                         textAlign: TextAlign.justify,
                                       ),
                                     ),
