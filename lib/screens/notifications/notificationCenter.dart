@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -137,7 +137,7 @@ class CommentNotification extends StatelessWidget {
                 children: [
                   Text("${snapshot.data?[index]['body']}"),
                   Spacer(),
-                  if (snapshot.data?[index]['read'] == false) Badge(),
+                  if (snapshot.data?[index]['read'] == false) badges.Badge(),
                   // Spacer(flex: 1)
                 ],
               )

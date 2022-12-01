@@ -27,7 +27,7 @@ class ViewProfilePage extends StatefulWidget {
 
 class _ViewProfilePageState extends State<ViewProfilePage>
     with SingleTickerProviderStateMixin {
-  bool isLoading = false;
+  bool isLoading = true;
   late TabController _tabController;
   int _tabIndex = 0;
   Map<String, dynamic> userData = {};
@@ -81,6 +81,12 @@ class _ViewProfilePageState extends State<ViewProfilePage>
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
     getUserData();
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        debugPrint("Hello?");
+        isLoading = false;
+      });
+    });
   }
 
   _handleTabSelection() {
@@ -93,7 +99,6 @@ class _ViewProfilePageState extends State<ViewProfilePage>
 
   Widget build(BuildContext context) {
     return Consumer<UserModel>(builder: ((context, user, child) {
-      // debugPrint("${user}");
       return GestureDetector(
           onTap: () {},
           child: Scaffold(
@@ -111,11 +116,11 @@ class _ViewProfilePageState extends State<ViewProfilePage>
                 centerTitle: true,
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
-              body: SingleChildScrollView(
-                child: Center(
-                  child: isLoading
-                      ? CircularProgressIndicator()
-                      : Padding(
+              body: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Center(
+                        child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: Column(
                             children: [
@@ -258,8 +263,8 @@ class _ViewProfilePageState extends State<ViewProfilePage>
                             ],
                           ),
                         ),
-                ),
-              )));
+                      ),
+                    )));
     }));
   }
 }

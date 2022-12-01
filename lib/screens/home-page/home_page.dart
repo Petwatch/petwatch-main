@@ -37,50 +37,6 @@ class _HomePageState extends State<HomePage> {
         ? post['postedBy']['pictureUrl'] as String
         : "";
 
-    String completedSitterUid = "";
-    if (post.containsKey('requests')) {
-      for (var request in post['requests']) {
-        if (request['status'] == "approved" &&
-            user.uid['uid'] == request['petSitterUid']) {
-          completedSitterUid = request['petSitterUid'];
-        }
-      }
-    }
-
-    void _showRatingAppDialog() {
-      final _ratingDialog = CustomRatingDialog(
-        starColor: Colors.amber,
-        starSize: 30,
-        title: [Center(child: Text('Reviewing ${post['postedBy']['name']}'))],
-        submitButtonText: 'Submit',
-        submitButtonTextStyle: TextStyle(color: Colors.white),
-        onCancelled: () => print('cancelled'),
-        onSubmitted: (response) async {
-          await FirebaseFirestore.instance
-              .doc(
-                  'building-codes/${user.buildingCode['buildingCode']}/users/${post['postedBy']['UID']}')
-              .update({
-            "reviews": FieldValue.arrayUnion([
-              {
-                "reviewerName": user.name['name'],
-                "reviewerPictureUrl": user.pictureUrl['pictureUrl'],
-                "comment": response.comment,
-                "stars": response.rating
-              }
-            ])
-          });
-        },
-        commentHint: "Tell us about your sitter",
-      );
-
-      showDialog(
-        useSafeArea: false,
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => _ratingDialog,
-      );
-    }
-
     return GestureDetector(
         onTap: (() {
           // debugPrint("clicked");
@@ -176,15 +132,10 @@ class _HomePageState extends State<HomePage> {
                                       return Colors.yellow;
                                   }
                                 })(),
-                                label: post['status'] == 'complete'
-                                    ? Text(
-                                        "Complete",
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    : Text(
-                                        post['type'],
-                                        style: TextStyle(color: Colors.white),
-                                      )),
+                                label: Text(
+                                  post['type'],
+                                  style: TextStyle(color: Colors.white),
+                                )),
                             const Spacer(),
                             Text("${post['comments'].length} comments"),
                             const Icon(Icons.comment, color: Colors.black),
@@ -197,26 +148,6 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      if (post['status'] == 'complete' &&
-                          completedSitterUid == user.uid['uid'])
-                        Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(15.0, 0, 15.0, 15.0),
-                          child: (ElevatedButton(
-                            onPressed: () {
-                              _showRatingAppDialog();
-                            },
-                            child: Text(
-                              "Leave a review",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ButtonStyle(
-                                fixedSize:
-                                    MaterialStateProperty.all(Size(350, 30)),
-                                backgroundColor: MaterialStateProperty.all(
-                                    Theme.of(context).colorScheme.primary)),
-                          )),
-                        )
                     ],
                   ),
                 ))));
@@ -241,7 +172,8 @@ class _HomePageState extends State<HomePage> {
     return Consumer<UserModel>(builder: (context, value, child) {
       List<Widget> postList = [];
       for (var post in value.posts) {
-        postList.add(singlePost(context, post, value));
+        if (post['type'] != 'complete' && post['status'] != "scheduled")
+          postList.add(singlePost(context, post, value));
       }
       // debugPrint("${postList.length}");
 

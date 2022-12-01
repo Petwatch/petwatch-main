@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,18 @@ class _ProfilePageState extends State<ProfilePage>
     });
   }
 
+  _launchStripeConnectDashboard(stripeId) async {
+    var res = await GetConnectedDashboard.getDashboard(stripeId);
+    debugPrint("$res");
+    final Uri _url = Uri.parse(res["url"]);
+    if (!await launchUrl(_url, mode: LaunchMode.platformDefault)) {
+      throw 'Could not launch $_url';
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -78,11 +91,11 @@ class _ProfilePageState extends State<ProfilePage>
           onTap: () {},
           child: Scaffold(
               appBar: TopNavBar(),
-              body: SingleChildScrollView(
-                child: Center(
-                  child: isLoading
-                      ? CircularProgressIndicator()
-                      : Padding(
+              body: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Center(
+                        child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: Column(
                             children: [
@@ -163,17 +176,37 @@ class _ProfilePageState extends State<ProfilePage>
                                                         textAlign:
                                                             TextAlign.center)),
                                               ),
-                                            )),
+                                            ))
+                                          else
+                                            (PopupMenuItem(
+                                                padding: EdgeInsets.zero,
+                                                child: Center(
+                                                  child: TextButton(
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        setState(() {
+                                                          isLoading = true;
+                                                        });
+                                                        // await _launchStripeConnect(
+                                                        //     user);
+                                                        await _launchStripeConnectDashboard(
+                                                            user.stripeExpressId);
+                                                      },
+                                                      child: const Text(
+                                                          "View Seller Dashboard",
+                                                          textAlign: TextAlign
+                                                              .center)),
+                                                ))),
                                           PopupMenuItem(
                                             padding: EdgeInsets.zero,
                                             child: Center(
-                                              child: GestureDetector(
-                                                onTap: () {
+                                              child: TextButton(
+                                                onPressed: () async {
                                                   Navigator.pop(context);
+                                                  await FirebaseAuth.instance
+                                                      .signOut();
                                                 },
-                                                child: SignOutButton(
-                                                  variant: ButtonVariant.text,
-                                                ),
+                                                child: Text("Sign Out"),
                                               ),
                                             ),
                                           ),
@@ -311,8 +344,8 @@ class _ProfilePageState extends State<ProfilePage>
                             ],
                           ),
                         ),
-                ),
-              )));
+                      ),
+                    )));
     }));
   }
 }

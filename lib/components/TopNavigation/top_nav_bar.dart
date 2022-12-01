@@ -1,4 +1,4 @@
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:petwatch/screens/message_screen.dart';
@@ -65,20 +65,20 @@ class _TopNavBarState extends State<TopNavBar> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                     case ConnectionState.waiting:
-                      return Badge(
+                      return badges.Badge(
                         child: const Icon(Icons.notifications),
                         // badgeContent: Text(""),
                         showBadge: false,
                       );
                     default:
                       if (snapshot.hasError) {
-                        return Badge(
+                        return badges.Badge(
                           child: const Icon(Icons.notifications),
                           // badgeContent: Text("3"),
                           showBadge: false,
                         );
                       } else {
-                        return Badge(
+                        return badges.Badge(
                           child: const Icon(Icons.notifications),
                           badgeContent: Text(snapshot.data.toString(),
                               style: TextStyle(color: Colors.white)),

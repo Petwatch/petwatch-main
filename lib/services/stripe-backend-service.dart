@@ -37,13 +37,26 @@ class StripeBackendService {
   }
 }
 
+class GetConnectedDashboard {
+  static String apiBase = 'https://petwatch-stripe-api.netlify.app/api/stripe';
+  static Future<Map<String, dynamic>> getDashboard(
+      String stripeExpressId) async {
+    String url =
+        "${GetConnectedDashboard.apiBase}/connect-dashboard?connectedStripeId=$stripeExpressId";
+    var response = await http.get(Uri.parse(url));
+    debugPrint(response.body.toString());
+    Map<String, dynamic> body = jsonDecode(response.body);
+    return body;
+  }
+}
+
 class CreatePaymentSheet {
   static String apiBase = "https://petwatch-stripe-api.netlify.app/api/stripe";
   static Future<Map<String, dynamic>> getPaymentIntent(
-      String expressId, int amount, String path) async {
+      String expressId, int amount, String path, String email) async {
     bool hasAccount = false;
     String url =
-        '${CreatePaymentSheet.apiBase}/payment-intent?account_id=$expressId&amount=$amount';
+        '${CreatePaymentSheet.apiBase}/payment-intent?account_id=$expressId&amount=$amount&email=$email';
     await FirebaseFirestore.instance.doc(path).get().then((value) {
       if (value.data()!['stripeCustomerId'] != null) {
         url += "&customer=${value.data()!['stripeCustomerId']}";

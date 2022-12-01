@@ -84,11 +84,12 @@ class ViewPendingPageState extends State<ViewPendingPage> {
             Spacer(),
             IconButton(
                 onPressed: (() async {
+                  var email = FirebaseAuth.instance.currentUser!.email ?? "";
                   var data = await CreatePaymentSheet.getPaymentIntent(
-                    transaction[index]["stripeExpressId"],
-                    amount,
-                    "building-codes/${user.buildingCode['buildingCode']}/users/${user.uid['uid']}",
-                  );
+                      transaction[index]["stripeExpressId"],
+                      amount,
+                      "building-codes/${user.buildingCode['buildingCode']}/users/${user.uid['uid']}",
+                      email);
                   await stripe.Stripe.instance.initPaymentSheet(
                       paymentSheetParameters:
                           stripe.SetupPaymentSheetParameters(
