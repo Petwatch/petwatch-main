@@ -11,10 +11,11 @@ import 'package:petwatch/components/components.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:petwatch/utils/db_services.dart';
 import 'package:petwatch/components/bottom_nav_bar.dart';
-import 'package:petwatch/components/components.dart';
+import 'package:petwatch/components/user_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -141,188 +142,30 @@ class _SearchPageState extends State<SearchPage> {
 
   groupList() {
     return hasUserSearched
-        ? ListView.builder(
+        ? ListView.separated(
             shrinkWrap: true,
             itemCount: searchSnapshot!.docs.length,
+            separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {
-              return userTile(
+              return UserTile(
                 searchSnapshot!.docs[index]['name'].toString(),
-                searchSnapshot!.docs[index]['uid'],
-                searchSnapshot!.docs[index]['name'],
-                searchSnapshot!.docs[index]['name'],
+                recipientId: searchSnapshot!.docs[index]['uid'],
+                recipientName: searchSnapshot!.docs[index]['name'],
+                userName: userName,
               );
-
-              // return groupTile(
-              //   userName,
-              //   searchSnapshot!.docs[index]['groupId'],
-              //   searchSnapshot!.docs[index]['groupName'],
-              //   searchSnapshot!.docs[index]['admin'],
-              // );
             },
           )
-        : Container(
-            color: Colors.black,
-            child: Text('ayooo hasUserSearched is false'),
-          );
+        : Container();
   }
 
-  joinedOrNot(
-      String userName, String groupId, String groupname, String admin) async {
+  joinedOrNot(String userName, String recipientId, String groupname,
+      String admin) async {
     await DatabaseService(uid: user!.uid)
-        .isUserJoined(groupname, groupId, userName)
+        .isUserJoined(groupname, recipientId, userName)
         .then((value) {
       setState(() {
         isJoined = value;
       });
     });
   }
-
-  ///USER TILE
-  Widget userTile(
-      String userName, String groupId, String groupName, String admin) {
-    // function to check whether user already exists in group
-    joinedOrNot(userName, admin, groupName, groupName);
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      leading: CircleAvatar(
-        radius: 30,
-        backgroundColor: Theme.of(context).primaryColor,
-        child: Text(
-          userName.toUpperCase(),
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      title:
-          Text(userName, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text("Admin: ${getName(admin)}"),
-      trailing: InkWell(
-        onTap: () async {
-          // await DatabaseService(uid: user!.uid)
-          //     .toggleGroupJoin(groupId, userName, groupName);
-          if (isJoined) {
-            setState(() {
-              isJoined = !isJoined;
-            });
-            showSnackbar(
-                context, Colors.green, "Successfully joined the group");
-            Future.delayed(const Duration(seconds: 2), () {
-              nextScreen(
-                  context,
-                  ChatPage(
-                      groupId: groupId,
-                      groupName: groupName,
-                      userName: userName));
-            });
-          } else {
-            setState(() {
-              // _isLoading = true;
-            });
-            DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-                .createGroup(userName, groupId, groupName)
-                .whenComplete(() {
-              // _isLoading = false;
-              isJoined = !isJoined;
-              showSnackbar(context, Colors.red, "Left the group $groupName");
-            });
-            Navigator.of(context).pop();
-            showSnackbar(context, Colors.green, "chat created successfully.");
-          }
-        },
-        child: isJoined
-            ? Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.black,
-                  border: Border.all(color: Colors.white, width: 1),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text(
-                  "Joined",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).primaryColor,
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text("Send Message",
-                    style: TextStyle(color: Colors.white)),
-              ),
-      ),
-    );
-  }
-
-  // Widget groupTile(
-  //     String userName, String groupId, String groupName, String admin) {
-  //   // function to check whether user already exists in group
-  //   joinedOrNot(userName, groupId, groupName, admin);
-  //   return ListTile(
-  //     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-  //     leading: CircleAvatar(
-  //       radius: 30,
-  //       backgroundColor: Theme.of(context).primaryColor,
-  //       child: Text(
-  //         groupName.substring(0, 1).toUpperCase(),
-  //         style: const TextStyle(color: Colors.white),
-  //       ),
-  //     ),
-  //     title:
-  //         Text(groupName, style: const TextStyle(fontWeight: FontWeight.w600)),
-  //     subtitle: Text("Admin: ${getName(admin)}"),
-  //     trailing: InkWell(
-  //       onTap: () async {
-  //         await DatabaseService(uid: user!.uid)
-  //             .toggleGroupJoin(groupId, userName, groupName);
-  //         if (isJoined) {
-  //           setState(() {
-  //             isJoined = !isJoined;
-  //           });
-  //           showSnackbar(
-  //               context, Colors.green, "Successfully joined the group");
-  //           Future.delayed(const Duration(seconds: 2), () {
-  //             nextScreen(
-  //                 context,
-  //                 ChatPage(
-  //                     groupId: groupId,
-  //                     groupName: groupName,
-  //                     userName: userName));
-  //           });
-  //         } else {
-  //           setState(() {
-  //             isJoined = !isJoined;
-  //             showSnackbar(context, Colors.red, "Left the group $groupName");
-  //           });
-  //         }
-  //       },
-  //       child: isJoined
-  //           ? Container(
-  //               decoration: BoxDecoration(
-  //                 borderRadius: BorderRadius.circular(10),
-  //                 color: Colors.black,
-  //                 border: Border.all(color: Colors.white, width: 1),
-  //               ),
-  //               padding:
-  //                   const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-  //               child: const Text(
-  //                 "Joined",
-  //                 style: TextStyle(color: Colors.white),
-  //               ),
-  //             )
-  //           : Container(
-  //               decoration: BoxDecoration(
-  //                 borderRadius: BorderRadius.circular(10),
-  //                 color: Theme.of(context).primaryColor,
-  //               ),
-  //               padding:
-  //                   const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-  //               child: const Text("Join Now",
-  //                   style: TextStyle(color: Colors.white)),
-  //             ),
-  //     ),
-  //   );
-  // }
 }

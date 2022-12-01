@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:isolate';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:petwatch/components/message_tile.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:petwatch/utils/db_services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatPage extends StatefulWidget {
   final String groupId;
@@ -37,6 +41,83 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     getChatandAdmin();
     super.initState();
+  }
+
+  File? imageFile;
+
+  Future getImage() async {
+    ImagePicker _picker = ImagePicker();
+
+    await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
+      if (xFile != null) {
+        imageFile = File(xFile.path);
+        uploadImage();
+      }
+    });
+  }
+
+  Future uploadImage() async {
+    String fileName = Uuid().v1();
+    int status = 1;
+
+    await FirebaseFirestore.instance
+        .collection('groups')
+        .doc(widget.groupId)
+        .collection('messages')
+        .doc(fileName)
+        .set({
+      "sender": widget.userName,
+      "message": "",
+      "type": "img",
+      "time": FieldValue.serverTimestamp(),
+    });
+
+    var ref =
+        FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
+
+    var uploadTask = await ref.putFile(imageFile!).catchError((error) async {
+      await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(widget.groupId)
+          .collection('messages')
+          .doc(fileName)
+          .delete();
+
+      status = 0;
+    });
+
+    if (status == 1) {
+      String imageUrl = await uploadTask.ref.getDownloadURL();
+
+      await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(widget.groupId)
+          .collection('messages')
+          .doc(fileName)
+          .update({"message": imageUrl});
+
+      print(imageFile);
+    }
+  }
+
+  void onSendMessage() async {
+    if (messageController.text.isNotEmpty) {
+      Map<String, dynamic> messages = {
+        "sender": widget.userName,
+        "message": messageController.text,
+        "type": "text",
+        "time": FieldValue.serverTimestamp(),
+      };
+
+      messageController.clear();
+      await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(widget.groupId)
+          .collection('messages')
+          .add(messages);
+    } else {
+      print("Message send failure. Try again later.");
+    }
   }
 
   getChatandAdmin() {
@@ -94,7 +175,11 @@ class _ChatPageState extends State<ChatPage> {
                     child: TextFormField(
                   controller: messageController,
                   style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    prefixIcon: IconButton(
+                      onPressed: () => getImage(),
+                      icon: const Icon(Icons.photo),
+                    ),
                     hintText: "Send a message...",
                     hintStyle: TextStyle(color: Colors.white, fontSize: 16),
                     border: InputBorder.none,
@@ -154,7 +239,8 @@ class _ChatPageState extends State<ChatPage> {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
         "sender": widget.userName,
-        "time": DateTime.now().millisecondsSinceEpoch,
+        "time": FieldValue.serverTimestamp(),
+        "type": "text",
       };
 
       DatabaseService().sendMessage(widget.groupId, chatMessageMap);
