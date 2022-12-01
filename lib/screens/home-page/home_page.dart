@@ -25,8 +25,6 @@ class _HomePageState extends State<HomePage> {
     final infoPostDateFormat = new DateFormat('MMMd');
     final requestPostDateFormat = new DateFormat("MMMd-MMMd");
     final timestamp = post['postedTime'] as Timestamp;
-
-    //TODO: Add the dates correctly for posts.
     var datePosted =
         DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
 

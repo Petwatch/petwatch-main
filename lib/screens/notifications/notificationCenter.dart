@@ -25,7 +25,6 @@ class NotificationsCenterState extends State<NotificationsCenter> {
         .then((value) {
       Map<String, dynamic> test = value.data()!;
       notifications = test["notifications"];
-      // debugPrint("${test["notifications"]}");
     });
     return notifications.reversed.toList();
   }
@@ -48,20 +47,26 @@ class NotificationsCenterState extends State<NotificationsCenter> {
                   if (snapshot.hasError) {
                     return Text("");
                   } else {
-                    return ListView.builder(
-                      // reverse: true,
-                      padding: const EdgeInsets.all(10),
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (context, index) {
-                        if (snapshot.data![index]['type'] == "comment") {
-                          return CommentNotification(snapshot, index, value);
-                        } else if (snapshot.data![index]['type'] ==
-                            "sitterRequest") {
-                          return CommentNotification(snapshot, index, value);
-                        } else {
-                          return Text("Notification type not handled yet.");
-                        }
+                    return RefreshIndicator(
+                      onRefresh: () {
+                        return getNotifications(value.uid['uid']!,
+                            value.buildingCode['buildingCode']);
                       },
+                      child: ListView.builder(
+                        // reverse: true,
+                        padding: const EdgeInsets.all(10),
+                        itemCount: snapshot.data?.length,
+                        itemBuilder: (context, index) {
+                          if (snapshot.data![index]['type'] == "comment") {
+                            return CommentNotification(snapshot, index, value);
+                          } else if (snapshot.data![index]['type'] ==
+                              "sitterRequest") {
+                            return CommentNotification(snapshot, index, value);
+                          } else {
+                            return CommentNotification(snapshot, index, value);
+                          }
+                        },
+                      ),
                     );
                   }
               }
@@ -82,67 +87,94 @@ class CommentNotification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100,
-      child: GestureDetector(
-        onTap: () async {
-          if (snapshot.data![index]["read"] == false) {
-            await FirebaseFirestore.instance
-                .doc(
-                    "/building-codes/${value.buildingCode["buildingCode"]}/users/${value.uid["uid"]}")
-                .get()
-                .then((value) {
-              // Map<String, dynamic>? test = value.data();
-              snapshot.data![index]['read'] = true;
-              value.reference.update({"notifications": snapshot.data});
-            });
-          }
+    return GestureDetector(
+      onTap: () async {
+        if (snapshot.data![index]["read"] == false) {
+          await FirebaseFirestore.instance
+              .doc(
+                  "/building-codes/${value.buildingCode["buildingCode"]}/users/${value.uid["uid"]}")
+              .get()
+              .then((value) {
+            // Map<String, dynamic>? test = value.data();
+            snapshot.data![index]['read'] = true;
+            value.reference
+                .update({"notifications": snapshot.data!.reversed.toList()});
+          });
+        }
 
-          // if(value.posts[index])
-          if (snapshot.data![index]['type'] == "sitterRequest") {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Routes(1)));
-          } else {
-            for (var post in value.posts) {
-              if (post['docPath'] == snapshot.data![index]['postPath']) {
-                // debugPrint("We have found the post");
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PostPage(post: post)));
-              }
+        // if(value.posts[index])
+        if (snapshot.data![index]['type'] == "sitterRequest") {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Routes(1)));
+        } else {
+          for (var post in value.posts) {
+            if (post['docPath'] == snapshot.data![index]['postPath']) {
+              // debugPrint("We have found the post");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PostPage(post: post)));
             }
           }
-        },
-        child: Card(
-          child: Column(
-            children: [
-              Row(
+        }
+      },
+      child: Card(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Colors.white,
-                    backgroundImage: snapshot.data![index]
-                                ['commentAuthorPictureUrl'] !=
-                            null
-                        ? NetworkImage(
-                            snapshot.data![index]['commentAuthorPictureUrl'])
-                        : AssetImage('assets/images/petwatch_logo.png')
-                            as ImageProvider,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: CircleAvatar(
+                      radius: 21,
+                      backgroundColor: Colors.white,
+                      backgroundImage: snapshot.data![index]
+                                  ['commentAuthorPictureUrl'] !=
+                              null
+                          ? NetworkImage(
+                              snapshot.data![index]['commentAuthorPictureUrl'])
+                          : AssetImage('assets/images/petwatch_logo.png')
+                              as ImageProvider,
+                    ),
                   ),
-                  Center(child: Text("${snapshot.data?[index]['title']}")),
+                  Center(
+                      child: Text(
+                    "${snapshot.data?[index]['title']}",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  )),
+                  Spacer(),
+                  if (snapshot.data?[index]['read'] == false)
+                    Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Container(
+                          width: 13,
+                          height: 13,
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              shape: BoxShape.circle),
+                        )),
                 ],
               ),
-              Row(
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
                 children: [
-                  Text("${snapshot.data?[index]['body']}"),
-                  Spacer(),
-                  if (snapshot.data?[index]['read'] == false) Badge(),
+                  Expanded(
+                    child: Text(
+                      "${snapshot.data?[index]['body']}",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                  ),
                   // Spacer(flex: 1)
                 ],
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
