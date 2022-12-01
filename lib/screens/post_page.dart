@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../state/user_model.dart';
+import 'pet-profile/view_pet_profile_page.dart';
 
 class PostPage extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -27,6 +28,37 @@ class PostPageState extends State<PostPage> {
   PostPageState({required this.post});
 
   // If the request post is not mine, and the person that clicks on it is a registered pet sitter, show the button
+
+  Widget displayPet(Map<String, dynamic> petData) {
+    List<Map<String, dynamic>> petDataList = [petData];
+    debugPrint("$petData");
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ViewPetProfilePage(petDataList, true)));
+          },
+          child: Card(
+            shape: CircleBorder(),
+            elevation: 2,
+            child: CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.white,
+              backgroundImage: petData["pictureUrl"] != null
+                  ? NetworkImage(petData["pictureUrl"])
+                  : AssetImage('assets/images/petwatch_logo.png')
+                      as ImageProvider,
+            ),
+          ),
+        ),
+        Text(petData['name'])
+      ],
+    );
+  }
 
   Widget commentCard(
       BuildContext context, Map<String, dynamic> comment, int index) {
@@ -94,9 +126,6 @@ class PostPageState extends State<PostPage> {
                   Expanded(
                       child: Text(
                     commentText,
-                    softWrap: false,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ))
                 ],
               ),
@@ -161,6 +190,14 @@ class PostPageState extends State<PostPage> {
         for (var i = 0; i < thePost["comments"].length; i++) {
           commentList.insert(
               0, commentCard(context, thePost["comments"][i], i));
+        }
+      }
+
+      List<Widget> petList = [];
+
+      if (thePost['type'] != "Info" && thePost['price'] != null) {
+        for (var petData in thePost['petInfo']) {
+          petList.add(displayPet(petData));
         }
       }
 
@@ -277,20 +314,29 @@ class PostPageState extends State<PostPage> {
                                                   backgroundColor: (() {
                                                     switch (post["type"]) {
                                                       case "Info":
-                                                        return Colors.yellow;
+                                                        return Colors.blue;
                                                       case "Request":
                                                         return Colors.green;
-                                                      case "Available":
-                                                        return Colors.blue;
                                                       default:
                                                         return Colors.yellow;
                                                     }
                                                   })(),
-                                                  label: Text(
-                                                    post['type'],
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  )),
+                                                  label: post['status'] !=
+                                                          'complete'
+                                                      ? Text(
+                                                          post['type'],
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )
+                                                      : Text(
+                                                          'Complete',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )),
+                                              Spacer(),
+                                              ...petList
                                             ],
                                           ),
                                         )
@@ -299,7 +345,8 @@ class PostPageState extends State<PostPage> {
                                   )),
                               if (post["type"] == "Request" &&
                                   post["postedBy"]["UID"] !=
-                                      FirebaseAuth.instance.currentUser!.uid)
+                                      FirebaseAuth.instance.currentUser!.uid &&
+                                  post['status'] != 'complete')
                                 (Tooltip(
                                   key: tooltipkey,
                                   decoration: BoxDecoration(
@@ -381,6 +428,24 @@ class PostPageState extends State<PostPage> {
                                             }
                                           ])
                                         });
+                                        var res = await http.post(
+                                            Uri.parse(
+                                                "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/request"),
+                                            headers: <String, String>{
+                                              'Content-Type':
+                                                  'application/json',
+                                            },
+                                            body: jsonEncode(<String, String>{
+                                              "path": "${post['docPath']}",
+                                              "petSitterName":
+                                                  user.name["name"],
+                                              "petSitterUID":
+                                                  user.uid["uid"] ?? "",
+                                              "petSitterUrl": user.hasPicture
+                                                  ? user
+                                                      .pictureUrl["pictureUrl"]
+                                                  : "",
+                                            }));
                                       }
                                     },
                                     child: requestLoading
@@ -421,7 +486,10 @@ class PostPageState extends State<PostPage> {
                                             builder: (context) =>
                                                 const Routes(1)));
                                   },
-                                  child: Text("See In Transactions"),
+                                  child: Text(
+                                    "See In Transactions",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   style: ButtonStyle(
                                       fixedSize: MaterialStateProperty.all(
                                           Size(350, 30)),

@@ -121,10 +121,8 @@ class _CreatePostState extends State<CreatePost> {
   }
 
   Widget requestPostForm(BuildContext context, UserModel value) {
-    // static List pets = value.petInfo;
     final _pets =
         value.petInfo.map((pet) => MultiSelectItem(pet, pet["name"])).toList();
-    // debugPrint("Pets: ${pets[0]["name"]}");
     return Form(
       key: _formKey,
       child: Padding(
@@ -142,7 +140,10 @@ class _CreatePostState extends State<CreatePost> {
                 items: _pets,
                 title: Text("Select Your Pet"),
                 onConfirm: (results) {
-                  debugPrint("$results");
+                  setState(() {
+                    _selectedPets = results;
+                  });
+                  debugPrint("$_selectedPets");
                 }),
             Padding(
               padding: const EdgeInsets.only(top: 15.0),
@@ -165,9 +166,15 @@ class _CreatePostState extends State<CreatePost> {
                         DateFormat("MMMd").format(dateRange.start);
                     String lastDate = DateFormat("MMMd").format(dateRange.end);
                     setState(() {
+                      debugPrint(
+                          "start: ${dateRange.start.millisecondsSinceEpoch}");
+                      debugPrint(
+                          "end: ${dateRange.end.millisecondsSinceEpoch}");
+
                       dateController.text = "$firstDate - $lastDate";
                       selectedDates = dateRange;
-                      numberOfDays = dateRange.end.day - dateRange.start.day;
+                      numberOfDays =
+                          dateRange.end.difference(dateRange.start).inDays;
                     });
                   }
                 },
@@ -220,6 +227,7 @@ class _CreatePostState extends State<CreatePost> {
                       }
                       List<Map<String, dynamic>> emptyCommentsArr = [];
                       debugPrint("${selectedDates.start}");
+                      debugPrint("$_selectedPets");
                       Map post = <String, dynamic>{
                         "postedBy": <String, dynamic>{
                           "name": value.name['name'],
@@ -228,6 +236,12 @@ class _CreatePostState extends State<CreatePost> {
                               ? value.pictureUrl["pictureUrl"]
                               : "",
                         },
+                        // "petInfo": {
+                        //   "petName": selectedPet['name'],
+                        //   "petID": selectedPet['petId'],
+                        //   "petPictureUrl": selectedPet['pictureUrl']
+                        // },
+                        "petInfo": _selectedPets,
                         "title": _PostTitle.text,
                         "desc": _PostContents.text,
                         "price": _PriceForRequest.text,

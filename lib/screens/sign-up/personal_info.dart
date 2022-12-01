@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -292,6 +293,12 @@ class PersonalInfoState extends State<PersonalInfo> {
                                             }));
 
                                             if (value.size == 1) {
+                                              var subtitle = "User";
+                                              if (describeEnum(_character!) ==
+                                                      "petSitter" ||
+                                                  describeEnum(_character!) ==
+                                                      "both")
+                                                subtitle = "Pet Sitter";
                                               FirebaseFirestore.instance
                                                   .collection('building-codes')
                                                   .doc(_codeTextController.text)
@@ -300,11 +307,12 @@ class PersonalInfoState extends State<PersonalInfo> {
                                                   .set(<String, String>{
                                                 "name": _nameController.text,
                                                 "lookingFor":
-                                                    _character.toString(),
+                                                    describeEnum(_character!),
                                                 "uid": widget.uid,
                                                 "buildingCode":
                                                     _codeTextController.text,
-                                                "deviceId": deviceId
+                                                "deviceId": deviceId,
+                                                "subtitle": subtitle
                                               });
                                               if (_uploadedPicture) {
                                                 FirebaseFirestore.instance

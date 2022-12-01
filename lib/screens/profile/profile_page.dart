@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +8,15 @@ import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:petwatch/screens/post_page.dart';
 import 'package:petwatch/screens/profile/edit_profile_page.dart';
+import 'package:petwatch/screens/settings-page/settings_page.dart';
 import 'package:petwatch/state/user_model.dart';
 import 'package:provider/provider.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:http/http.dart' as http;
 import 'package:petwatch/services/stripe-backend-service.dart';
 import 'package:animated_segmented_tab_control/animated_segmented_tab_control.dart';
+import '../../components/CustomRatingDialog.dart';
 
 class ProfilePage extends StatefulWidget {
   // final BuildContext context;
@@ -40,6 +44,18 @@ class _ProfilePageState extends State<ProfilePage>
         .update({"stripeExpressId": response.id});
     final Uri _url = Uri.parse(response.url);
     if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  _launchStripeConnectDashboard(stripeId) async {
+    var res = await GetConnectedDashboard.getDashboard(stripeId);
+    debugPrint("$res");
+    final Uri _url = Uri.parse(res["url"]);
+    if (!await launchUrl(_url, mode: LaunchMode.platformDefault)) {
       throw 'Could not launch $_url';
     }
     setState(() {
@@ -75,11 +91,11 @@ class _ProfilePageState extends State<ProfilePage>
           onTap: () {},
           child: Scaffold(
               appBar: TopNavBar(),
-              body: SingleChildScrollView(
-                child: Center(
-                  child: isLoading
-                      ? CircularProgressIndicator()
-                      : Padding(
+              body: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Center(
+                        child: Padding(
                           padding: const EdgeInsets.all(8),
                           child: Column(
                             children: [
@@ -131,9 +147,13 @@ class _ProfilePageState extends State<ProfilePage>
                                                     // });
                                                     // await _launchStripeConnect(
                                                     //     user);
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                SettingsPage()));
                                                   },
-                                                  child: const Text(
-                                                      "Payment Settings",
+                                                  child: const Text("Settings",
                                                       textAlign:
                                                           TextAlign.center)),
                                             ),
@@ -156,12 +176,37 @@ class _ProfilePageState extends State<ProfilePage>
                                                         textAlign:
                                                             TextAlign.center)),
                                               ),
-                                            )),
+                                            ))
+                                          else
+                                            (PopupMenuItem(
+                                                padding: EdgeInsets.zero,
+                                                child: Center(
+                                                  child: TextButton(
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        setState(() {
+                                                          isLoading = true;
+                                                        });
+                                                        // await _launchStripeConnect(
+                                                        //     user);
+                                                        await _launchStripeConnectDashboard(
+                                                            user.stripeExpressId);
+                                                      },
+                                                      child: const Text(
+                                                          "View Seller Dashboard",
+                                                          textAlign: TextAlign
+                                                              .center)),
+                                                ))),
                                           PopupMenuItem(
                                             padding: EdgeInsets.zero,
                                             child: Center(
-                                              child: SignOutButton(
-                                                variant: ButtonVariant.text,
+                                              child: TextButton(
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  await FirebaseAuth.instance
+                                                      .signOut();
+                                                },
+                                                child: Text("Sign Out"),
                                               ),
                                             ),
                                           ),
@@ -236,7 +281,7 @@ class _ProfilePageState extends State<ProfilePage>
                                       child: Text(
                                         user.subtitle != ""
                                             ? user.subtitle
-                                            : "Subtitle Placeholder",
+                                            : "User",
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
@@ -254,7 +299,7 @@ class _ProfilePageState extends State<ProfilePage>
                                       child: Text(
                                         user.bio != ""
                                             ? user.bio
-                                            : "More information placeholder",
+                                            : "Edit your profile to fill out your bio",
                                         textAlign: TextAlign.justify,
                                       ),
                                     ),
@@ -289,41 +334,99 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               Center(
                                 child: [
-                                  SampleWidget(
-                                      label: "Reviews Placeholder", user: user),
+                                  RatingWidget(
+                                    user: user,
+                                    context: context,
+                                  ),
                                   PostWidget(user: user),
                                 ][_tabIndex],
                               ),
                             ],
                           ),
                         ),
-                ),
-              )));
+                      ),
+                    )));
     }));
   }
 }
 
-class SampleWidget extends StatelessWidget {
-  const SampleWidget({
+class RatingWidget extends StatelessWidget {
+  const RatingWidget({
     Key? key,
-    required this.label,
     required this.user,
+    required this.context,
   }) : super(key: key);
 
-  final String label;
   final UserModel user;
+  final BuildContext context;
+
+  Widget singleReview(context, review) {
+    String pictureUrl = review['reviewerPictureUrl'].toString();
+    String name = review['reviewerName'].toString();
+    String stars = review['stars'].toString();
+    String message = review['comment'].toString();
+
+    return FractionallySizedBox(
+      widthFactor: .95,
+      child: CustomRatingDialog(
+        starColor: Colors.amber,
+        title: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              backgroundImage: pictureUrl != ""
+                  ? NetworkImage(pictureUrl)
+                  : AssetImage('assets/images/petwatch_logo.png')
+                      as ImageProvider,
+              child: ClipRRect(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          Text(name)
+        ],
+        starSize: 20,
+        submitButtonText: 'Submit',
+        onCancelled: () => print('cancelled'),
+        onSubmitted: (response) {
+          print('rating: ${response.rating}, '
+              'comment: ${response.comment}');
+        },
+        message: Text(
+          message,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        enableComment: false,
+        showCloseButton: false,
+        showSubmitButton: false,
+        disableEdit: true,
+        initialRating: double.parse(stars),
+        isAlert: false,
+      ),
+    );
+  }
+
+  List<Widget> getUserReviews(context) {
+    List<Widget> reviewList = [];
+    if (user.reviews != null) {
+      for (var review in user.reviews) {
+        reviewList.insert(0, singleReview(context, review));
+      }
+    }
+    return reviewList;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-          ),
-        ));
+    List<Widget> reviewList = getUserReviews(context);
+    return Column(
+      children: [
+        ...reviewList,
+      ],
+    );
   }
 }
 
