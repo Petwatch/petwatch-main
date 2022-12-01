@@ -119,21 +119,65 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(15),
                         child: Row(
                           children: [
-                            Chip(
-                                backgroundColor: (() {
-                                  switch (post["type"]) {
-                                    case "Info":
-                                      return Colors.blue;
-                                    case "Request":
-                                      return Colors.green;
-                                    default:
-                                      return Colors.yellow;
-                                  }
-                                })(),
-                                label: Text(
-                                  post['type'],
-                                  style: TextStyle(color: Colors.white),
-                                )),
+                            Container(
+                              height: 30,
+                              width: 65,
+                              child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: (() {
+                                          switch (post["type"]) {
+                                            case "Info":
+                                              return Colors.blue
+                                                  .withOpacity(0.5);
+                                            case "Request":
+                                              return Colors.green
+                                                  .withOpacity(0.5);
+                                            default:
+                                              return Colors.yellow
+                                                  .withOpacity(0.5);
+                                          }
+                                        })(),
+                                        width: 3),
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: (() {
+                                      switch (post["type"]) {
+                                        case "Info":
+                                          return Colors.blue.withOpacity(0.8);
+                                        case "Request":
+                                          return Colors.green.withOpacity(0.8);
+                                        default:
+                                          return Colors.yellow.withOpacity(0.8);
+                                      }
+                                    })(),
+                                  ),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        post['type'],
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12),
+                                      ),
+                                    ),
+                                  )),
+                            ),
+                            // Chip(
+                            //     backgroundColor: (() {
+                            //       switch (post["type"]) {
+                            //         case "Info":
+                            //           return Colors.blue;
+                            //         case "Request":
+                            //           return Colors.green;
+                            //         default:
+                            //           return Colors.yellow;
+                            //       }
+                            //     })(),
+                            //     label: Text(
+                            //       post['type'],
+                            //       style: TextStyle(color: Colors.white),
+                            //     )),
                             const Spacer(),
                             Text("${post['comments'].length} comments"),
                             const Icon(Icons.comment, color: Colors.black),
