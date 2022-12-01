@@ -126,9 +126,6 @@ class PostPageState extends State<PostPage> {
                   Expanded(
                       child: Text(
                     commentText,
-                    softWrap: false,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ))
                 ],
               ),
