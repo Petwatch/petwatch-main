@@ -538,6 +538,16 @@ class PostPageState extends State<PostPage> {
                                                   .colorScheme
                                                   .primary)),
                                 )),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                                child: Text("Comments",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary)),
+                              ),
                               Divider(
                                 thickness: 2,
                                 color: Theme.of(context).colorScheme.primary,

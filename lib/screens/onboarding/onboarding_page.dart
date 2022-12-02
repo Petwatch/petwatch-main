@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
+import 'package:petwatch/screens/auth_gate.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -17,10 +19,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
     PageModel(
       widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,
+          color: Colors.white,
           border: Border.all(
             width: 0.0,
-            color: background,
+            color: Colors.white,
           ),
         ),
         child: SingleChildScrollView(
@@ -41,7 +43,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'SECURED BACKUP',
-                    style: pageTitleStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -52,7 +57,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -63,7 +71,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -74,7 +85,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -85,7 +99,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -98,10 +115,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
     PageModel(
       widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,
+          color: Colors.white,
           border: Border.all(
             width: 0.0,
-            color: background,
+            color: Colors.white,
           ),
         ),
         child: SingleChildScrollView(
@@ -122,7 +139,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'CHANGE AND RISE',
-                    style: pageTitleStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -133,7 +153,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Give others access to any file or folders you choose',
-                    style: pageInfoStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -146,10 +169,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
     PageModel(
       widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,
+          color: Colors.white,
           border: Border.all(
             width: 0.0,
-            color: background,
+            color: Colors.white,
           ),
         ),
         child: SingleChildScrollView(
@@ -170,7 +193,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'EASY ACCESS',
-                    style: pageTitleStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -181,7 +207,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Reach your files anytime from any devices anywhere',
-                    style: pageInfoStyle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.left,
                   ),
                 ),
@@ -229,7 +258,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
       color: defaultProceedButtonColor,
       child: InkWell(
         borderRadius: defaultProceedButtonBorderRadius,
-        onTap: () {},
+        onTap: () async {
+          await FirebaseAuth.instance.signOut();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => AuthGate(),
+            ),
+          );
+        },
         child: const Padding(
           padding: defaultProceedButtonPadding,
           child: Text(
@@ -260,14 +296,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
           footerBuilder: (context, dragDistance, pagesLength, setIndex) {
             return DecoratedBox(
               decoration: BoxDecoration(
-                color: background,
+                color: Colors.white,
                 border: Border.all(
                   width: 0.0,
-                  color: background,
+                  color: Colors.white,
                 ),
               ),
               child: ColoredBox(
-                color: background,
+                color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(45.0),
                   child: Row(

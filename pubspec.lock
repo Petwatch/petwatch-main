@@ -398,6 +398,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  flutter_inappwebview:
+    dependency: "direct main"
+    description:
+      name: flutter_inappwebview
+      sha256: "44c8306f0b68ab390ffdfb26beba88814cd24f7b4be95b6b58643477aae5bf3d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.7.2+1"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:

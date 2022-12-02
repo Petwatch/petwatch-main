@@ -509,8 +509,10 @@ class PostWidget extends StatelessWidget {
                                     )),
                               ),
                               const Spacer(),
-                              Text("${post['comments'].length} comments"),
-                              const Icon(Icons.comment, color: Colors.black),
+                              Text(post['comments'].length > 2 ||
+                                      post['comments'].length == 0
+                                  ? "${post['comments'].length} comments"
+                                  : "${post['comments'].length} comment"),
                               const Icon(
                                 Icons.arrow_forward_ios,
                                 color: Colors.black,

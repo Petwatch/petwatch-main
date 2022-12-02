@@ -37,7 +37,10 @@ class AuthGate extends StatelessWidget {
             builder: ((context, snapshot) {
               // debugPrint("${snapshot.data.toString()}");
               while (snapshot.data == null) {
-                return CircularProgressIndicator(); // TODO: replace this with a screen that has a processing circle.
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+                ; // TODO: replace this with a screen that has a processing circle.
               }
               if (snapshot.data.toString() == "true") {
                 return Routes(0);

@@ -163,30 +163,15 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   )),
                             ),
-                            // Chip(
-                            //     backgroundColor: (() {
-                            //       switch (post["type"]) {
-                            //         case "Info":
-                            //           return Colors.blue;
-                            //         case "Request":
-                            //           return Colors.green;
-                            //         default:
-                            //           return Colors.yellow;
-                            //       }
-                            //     })(),
-                            //     label: Text(
-                            //       post['type'],
-                            //       style: TextStyle(color: Colors.white),
-                            //     )),
                             const Spacer(),
-                            Text("${post['comments'].length} comments"),
-                            const Icon(Icons.comment, color: Colors.black),
+                            Text(post['comments'].length > 2 ||
+                                    post['comments'].length == 0
+                                ? "${post['comments'].length} comments"
+                                : "${post['comments'].length} comment"),
                             const Icon(
                               Icons.arrow_forward_ios,
                               color: Colors.black,
                             )
-
-                            //Make text color white
                           ],
                         ),
                       ),
