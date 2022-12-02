@@ -6,6 +6,8 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:petwatch/screens/sign-up/personal_info.dart';
 import 'package:petwatch/screens/routes.dart';
+import 'package:petwatch/screens/onboarding/onboarding_page.dart';
+
 class SignUpCompletePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,15 +24,25 @@ class SignUpCompletePage extends StatelessWidget {
                   Text("Congratulations!"),
                   Text("Your account has been succesfully created."),
                   ElevatedButton(
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        Navigator.of(context).pushReplacement(
+                      onPressed: () {
+                        // async {
+                        //   await FirebaseAuth.instance.signOut();
+                        //   Navigator.of(context).pushReplacement(
+                        //     MaterialPageRoute(
+                        //       builder: (context) => AuthGate(),
+                        //     ),
+                        //   );
+                        // },
+                        Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => AuthGate(),
+                            builder: (context) => const OnboardingPage(),
                           ),
                         );
                       },
-                      child: Text("Confirm"))
+                      child: Text(
+                        "Confirm",
+                        style: TextStyle(color: Colors.white),
+                      ))
                 ]),
           ),
         )));

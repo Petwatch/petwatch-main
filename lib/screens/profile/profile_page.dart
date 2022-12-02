@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/top_nav_bar.dart';
 import 'package:petwatch/screens/pet-profile/pet_profile_page.dart';
 import 'package:petwatch/screens/post_page.dart';
+import 'package:petwatch/screens/profile/dashboard_page.dart';
 import 'package:petwatch/screens/profile/edit_profile_page.dart';
 import 'package:petwatch/screens/settings-page/settings_page.dart';
 import 'package:petwatch/state/user_model.dart';
@@ -46,6 +47,8 @@ class _ProfilePageState extends State<ProfilePage>
     if (!await launchUrl(_url)) {
       throw 'Could not launch $_url';
     }
+    // Navigator.push(context,
+    //     MaterialPageRoute(builder: (context) => DashboardPage(url: _url)));
     setState(() {
       isLoading = false;
     });
@@ -55,9 +58,17 @@ class _ProfilePageState extends State<ProfilePage>
     var res = await GetConnectedDashboard.getDashboard(stripeId);
     debugPrint("$res");
     final Uri _url = Uri.parse(res["url"]);
-    if (!await launchUrl(_url, mode: LaunchMode.platformDefault)) {
-      throw 'Could not launch $_url';
-    }
+    // if (!await launchUrl(_url, mode: LaunchMode.platformDefault)) {
+    //   throw 'Could not launch $_url';
+    // }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DashboardPage(
+                  url: _url,
+                  title: "Seller Dashboard",
+                )));
+
     setState(() {
       isLoading = false;
     });
@@ -539,23 +550,58 @@ class PostWidget extends StatelessWidget {
                           padding: const EdgeInsets.all(15),
                           child: Row(
                             children: [
-                              Chip(
-                                  backgroundColor: (() {
-                                    switch (post["type"]) {
-                                      case "Info":
-                                        return Colors.yellow;
-                                      case "Request":
-                                        return Colors.green;
-                                      case "Available":
-                                        return Colors.blue;
-                                      default:
-                                        return Colors.yellow;
-                                    }
-                                  })(),
-                                  label: Text(post['type'])),
+                              Container(
+                                height: 30,
+                                width: 65,
+                                child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: (() {
+                                            switch (post["type"]) {
+                                              case "Info":
+                                                return Colors.blue
+                                                    .withOpacity(0.5);
+                                              case "Request":
+                                                return Colors.green
+                                                    .withOpacity(0.5);
+                                              default:
+                                                return Colors.yellow
+                                                    .withOpacity(0.5);
+                                            }
+                                          })(),
+                                          width: 3),
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: (() {
+                                        switch (post["type"]) {
+                                          case "Info":
+                                            return Colors.blue.withOpacity(0.8);
+                                          case "Request":
+                                            return Colors.green
+                                                .withOpacity(0.8);
+                                          default:
+                                            return Colors.yellow
+                                                .withOpacity(0.8);
+                                        }
+                                      })(),
+                                    ),
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          post['type'],
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      ),
+                                    )),
+                              ),
                               const Spacer(),
-                              Text("${post['comments'].length} comments"),
-                              const Icon(Icons.comment, color: Colors.black),
+                              Text(post['comments'].length > 2 ||
+                                      post['comments'].length == 0
+                                  ? "${post['comments'].length} comments"
+                                  : "${post['comments'].length} comment"),
                               const Icon(
                                 Icons.arrow_forward_ios,
                                 color: Colors.black,

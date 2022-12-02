@@ -310,31 +310,70 @@ class PostPageState extends State<PostPage> {
                                           padding: const EdgeInsets.all(15),
                                           child: Row(
                                             children: [
-                                              Chip(
-                                                  backgroundColor: (() {
-                                                    switch (post["type"]) {
-                                                      case "Info":
-                                                        return Colors.blue;
-                                                      case "Request":
-                                                        return Colors.green;
-                                                      default:
-                                                        return Colors.yellow;
-                                                    }
-                                                  })(),
-                                                  label: post['status'] !=
-                                                          'complete'
-                                                      ? Text(
+                                              Container(
+                                                height: 30,
+                                                width: 65,
+                                                child: DecoratedBox(
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: (() {
+                                                            switch (
+                                                                post["type"]) {
+                                                              case "Info":
+                                                                return Colors
+                                                                    .blue
+                                                                    .withOpacity(
+                                                                        0.5);
+                                                              case "Request":
+                                                                return Colors
+                                                                    .green
+                                                                    .withOpacity(
+                                                                        0.5);
+                                                              default:
+                                                                return Colors
+                                                                    .yellow
+                                                                    .withOpacity(
+                                                                        0.5);
+                                                            }
+                                                          })(),
+                                                          width: 3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      color: (() {
+                                                        switch (post["type"]) {
+                                                          case "Info":
+                                                            return Colors.blue
+                                                                .withOpacity(
+                                                                    0.8);
+                                                          case "Request":
+                                                            return Colors.green
+                                                                .withOpacity(
+                                                                    0.8);
+                                                          default:
+                                                            return Colors.yellow
+                                                                .withOpacity(
+                                                                    0.8);
+                                                        }
+                                                      })(),
+                                                    ),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
                                                           post['type'],
+                                                          textAlign:
+                                                              TextAlign.center,
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.white),
-                                                        )
-                                                      : Text(
-                                                          'Complete',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        )),
+                                                                  Colors.white,
+                                                              fontSize: 12),
+                                                        ),
+                                                      ),
+                                                    )),
+                                              ),
                                               Spacer(),
                                               ...petList
                                             ],
@@ -499,6 +538,16 @@ class PostPageState extends State<PostPage> {
                                                   .colorScheme
                                                   .primary)),
                                 )),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                                child: Text("Comments",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary)),
+                              ),
                               Divider(
                                 thickness: 2,
                                 color: Theme.of(context).colorScheme.primary,
