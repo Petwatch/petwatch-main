@@ -141,7 +141,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   FractionallySizedBox selfTransaction(
-      AsyncSnapshot<List<dynamic>> snapshot, int index) {
+      // RegExp removeUnderscore = new RegExp(r"(/_/g)");
+      AsyncSnapshot<List<dynamic>> snapshot,
+      int index) {
     final requestPostDateFormat = new DateFormat('MMMd');
     List<Widget> petList = [];
     if (snapshot.data![index]['type'] != "Info" &&
@@ -255,7 +257,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     children: [
                       Container(
                         height: 30,
-                        width: 75,
+                        width: 85,
                         child: DecoratedBox(
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -299,7 +301,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   toBeginningOfSentenceCase(
-                                          snapshot.data![index]["status"])
+                                          snapshot.data![index]['status'])
                                       .toString(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(

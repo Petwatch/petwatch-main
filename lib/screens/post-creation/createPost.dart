@@ -20,7 +20,6 @@ class _CreatePostState extends State<CreatePost> {
     List<DropdownMenuItem<String>> menuItems = [
       const DropdownMenuItem(value: "Info", child: Text("info")),
       const DropdownMenuItem(value: "Request", child: Text("request")),
-      const DropdownMenuItem(value: "Available", child: Text("available")),
     ];
     return menuItems;
   }
@@ -112,7 +111,6 @@ class _CreatePostState extends State<CreatePost> {
                                       builder: (context) => Routes(0))),
                               value.getPosts(),
                             });
-                    // debugPrint("$post");
                   },
                   child: Text("Post")))
         ],
@@ -143,7 +141,6 @@ class _CreatePostState extends State<CreatePost> {
                   setState(() {
                     _selectedPets = results;
                   });
-                  debugPrint("$_selectedPets");
                 }),
             Padding(
               padding: const EdgeInsets.only(top: 15.0),
@@ -166,11 +163,6 @@ class _CreatePostState extends State<CreatePost> {
                         DateFormat("MMMd").format(dateRange.start);
                     String lastDate = DateFormat("MMMd").format(dateRange.end);
                     setState(() {
-                      debugPrint(
-                          "start: ${dateRange.start.millisecondsSinceEpoch}");
-                      debugPrint(
-                          "end: ${dateRange.end.millisecondsSinceEpoch}");
-
                       dateController.text = "$firstDate - $lastDate";
                       selectedDates = dateRange;
                       numberOfDays =
@@ -226,8 +218,8 @@ class _CreatePostState extends State<CreatePost> {
                         print("Success");
                       }
                       List<Map<String, dynamic>> emptyCommentsArr = [];
-                      debugPrint("${selectedDates.start}");
-                      debugPrint("$_selectedPets");
+                      ("${selectedDates.start}");
+                      ("$_selectedPets");
                       Map post = <String, dynamic>{
                         "postedBy": <String, dynamic>{
                           "name": value.name['name'],
@@ -294,7 +286,7 @@ class _CreatePostState extends State<CreatePost> {
                                         builder: (context) => Routes(0))),
                                 value.getPosts(),
                               });
-                      debugPrint("$post");
+                      ("$post");
                     },
                     child: Text("Post"))),
           ],
