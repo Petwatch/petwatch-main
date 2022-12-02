@@ -50,6 +50,9 @@ class ViewPendingPageState extends State<ViewPendingPage> {
     };
 
     return Card(
+        color: transaction[index]["status"] == "rejected"
+            ? Colors.grey[200]
+            : Colors.white,
         elevation: 2,
         child: Row(
           children: [
@@ -82,71 +85,73 @@ class ViewPendingPageState extends State<ViewPendingPage> {
             ),
             Text(transaction[index]['name']),
             Spacer(),
-            IconButton(
-                onPressed: (() async {
-                  var email = FirebaseAuth.instance.currentUser!.email ?? "";
-                  var data = await CreatePaymentSheet.getPaymentIntent(
-                      transaction[index]["stripeExpressId"],
-                      amount,
-                      "building-codes/${user.buildingCode['buildingCode']}/users/${user.uid['uid']}",
-                      email);
-                  await stripe.Stripe.instance.initPaymentSheet(
-                      paymentSheetParameters:
-                          stripe.SetupPaymentSheetParameters(
-                    merchantDisplayName: "Petwatch",
-                    paymentIntentClientSecret: data["paymentIntent"],
-                    customerEphemeralKeySecret: data['ephemeralKey'],
-                    customerId: data["customer"],
-                    // applePay: PaymentSheetApplePay,
-                    // googlePay: true,
-                  ));
+            if (transaction[index]["status"] != "rejected") ...[
+              IconButton(
+                  onPressed: (() async {
+                    var email = FirebaseAuth.instance.currentUser!.email ?? "";
+                    var data = await CreatePaymentSheet.getPaymentIntent(
+                        transaction[index]["stripeExpressId"],
+                        amount,
+                        "building-codes/${user.buildingCode['buildingCode']}/users/${user.uid['uid']}",
+                        email);
+                    await stripe.Stripe.instance.initPaymentSheet(
+                        paymentSheetParameters:
+                            stripe.SetupPaymentSheetParameters(
+                      merchantDisplayName: "Petwatch",
+                      paymentIntentClientSecret: data["paymentIntent"],
+                      customerEphemeralKeySecret: data['ephemeralKey'],
+                      customerId: data["customer"],
+                      // applePay: PaymentSheetApplePay,
+                      // googlePay: true,
+                    ));
 
-                  try {
-                    await stripe.Stripe.instance.presentPaymentSheet();
-                    await FirebaseFirestore.instance
-                        .doc(this.transaction['documentPath'])
-                        .get()
-                        .then((value) {
-                      List<dynamic> requestsArr = value.data()?['requests'];
-                      for (var request in requestsArr) {
-                        if (request['petSitterUid'] !=
-                            transaction[index]['petSitterUid']) {
-                          request['status'] = "rejected";
-                        } else {
-                          request['status'] = "approved";
+                    try {
+                      await stripe.Stripe.instance.presentPaymentSheet();
+                      await FirebaseFirestore.instance
+                          .doc(this.transaction['documentPath'])
+                          .get()
+                          .then((value) {
+                        List<dynamic> requestsArr = value.data()?['requests'];
+                        for (var request in requestsArr) {
+                          if (request['petSitterUid'] !=
+                              transaction[index]['petSitterUid']) {
+                            request['status'] = "rejected";
+                          } else {
+                            request['status'] = "scheduled";
+                          }
                         }
-                      }
-                      value.reference.update(
-                          {"status": "scheduled", "requests": requestsArr});
-                    });
+                        value.reference.update(
+                            {"status": "scheduled", "requests": requestsArr});
+                      });
 
-                    var petNames =
-                        this.transaction['petInfo'].map((pet) => pet['name']);
-                    Map<String, dynamic> scheduleApiBody = {
-                      "postType": "scheduledNotification",
-                      "startTimeStamp": this.transaction['dateRange']
-                          ['startTime'],
-                      "endTimeStamp": this.transaction['dateRange']['endTime'],
-                      "petSitterUID": transaction[index]['petSitterUid'],
-                      "customerUID": this.transaction['postedBy']["UID"],
-                      "petNames": petNames.toList(),
-                      "sitterName": transaction[index]["name"],
-                      "ownerName": this.transaction['postedBy']["name"]
-                    };
-                    var res = await http.post(
-                        Uri.parse(
-                            "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/schedule"),
-                        headers: <String, String>{
-                          'Content-Type': 'application/json',
-                        },
-                        body: jsonEncode(scheduleApiBody));
+                      var petNames =
+                          this.transaction['petInfo'].map((pet) => pet['name']);
+                      Map<String, dynamic> scheduleApiBody = {
+                        "postType": "scheduledNotification",
+                        "startTimeStamp": this.transaction['dateRange']
+                            ['startTime'],
+                        "endTimeStamp": this.transaction['dateRange']
+                            ['endTime'],
+                        "petSitterUID": transaction[index]['petSitterUid'],
+                        "customerUID": this.transaction['postedBy']["UID"],
+                        "petNames": petNames.toList(),
+                        "sitterName": transaction[index]["name"],
+                        "ownerName": this.transaction['postedBy']["name"]
+                      };
+                      var res = await http.post(
+                          Uri.parse(
+                              "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/schedule"),
+                          headers: <String, String>{
+                            'Content-Type': 'application/json',
+                          },
+                          body: jsonEncode(scheduleApiBody));
 
-                    debugPrint("${res.statusCode}");
+                      debugPrint("${res.statusCode}");
 
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Routes(1)));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Routes(1)));
 
-                    /*
+                      /*
                     So, on success, we need to: 
                       - Update the post from review to scheduled - DONE
                       - Update the array of requests, every single array that - DONE
@@ -155,16 +160,81 @@ class ViewPendingPageState extends State<ViewPendingPage> {
                       - Send notification to the pet sitter. - need to do this, should be simple
                       - Schedule the notifications to be sent out day before and day of, to both parties.
                      */
-                  } catch (e) {
-                    debugPrint(e.toString());
-                  }
-                }),
-                icon: Icon(
-                  Icons.check,
-                  color: Colors.green,
-                )),
-            IconButton(
-                onPressed: (() {}), icon: Icon(Icons.close, color: Colors.red)),
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
+                  }),
+                  icon: Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  )),
+              IconButton(
+                  onPressed: (() {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                              title: Text(
+                                  "Decline ${transaction[index]['name']}?"),
+                              content: Text(
+                                  "Are you sure you wish to decline this sitter?"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'Cancel'),
+                                    child: Text("Cancel")),
+                                TextButton(
+                                    onPressed: (() async {
+                                      Navigator.pop(context);
+                                      await FirebaseFirestore.instance
+                                          .doc(this.transaction['documentPath'])
+                                          .get()
+                                          .then((value) {
+                                        List<dynamic> requestsArr =
+                                            value.data()?['requests'];
+                                        for (var request in requestsArr) {
+                                          if (request['petSitterUid'] ==
+                                              transaction[index]
+                                                  ['petSitterUid']) {
+                                            request['status'] = "rejected";
+                                          }
+                                        }
+                                        value.reference
+                                            .update({"requests": requestsArr});
+                                      });
+                                    }),
+                                    child: Text(
+                                      "Decline",
+                                      style: TextStyle(color: Colors.red),
+                                    ))
+                              ],
+                            ));
+                  }),
+                  icon: Icon(Icons.close, color: Colors.red))
+            ] else
+              Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: Container(
+                  height: 30,
+                  width: 85,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Colors.red.withOpacity(.5), width: 3),
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.red.withOpacity(.8),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Declined",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      )),
+                ),
+              ),
           ],
         ));
   }
@@ -194,9 +264,12 @@ class ViewPendingPageState extends State<ViewPendingPage> {
               children: [
                 Align(alignment: Alignment.center, child: transactionWidget),
                 Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text("Available Sitters:",
-                      style: TextStyle(fontSize: 25)),
+                  padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                  child: Text("Available Sitters",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary)),
                 ),
                 Divider(
                   thickness: 2,

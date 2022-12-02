@@ -214,7 +214,9 @@ class _HomePageState extends State<HomePage> {
     return Consumer<UserModel>(builder: (context, value, child) {
       List<Widget> postList = [];
       for (var post in value.posts) {
-        if (post['type'] != 'complete' && post['status'] != "scheduled")
+        if (post['type'] != 'complete' &&
+            post['status'] != "scheduled" &&
+            post['status'] != "in_progress")
           postList.add(singlePost(context, post, value));
       }
       // debugPrint("${postList.length}");
