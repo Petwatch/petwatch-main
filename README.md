@@ -1,7 +1,7 @@
 # petwatch
 
 How to use: 
-1. Be an authenticated firebase user 
+1. Place firebase_options.dart file into lib folder
 2. Follow the flutter installation [instructions](https://docs.flutter.dev/get-started/install)
 3. `flutter run`
 
