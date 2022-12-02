@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:petwatch/components/components.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 class DatabaseService {
   final String? uid;
@@ -194,4 +197,6 @@ class DatabaseService {
       "recentMessageTime": chatMessageData['time'].toString(),
     });
   }
+
+//add recent message to placeholder text instead of jus start a conversation of wha
 }

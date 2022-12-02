@@ -34,6 +34,7 @@ class _UserTileState extends State<UserTile> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: ListTile(
+          dense: true,
           leading: CircleAvatar(
             radius: 30,
             backgroundColor: Theme.of(context).primaryColor,
@@ -49,7 +50,7 @@ class _UserTileState extends State<UserTile> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            "Join the conversation",
+            "Start a conversation",
             style: const TextStyle(fontSize: 13),
           ),
           trailing: Container(child: Icon(Icons.arrow_forward_ios)),

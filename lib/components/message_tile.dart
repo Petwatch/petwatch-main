@@ -4,12 +4,14 @@ class MessageTile extends StatefulWidget {
   final String message;
   final String sender;
   final bool sentByMe;
+  final String url;
 
   const MessageTile(
       {Key? key,
       required this.message,
       required this.sender,
-      required this.sentByMe})
+      required this.sentByMe,
+      required this.url})
       : super(key: key);
 
   @override
@@ -64,7 +66,8 @@ class _MessageTileState extends State<MessageTile> {
             ),
             Text(widget.message,
                 textAlign: TextAlign.start,
-                style: const TextStyle(fontSize: 16, color: Colors.white))
+                style: const TextStyle(fontSize: 16, color: Colors.white)),
+            if (widget.url != "") Image(image: NetworkImage(widget.url))
           ],
         ),
       ),
