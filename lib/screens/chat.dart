@@ -16,6 +16,15 @@ import 'package:petwatch/utils/db_services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
+
+final storage = FirebaseStorage.instance;
+// Points to the root reference
+final storageRef = FirebaseStorage.instance.ref();
+
+// Points to "images"
+
+// Note that you can use variables to create child values
 
 class ChatPage extends StatefulWidget {
   final String groupId;
@@ -51,6 +60,7 @@ class _ChatPageState extends State<ChatPage> {
     await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
       if (xFile != null) {
         imageFile = File(xFile.path);
+        // sendImg();
         uploadImage();
       }
     });
@@ -68,14 +78,15 @@ class _ChatPageState extends State<ChatPage> {
         .set({
       "sender": widget.userName,
       "message": "",
-      "type": "img",
+      "type": "image/jpeg",
       "time": FieldValue.serverTimestamp(),
     });
 
     var ref =
         FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
-
-    var uploadTask = await ref.putFile(imageFile!).catchError((error) async {
+    final metadata = SettableMetadata(contentType: "image/jpeg");
+    var uploadTask =
+        await ref.putFile(imageFile!, metadata).catchError((error) async {
       await FirebaseFirestore.instance
           .collection('groups')
           .doc(widget.groupId)
@@ -94,9 +105,9 @@ class _ChatPageState extends State<ChatPage> {
           .doc(widget.groupId)
           .collection('messages')
           .doc(fileName)
-          .update({"message": imageUrl});
+          .update({'imageUrl': imageUrl, 'message': ''});
 
-      print(imageFile);
+      NetworkImage(imageUrl);
     }
   }
 
@@ -199,11 +210,10 @@ class _ChatPageState extends State<ChatPage> {
                       color: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Center(
-                        child: Icon(
+                    child: Icon(
                       Icons.send,
                       color: Colors.white,
-                    )),
+                    ),
                   ),
                 )
               ]),
@@ -226,7 +236,8 @@ class _ChatPageState extends State<ChatPage> {
                       message: snapshot.data.docs[index]['message'],
                       sender: snapshot.data.docs[index]['sender'],
                       sentByMe: widget.userName ==
-                          snapshot.data.docs[index]['sender']);
+                          snapshot.data.docs[index]['sender'],
+                      url: snapshot.data.docs[index]["imageUrl"] ?? "");
                 },
               )
             : Container();

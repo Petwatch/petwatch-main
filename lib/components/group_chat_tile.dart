@@ -50,7 +50,7 @@ class _GroupTileState extends State<GroupTile> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            "Join the conversation",
+            "recent message",
             style: const TextStyle(fontSize: 13),
           ),
           trailing: Container(child: Icon(Icons.arrow_forward_ios)),
