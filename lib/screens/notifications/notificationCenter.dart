@@ -26,6 +26,7 @@ class NotificationsCenterState extends State<NotificationsCenter> {
       Map<String, dynamic> test = value.data()!;
       notifications = test["notifications"];
     });
+
     return notifications.reversed.toList();
   }
 
@@ -107,14 +108,20 @@ class CommentNotification extends StatelessWidget {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Routes(1)));
         } else {
+          bool found = false;
           for (var post in value.posts) {
             if (post['docPath'] == snapshot.data![index]['postPath']) {
               // debugPrint("We have found the post");
+              found = true;
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => PostPage(post: post)));
             }
+          }
+          if (!found) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Routes(1)));
           }
         }
       },
@@ -162,9 +169,14 @@ class CommentNotification extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  Text("${snapshot.data?[index]['body']}"),
-                  Spacer(),
-                  if (snapshot.data?[index]['read'] == false) badges.Badge(),
+                  Expanded(
+                      child: snapshot.data?[index]['type'] == "comment"
+                          ? Text(
+                              "${snapshot.data?[index]['body']}",
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          : Text("${snapshot.data?[index]['body']}")),
+                  // Spacer(),
                   // Spacer(flex: 1)
                 ],
               ),

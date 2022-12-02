@@ -85,15 +85,6 @@ class _PetProfilePageState extends State<PetProfilePage> {
                           value: Menu.delete,
                           child: Center(
                             child: TextButton(
-                                // onPressed: () {
-                                //   debugPrint("Deleting pet at index ${index}");
-                                //   debugPrint(
-                                //       "Building Code: ${value.buildingCode['buildingCode']}");
-                                //   debugPrint("UID: ${value.uid['uid']}");
-                                //   debugPrint(
-                                //       "petID: ${value.petInfo[index]['petId']}");
-                                //   DeletePet(index, value);
-                                // },
                                 onPressed: () {
                                   Navigator.pop(context, 'Cancel');
                                   showDialog(
@@ -167,146 +158,108 @@ class _PetProfilePageState extends State<PetProfilePage> {
                     width: 300,
                     child: Text(value.petInfo[index]['other']),
                   ),
-                  SizedBox(
-                    height: 50,
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                            padding: const EdgeInsets.only(left: 0),
-                            child: Row(
-                              children: [
-                                if (value.petInfo[index]['houseTrained'] ==
-                                    "yes")
-                                  Chip(
-                                    elevation: 5,
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    label: const SizedBox(
-                                        width: 50,
-                                        height: 25,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "Trained",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ))),
-                                    labelPadding: const EdgeInsets.only(
-                                      left: 15,
-                                      right: 15,
-                                    ),
-                                  ),
-                                if (value.petInfo[index]['microChipped'] ==
-                                    "yes")
-                                  Chip(
-                                    elevation: 5,
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    label: const SizedBox(
-                                        width: 50,
-                                        height: 25,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "Chip",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ))),
-                                    labelPadding: const EdgeInsets.only(
-                                      left: 15,
-                                      right: 15,
-                                    ),
-                                  ),
-                                if (value.petInfo[index]['friendlyWith']
-                                    .containsValue(true))
-                                  Chip(
-                                    elevation: 5,
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    label: const SizedBox(
-                                        width: 50,
-                                        height: 25,
-                                        child: Align(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "Friendly",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ))),
-                                    labelPadding: const EdgeInsets.only(
-                                      left: 15,
-                                      right: 15,
-                                    ),
-                                  ),
-                              ],
-                            ))),
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                            padding: const EdgeInsets.only(left: 0),
-                            child: Row(
-                              children: [
-                                Chip(
-                                  elevation: 5,
-                                  label: SizedBox(
-                                      width: 50,
-                                      height: 25,
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                              value.petInfo[index]['type']))),
-                                  labelPadding: const EdgeInsets.only(
-                                    left: 15,
-                                    right: 15,
-                                  ),
-                                ),
-                                Chip(
-                                  elevation: 5,
-                                  label: SizedBox(
-                                      width: 50,
-                                      height: 25,
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                              value.petInfo[index]["sex"]))),
-                                  labelPadding: const EdgeInsets.only(
-                                    left: 15,
-                                    right: 15,
-                                  ),
-                                ),
-                                Chip(
-                                  elevation: 5,
-                                  label: SizedBox(
-                                      width: 50,
-                                      height: 25,
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                              "${value.petInfo[index]['age']} years"))),
-                                  labelPadding: const EdgeInsets.only(
-                                    left: 15,
-                                    right: 15,
-                                  ),
-                                ),
-                                Chip(
-                                  elevation: 5,
-                                  label: SizedBox(
-                                      width: 50,
-                                      height: 25,
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                              "${value.petInfo[index]['weight']} lbs"))),
-                                  labelPadding: const EdgeInsets.only(
-                                    left: 15,
-                                    right: 15,
-                                  ),
-                                ),
-                              ],
-                            ))),
+                  Padding(
+                      padding: const EdgeInsets.only(left: 0),
+                      child: Row(
+                        children: [
+                          if (value.petInfo[index]['houseTrained'] == "yes")
+                            Chip(
+                              elevation: 5,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              label: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Trained",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              labelPadding: const EdgeInsets.only(
+                                left: 15,
+                                right: 15,
+                              ),
+                            ),
+                          if (value.petInfo[index]['microChipped'] == "yes")
+                            Chip(
+                              elevation: 5,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              label: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Chip",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              labelPadding: const EdgeInsets.only(
+                                left: 15,
+                                right: 15,
+                              ),
+                            ),
+                          if (value.petInfo[index]['friendlyWith']
+                              .containsValue(true))
+                            Chip(
+                              elevation: 5,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              label: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Friendly",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                              labelPadding: const EdgeInsets.only(
+                                left: 15,
+                                right: 15,
+                              ),
+                            ),
+                        ],
+                      )),
+                  Center(
+                    child: Row(
+                      children: [
+                        Chip(
+                          elevation: 5,
+                          label: Align(
+                              alignment: Alignment.center,
+                              child: Text(value.petInfo[index]['type'])),
+                          labelPadding: const EdgeInsets.only(
+                            left: 15,
+                            right: 15,
+                          ),
+                        ),
+                        Chip(
+                          elevation: 5,
+                          label: Align(
+                              alignment: Alignment.center,
+                              child: Text(value.petInfo[index]["sex"])),
+                          labelPadding: const EdgeInsets.only(
+                            left: 15,
+                            right: 15,
+                          ),
+                        ),
+                        Chip(
+                          elevation: 5,
+                          label: Align(
+                              alignment: Alignment.center,
+                              child:
+                                  Text("${value.petInfo[index]['age']} years")),
+                          labelPadding: const EdgeInsets.only(
+                            left: 15,
+                            right: 15,
+                          ),
+                        ),
+                        Chip(
+                          elevation: 5,
+                          label: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                  "${value.petInfo[index]['weight']} lbs")),
+                          labelPadding: const EdgeInsets.only(
+                            left: 15,
+                            right: 15,
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ))),
