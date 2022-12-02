@@ -64,6 +64,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         foregroundColor: Colors.white,
         elevation: 0,
@@ -75,6 +76,7 @@ class _SearchPageState extends State<SearchPage> {
         ),
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           Container(
             color: Theme.of(context).primaryColor,
@@ -113,7 +115,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
           isLoading
               ? Center(
-                  child: Column(children: [
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
                   CircularProgressIndicator(
                       color: Theme.of(context).primaryColor),
                 ]))
@@ -144,6 +146,7 @@ class _SearchPageState extends State<SearchPage> {
     return hasUserSearched
         ? ListView.separated(
             shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
             itemCount: searchSnapshot!.docs.length,
             separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {

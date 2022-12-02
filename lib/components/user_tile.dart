@@ -32,7 +32,7 @@ class _UserTileState extends State<UserTile> {
               userName: widget.userName,
             ));
       },
-      child: Container( height: ,
+      child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: ListTile(
           leading: CircleAvatar(

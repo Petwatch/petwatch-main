@@ -220,6 +220,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
             ? ListView.builder(
+                shrinkWrap: true,
                 itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(

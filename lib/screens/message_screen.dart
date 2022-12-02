@@ -117,6 +117,7 @@ class _MessageScreenState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
@@ -136,7 +137,7 @@ class _MessageScreenState extends State<MessageScreen> {
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
         ),
       ),
-      body: groupList(),
+      body: SingleChildScrollView(child: groupList()),
     );
   }
 
@@ -195,6 +196,7 @@ class _MessageScreenState extends State<MessageScreen> {
               if (snapshot.data['groups'].length != 0) {
                 return ListView.separated(
                   itemCount: snapshot.data['groups'].length,
+                  shrinkWrap: true,
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
                     Container(

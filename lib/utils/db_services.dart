@@ -78,8 +78,7 @@ class DatabaseService {
     // update the members
     //update 'groups' collections
     await groupDocumentReference.update({
-      "members":
-          FieldValue.arrayUnion(["${id}_$userName", '${uid}_$getUserName']),
+      "members": FieldValue.arrayUnion(["${id}_$userName", '${uid}_$userName']),
       "groupId": groupDocumentReference.id,
     });
 
@@ -160,29 +159,6 @@ class DatabaseService {
     } else {
       return 0;
     }
-    // // doc reference
-    // DocumentReference userDocumentReference = userCollection.doc(uid);
-    // DocumentReference groupDocumentReference = groupCollection.doc(groupId);
-
-    // DocumentSnapshot documentSnapshot = await userDocumentReference.get();
-    // List<dynamic> groups = await documentSnapshot['groups'];
-
-    // // if user has our groups -> then remove then or also in other part re join
-    // if (groups.contains("${groupId}_$groupName")) {
-    //   await userDocumentReference.update({
-    //     "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
-    //   });
-    //   await groupDocumentReference.update({
-    //     "members": FieldValue.arrayRemove(["${uid}_$userName"])
-    //   });
-    // } else {
-    //   await userDocumentReference.update({
-    //     "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
-    //   });
-    //   await groupDocumentReference.update({
-    //     "members": FieldValue.arrayUnion(["${uid}_$userName"])
-    //   });
-    // }
   }
 
   // send message
