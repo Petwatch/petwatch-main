@@ -81,39 +81,6 @@ class _MessageScreenState extends State<MessageScreen> {
     });
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   //listens for actions
-  //   return GestureDetector(
-  //       onTap: () {},
-  //       child: Scaffold(
-  //         appBar: MessageNavBar(),
-  //         body: Center(
-  //           child: Padding(
-  //             padding: EdgeInsets.all(24),
-  //             child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.center,
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: const [
-  //                   Text("Tap the '+' icon to start a new chat"),
-  //                 ]),
-  //           ),
-  //         ),
-  //         body: groupList(),
-  //         floatingActionButton: FloatingActionButton(
-  //           onPressed: () {
-  //             popupDialogue(context);
-  //           },
-  //           elevation: 0,
-  //           child: const Icon(
-  //             Icons.add,
-  //             color: Colors.white,
-  //             size: 30,
-  //           ),
-  //         ),
-  //       ));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
