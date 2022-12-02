@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:petwatch/components/components.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -31,7 +32,7 @@ class _UserTileState extends State<UserTile> {
               userName: widget.userName,
             ));
       },
-      child: Container(
+      child: Container( height: ,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: ListTile(
           leading: CircleAvatar(
@@ -49,7 +50,7 @@ class _UserTileState extends State<UserTile> {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            "Join the conversation",
+            "Start a conversation",
             style: const TextStyle(fontSize: 13),
           ),
           trailing: Container(child: Icon(Icons.arrow_forward_ios)),
