@@ -1,5 +1,9 @@
 # petwatch
 
+How to use: 
+1. Be an authenticated firebase user 
+2. Follow the flutter installation [instructions](https://docs.flutter.dev/get-started/install)
+
 Petwatch Flutter Project
 
 ## How to contribute?
