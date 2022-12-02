@@ -42,7 +42,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'SECURED BACKUP',
+                    'STEP 1',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -56,49 +56,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
+                    'Connect with neighbors',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -138,7 +96,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'CHANGE AND RISE',
+                    'STEP 2',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -152,7 +110,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Give others access to any file or folders you choose',
+                    'Schedule and pay',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -192,7 +150,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'EASY ACCESS',
+                    'STEP 3',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -206,7 +164,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Reach your files anytime from any devices anywhere',
+                    'Pet care from a reliable neighbor',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
