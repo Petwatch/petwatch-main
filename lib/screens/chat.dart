@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:petwatch/components/message_tile.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:petwatch/utils/db_services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
@@ -55,15 +55,21 @@ class _ChatPageState extends State<ChatPage> {
   File? imageFile;
 
   Future getImage() async {
-    ImagePicker _picker = ImagePicker();
+    // ImagePicker _picker = ImagePicker();
 
-    await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
-      if (xFile != null) {
-        imageFile = File(xFile.path);
-        // sendImg();
-        uploadImage();
-      }
-    });
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result != null) {
+      imageFile = File(result.files.single.path.toString());
+      uploadImage();
+    }
+
+    // await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
+    //   if (xFile != null) {
+    //     imageFile = File(xFile.path);
+    //     uploadImage();
+    //   }
+    // });
   }
 
   Future uploadImage() async {
@@ -105,7 +111,7 @@ class _ChatPageState extends State<ChatPage> {
           .doc(widget.groupId)
           .collection('messages')
           .doc(fileName)
-          .update({'imageUrl': imageUrl, 'message': ''});
+          .update({'imageUrl': imageUrl});
 
       NetworkImage(imageUrl);
     }
@@ -118,6 +124,7 @@ class _ChatPageState extends State<ChatPage> {
         "message": messageController.text,
         "type": "text",
         "time": FieldValue.serverTimestamp(),
+        "imageUrl": ""
       };
 
       messageController.clear();
@@ -132,7 +139,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   getChatandAdmin() {
-    //get chats
+    //get chatsr
     DatabaseService().getChats(widget.groupId).then((val) {
       setState(() {
         chats = val;
@@ -141,6 +148,7 @@ class _ChatPageState extends State<ChatPage> {
 
     //get chat admin/owner
     DatabaseService().getGroupAdmin(widget.groupId).then((val) {
+      debugPrint(val.toString());
       setState(() {
         admin = val;
       });
@@ -252,6 +260,7 @@ class _ChatPageState extends State<ChatPage> {
         "sender": widget.userName,
         "time": FieldValue.serverTimestamp(),
         "type": "text",
+        "imageUrl": ""
       };
 
       DatabaseService().sendMessage(widget.groupId, chatMessageMap);
