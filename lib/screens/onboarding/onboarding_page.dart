@@ -56,7 +56,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Connect with neighbors',
+                    'Post and connect',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'View and interact with posts made by your neighbors',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -110,7 +124,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Schedule and pay',
+                    'Send private messages',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Talk with your neighbors and make plans around your pets',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
@@ -164,7 +192,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Pet care from a reliable neighbor',
+                    'Safe and secure payments',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'View your transactions',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
