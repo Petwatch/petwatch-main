@@ -7,10 +7,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:intl/intl.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
+import 'package:petwatch/screens/chat.dart';
+import 'package:petwatch/screens/message_screen.dart';
 import 'package:petwatch/screens/profile/view_profile_page.dart';
 import 'package:petwatch/screens/routes.dart';
 import 'package:petwatch/services/stripe-backend-service.dart';
 import 'package:petwatch/state/user_model.dart';
+import 'package:petwatch/utils/db_services.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -145,11 +148,28 @@ class ViewPendingPageState extends State<ViewPendingPage> {
                             'Content-Type': 'application/json',
                           },
                           body: jsonEncode(scheduleApiBody));
+                      DatabaseService startGroupChat = new DatabaseService(
+                          uid: transaction[index]['petSitterUid']);
 
-                      debugPrint("${res.statusCode}");
+                      var groupId = await startGroupChat.createGroup(
+                          this.transaction['postedBy']["name"],
+                          this.transaction['postedBy']["UID"],
+                          this.transaction['postedBy']["name"]);
 
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Routes(1)));
+                      Map<String, dynamic> chatMessageData = {
+                        "message":
+                            "Hey ${transaction[index]["name"]}, thanks for watching my dog. This is automated message, please communicate with each other to watch your pet. Or don't",
+                        "sender": this.transaction['postedBy']["name"],
+                        "time": FieldValue.serverTimestamp(),
+                        "type": "text",
+                        "imageUrl": ""
+                      };
+
+                      startGroupChat.sendMessage(groupId, chatMessageData);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MessageScreen()));
 
                       /*
                     So, on success, we need to: 

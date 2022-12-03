@@ -69,6 +69,7 @@ class DatabaseService {
 
   // creating a group
   Future createGroup(String userName, String id, String groupName) async {
+    String groupId = "";
     DocumentReference groupDocumentReference = await groupCollection.add({
       "groupName": groupName,
       "groupIcon": "",
@@ -91,13 +92,16 @@ class DatabaseService {
         name = element.data()["name"];
       });
     });
-    await groupDocumentReference.update({
-      "members": FieldValue.arrayUnion(["${id}", '${uid}']),
-      "memberNames": FieldValue.arrayUnion(([
-        {"uid": '${id}', "name": "$groupName"},
-        {"uid": "${uid}", "name": "$name"}
-      ])),
-      "groupId": groupDocumentReference.id,
+    await groupDocumentReference.get().then((value) {
+      groupId = groupDocumentReference.id;
+      value.reference.update({
+        "members": FieldValue.arrayUnion(["${id}", '${uid}']),
+        "memberNames": FieldValue.arrayUnion(([
+          {"uid": '${id}', "name": "$groupName"},
+          {"uid": "${uid}", "name": "$name"}
+        ])),
+        "groupId": groupDocumentReference.id,
+      });
     });
 
     //Update recipient docs
@@ -120,6 +124,8 @@ class DatabaseService {
       "groups":
           FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
     });
+
+    return groupId;
   }
 
   // getting the chats
