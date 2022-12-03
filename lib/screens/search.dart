@@ -205,14 +205,9 @@ class _SearchPageState extends State<SearchPage> {
             });
             showSnackbar(
                 context, Colors.green, "Successfully joined the group");
-            Future.delayed(const Duration(seconds: 2), () {
-              nextScreen(
-                  context,
-                  ChatPage(
-                      groupId: recipientId,
-                      groupName: groupName,
-                      userName: userName));
-            });
+            // Future.delayed(const Duration(seconds: 2), () {
+
+            // });
           } else {
             setState(() {
               // _isLoading = true;
@@ -222,15 +217,21 @@ class _SearchPageState extends State<SearchPage> {
                 .whenComplete(() {
               //_isLoading = false;
               isJoined = !isJoined;
+              nextScreen(
+                  context,
+                  ChatPage(
+                      groupId: recipientId,
+                      groupName: groupName,
+                      userName: userName));
               //showSnackbar(context, Colors.red, "Left the group $groupName");
             });
 
-            nextScreen(
-                context,
-                ChatPage(
-                    groupId: recipientId,
-                    groupName: groupName,
-                    userName: userName));
+            // nextScreen(
+            //     context,
+            //     ChatPage(
+            //         groupId: recipientId,
+            //         groupName: groupName,
+            //         userName: userName));
             // Navigator.of(context).pop();
             showSnackbar(context, Colors.green, "chat created successfully.");
           }

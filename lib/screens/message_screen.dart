@@ -72,6 +72,7 @@ class _MessageScreenState extends State<MessageScreen> {
         .then((snapshot) {
       setState(() {
         groups = snapshot;
+        debugPrint(groups.toString());
       });
     });
     await DatabaseService.getUserNameFromSF().then((val) {

@@ -34,7 +34,6 @@ class _ProfilePageState extends State<ProfilePage>
   int _tabIndex = 0;
 
   _launchStripeConnect(value) async {
-    // const url = Uri.encodeFull("https://google.com");
     CreateAccountResponse response =
         await StripeBackendService.createSellerAccount();
     debugPrint("${response.id}");
@@ -44,11 +43,13 @@ class _ProfilePageState extends State<ProfilePage>
             "/building-codes/${value.buildingCode['buildingCode']}/users/${value.uid['uid']}/")
         .update({"stripeExpressId": response.id});
     final Uri _url = Uri.parse(response.url);
-    if (!await launchUrl(_url)) {
-      throw 'Could not launch $_url';
-    }
-    // Navigator.push(context,
-    //     MaterialPageRoute(builder: (context) => DashboardPage(url: _url)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DashboardPage(
+                  url: _url,
+                  title: "Stripe Setup",
+                )));
     setState(() {
       isLoading = false;
     });
