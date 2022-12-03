@@ -73,6 +73,9 @@ class UserModel extends ChangeNotifier {
         if (element.data().containsKey("reviewedUsers")) {
           reviewedUsers = element['reviewedUsers'];
         }
+        if (!element.data().containsKey("groups")) {
+          element.reference.update({"groups": []});
+        }
       }
     }, onError: (e) => {"Name": "Error Getting Name"});
 
