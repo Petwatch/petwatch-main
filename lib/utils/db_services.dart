@@ -74,14 +74,29 @@ class DatabaseService {
       "groupIcon": "",
       "admin": "${id}_$userName",
       "members": [],
+      "memberNames": [],
       "groupId": Uuid().v1(),
       "recentMessage": "",
       "recentMessageSender": "",
     });
     // update the members
     //update 'groups' collections
+    String name = "";
+    await FirebaseFirestore.instance
+        .collectionGroup("users")
+        .where("uid", isEqualTo: uid)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        name = element.data()["name"];
+      });
+    });
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion(["${id}", '${uid}']),
+      "memberNames": FieldValue.arrayUnion(([
+        {"uid": '${id}', "name": "$groupName"},
+        {"uid": "${uid}", "name": "$name"}
+      ])),
       "groupId": groupDocumentReference.id,
     });
 

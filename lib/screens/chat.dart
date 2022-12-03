@@ -63,13 +63,6 @@ class _ChatPageState extends State<ChatPage> {
       imageFile = File(result.files.single.path.toString());
       uploadImage();
     }
-
-    // await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
-    //   if (xFile != null) {
-    //     imageFile = File(xFile.path);
-    //     uploadImage();
-    //   }
-    // });
   }
 
   Future uploadImage() async {
@@ -186,7 +179,7 @@ class _ChatPageState extends State<ChatPage> {
             alignment: Alignment.bottomCenter,
             width: MediaQuery.of(context).size.width,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
               width: MediaQuery.of(context).size.width,
               color: Colors.grey[700],
               child: Row(children: [
@@ -232,21 +225,36 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  final ScrollController _scrollController = ScrollController();
+  _scrollToEnd() {
+    final position = _scrollController.position.maxScrollExtent;
+    _scrollController.jumpTo(position);
+    // _scrollControllerlistScrollController.jumpTo(position);.animateTo(_scrollController.position.maxScrollExtent,
+    //     duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
   chatMessages() {
+    if (_scrollController.hasClients) {
+      _scrollToEnd();
+    }
     return StreamBuilder(
       stream: chats,
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  return MessageTile(
-                      message: snapshot.data.docs[index]['message'],
-                      sender: snapshot.data.docs[index]['sender'],
-                      sentByMe: widget.userName ==
-                          snapshot.data.docs[index]['sender'],
-                      url: snapshot.data.docs[index]["imageUrl"] ?? "");
-                },
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 50.0),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return MessageTile(
+                        message: snapshot.data.docs[index]['message'],
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: widget.userName ==
+                            snapshot.data.docs[index]['sender'],
+                        url: snapshot.data.docs[index]["imageUrl"] ?? "");
+                  },
+                ),
               )
             : Container();
       },

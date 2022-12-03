@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:petwatch/screens/chat.dart';
@@ -20,15 +22,40 @@ class GroupTile extends StatefulWidget {
 }
 
 class _GroupTileState extends State<GroupTile> {
+  String memberName = "";
+  @override
+  void initState() {
+    tet();
+  }
+
+  void tet() async {
+    await FirebaseFirestore.instance
+        .collection('groups')
+        .where('groupId', isEqualTo: widget.groupId)
+        .get()
+        .then(
+      (value) {
+        var memberNames = value.docs[0].data()['memberNames'];
+        for (var member in memberNames) {
+          if (member['uid'] != FirebaseAuth.instance.currentUser!.uid)
+            setState(() {
+              memberName = member["name"];
+            });
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    debugPrint("Group name: ${widget.groupName}");
     return GestureDetector(
       onTap: () {
         nextScreen(
             context,
             ChatPage(
               groupId: widget.groupId,
-              groupName: widget.groupName,
+              groupName: memberName,
               userName: widget.userName,
             ));
       },
@@ -39,14 +66,16 @@ class _GroupTileState extends State<GroupTile> {
             radius: 30,
             backgroundColor: Theme.of(context).primaryColor,
             child: Text(
-              widget.groupName.substring(0, 1).toUpperCase(),
+              memberName.isNotEmpty
+                  ? memberName.substring(0, 1).toUpperCase()
+                  : "",
               textAlign: TextAlign.center,
               style: const TextStyle(
                   color: Colors.white, fontWeight: FontWeight.w500),
             ),
           ),
           title: Text(
-            widget.groupName,
+            memberName,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(

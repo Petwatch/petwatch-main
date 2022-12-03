@@ -176,6 +176,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         groupId: getId(snapshot.data['groups'][reverseIndex]),
                         groupName:
                             getName(snapshot.data['groups'][reverseIndex]),
+                        // getName(snapshot.data['groups'][reverseIndex]),
                         userName: snapshot.data['name']);
                   },
                 );
