@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:petwatch/components/components.dart';
 import 'package:petwatch/screens/chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -210,6 +211,12 @@ class DatabaseService {
 
   // send message
   sendMessage(String groupId, Map<String, dynamic> chatMessageData) async {
+    // debugPrint("${}");
+    // var members = await getGroupMembers(groupId).then((value) {
+    //   debugPrint(value.toString());
+    // });
+    // debugPrint(members);
+
     groupCollection.doc(groupId).collection("messages").add(chatMessageData);
     groupCollection.doc(groupId).update({
       "recentMessage": chatMessageData['message'],

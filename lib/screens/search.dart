@@ -220,9 +220,10 @@ class _SearchPageState extends State<SearchPage> {
               nextScreen(
                   context,
                   ChatPage(
-                      groupId: recipientId,
-                      groupName: groupName,
-                      userName: userName));
+                    groupId: recipientId,
+                    groupName: groupName,
+                    userName: userName,
+                  ));
               //showSnackbar(context, Colors.red, "Left the group $groupName");
             });
 

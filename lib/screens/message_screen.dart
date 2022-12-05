@@ -173,6 +173,8 @@ class _MessageScreenState extends State<MessageScreen> {
                     );
                     int reverseIndex =
                         snapshot.data['groups'].length - index - 1;
+                    debugPrint(
+                        " ${snapshot.data["groups"][reverseIndex].toString()}");
                     return GroupTile(
                         groupId: getId(snapshot.data['groups'][reverseIndex]),
                         groupName:

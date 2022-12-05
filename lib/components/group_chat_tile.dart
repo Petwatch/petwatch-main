@@ -23,12 +23,13 @@ class GroupTile extends StatefulWidget {
 
 class _GroupTileState extends State<GroupTile> {
   String memberName = "";
+  String memberUID = "";
   @override
   void initState() {
     tet();
   }
 
-  void tet() async {
+  Future tet() async {
     await FirebaseFirestore.instance
         .collection('groups')
         .where('groupId', isEqualTo: widget.groupId)
@@ -40,6 +41,7 @@ class _GroupTileState extends State<GroupTile> {
           if (member['uid'] != FirebaseAuth.instance.currentUser!.uid)
             setState(() {
               memberName = member["name"];
+              memberUID = member['uid'];
             });
         }
       },
@@ -48,16 +50,17 @@ class _GroupTileState extends State<GroupTile> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Group name: ${widget.groupName}");
+    // debugPrint("Group name: ${widget.}");
+
     return GestureDetector(
       onTap: () {
         nextScreen(
             context,
             ChatPage(
-              groupId: widget.groupId,
-              groupName: memberName,
-              userName: widget.userName,
-            ));
+                groupId: widget.groupId,
+                groupName: memberName,
+                userName: widget.userName,
+                notifyUID: memberUID));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),

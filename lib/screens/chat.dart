@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 final storage = FirebaseStorage.instance;
 // Points to the root reference
@@ -30,12 +32,14 @@ class ChatPage extends StatefulWidget {
   final String groupId;
   final String groupName;
   final String userName;
-  const ChatPage(
-      {Key? key,
-      required this.groupId,
-      required this.groupName,
-      required this.userName})
-      : super(key: key);
+  final String? notifyUID;
+  const ChatPage({
+    Key? key,
+    required this.groupId,
+    required this.groupName,
+    required this.userName,
+    this.notifyUID,
+  }) : super(key: key);
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -261,9 +265,9 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  sendMessage() {
+  sendMessage() async {
     if (messageController.text.isNotEmpty) {
-      debugPrint(widget.toString());
+      // debugPrint(widget.)
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
         "sender": widget.userName,
@@ -272,6 +276,21 @@ class _ChatPageState extends State<ChatPage> {
         "type": "text",
         "imageUrl": ""
       };
+
+      if (widget.notifyUID != null) {
+        http.post(
+            Uri.parse(
+                "https://us-central1-petwatch-9a46d.cloudfunctions.net/notify/api/v1/message"),
+            headers: <String, String>{
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(<String, String>{
+              "name": widget.userName,
+              "message": messageController.text,
+              "groupPath": "groups/${widget.groupId}",
+              "senderUID": FirebaseAuth.instance.currentUser!.uid
+            }));
+      }
 
       DatabaseService().sendMessage(widget.groupId, chatMessageMap);
       setState(() {
