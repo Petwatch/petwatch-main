@@ -250,8 +250,8 @@ class _ChatPageState extends State<ChatPage> {
                     return MessageTile(
                         message: snapshot.data.docs[index]['message'],
                         sender: snapshot.data.docs[index]['sender'],
-                        sentByMe: widget.userName ==
-                            snapshot.data.docs[index]['sender'],
+                        sentByMe: FirebaseAuth.instance.currentUser!.uid ==
+                            snapshot.data.docs[index]['uid'],
                         url: snapshot.data.docs[index]["imageUrl"] ?? "");
                   },
                 ),
@@ -263,9 +263,11 @@ class _ChatPageState extends State<ChatPage> {
 
   sendMessage() {
     if (messageController.text.isNotEmpty) {
+      debugPrint(widget.toString());
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
         "sender": widget.userName,
+        "uid": FirebaseAuth.instance.currentUser!.uid,
         "time": FieldValue.serverTimestamp(),
         "type": "text",
         "imageUrl": ""

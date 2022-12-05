@@ -158,7 +158,7 @@ class ViewPendingPageState extends State<ViewPendingPage> {
 
                       Map<String, dynamic> chatMessageData = {
                         "message":
-                            "Hey ${transaction[index]["name"]}, thanks for watching my dog. This is automated message, please communicate with each other to watch your pet. Or don't",
+                            "Hey ${transaction[index]["name"]}, thanks for watching my dog. This is an automated message, please communicate with each other to determine a pickup time.",
                         "sender": this.transaction['postedBy']["name"],
                         "time": FieldValue.serverTimestamp(),
                         "type": "text",

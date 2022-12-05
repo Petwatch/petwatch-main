@@ -83,7 +83,6 @@ class _ViewProfilePageState extends State<ViewProfilePage>
     getUserData();
     Future.delayed(const Duration(milliseconds: 200), () {
       setState(() {
-        debugPrint("Hello?");
         isLoading = false;
       });
     });
