@@ -34,7 +34,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/petwatch_logo.png',
+                child: Image.asset('assets/images/onboarding/HomePage.png',
                     color: pageImageColor),
               ),
               const Padding(
@@ -102,7 +102,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/petwatch_logo.png',
+                child: Image.asset('assets/images/onboarding/Messages.png',
                     color: pageImageColor),
               ),
               const Padding(
@@ -170,7 +170,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/petwatch_logo.png',
+                child: Image.asset('assets/images/onboarding/Transactions.png',
                     color: pageImageColor),
               ),
               const Padding(

@@ -70,9 +70,9 @@ class _MessageScreenState extends State<MessageScreen> {
     await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getUserGroups()
         .then((snapshot) {
+      debugPrint(snapshot.toString());
       setState(() {
         groups = snapshot;
-        debugPrint(groups.toString());
       });
     });
     await DatabaseService.getUserNameFromSF().then((val) {
@@ -173,14 +173,15 @@ class _MessageScreenState extends State<MessageScreen> {
                     );
                     int reverseIndex =
                         snapshot.data['groups'].length - index - 1;
-                    debugPrint(
-                        " ${snapshot.data["groups"][reverseIndex].toString()}");
+                    // debugPrint(
+                    //     " ${snapshot.data["groups"][reverseIndex].toString()}");
+
                     return GroupTile(
-                        groupId: getId(snapshot.data['groups'][reverseIndex]),
-                        groupName:
-                            getName(snapshot.data['groups'][reverseIndex]),
-                        // getName(snapshot.data['groups'][reverseIndex]),
-                        userName: snapshot.data['name']);
+                      groupId: getId(snapshot.data['groups'][reverseIndex]),
+                      groupName: getName(snapshot.data['groups'][reverseIndex]),
+                      // getName(snapshot.data['groups'][reverseIndex]),
+                      userName: snapshot.data['name'],
+                    );
                   },
                 );
               } else {

@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petwatch/components/TopNavigation/message_top_nav.dart';
 import 'package:petwatch/screens/message_screen.dart';
+import 'package:petwatch/state/user_model.dart';
+import 'package:provider/provider.dart';
 import 'auth_gate.dart';
 import 'package:petwatch/screens/auth_gate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +18,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:rxdart/rxdart.dart';
+import 'dart:async';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -27,10 +31,11 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   TextEditingController searchController = TextEditingController();
   bool isLoading = false;
-  QuerySnapshot? searchSnapshot;
+  late List<Map<String, dynamic>> searchSnapshot;
   bool hasUserSearched = false;
   String userName = "";
   bool isJoined = false;
+  Timer? _debounce;
 
   User? user;
   final CollectionReference userCollection = FirebaseFirestore.instance
@@ -84,6 +89,14 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 Expanded(
                   child: TextField(
+                    onChanged: (value) {
+                      if (_debounce?.isActive ?? false) _debounce!.cancel();
+                      _debounce = Timer(const Duration(milliseconds: 500), () {
+                        // do something with query
+                        initiateSearchMethod();
+                        debugPrint("Running");
+                      });
+                    },
                     controller: searchController,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
@@ -95,7 +108,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    initiateSearchMethod();
+                    // initiateSearchMethod();
                   },
                   child: Container(
                     width: 40,
@@ -130,7 +143,7 @@ class _SearchPageState extends State<SearchPage> {
         isLoading = true;
       });
       await DatabaseService()
-          .searchByName(searchController.text)
+          .searchByName(searchController.text.toLowerCase())
           .then((snapshot) {
         setState(() {
           searchSnapshot = snapshot;
@@ -145,21 +158,14 @@ class _SearchPageState extends State<SearchPage> {
     return hasUserSearched
         ? ListView.builder(
             shrinkWrap: true,
-            itemCount: searchSnapshot!.docs.length,
+            itemCount: searchSnapshot!.length,
             itemBuilder: (context, index) {
               return userTile(
-                searchSnapshot!.docs[index]['name'].toString(),
-                searchSnapshot!.docs[index]['uid'],
-                searchSnapshot!.docs[index]['name'],
-                searchSnapshot!.docs[index]['name'],
+                searchSnapshot![index]['name'].toString(),
+                searchSnapshot![index]['uid'],
+                searchSnapshot![index]['name'],
+                searchSnapshot![index]['name'],
               );
-
-              // return groupTile(
-              //   userName,
-              //   searchSnapshot!.docs[index]['groupId'],
-              //   searchSnapshot!.docs[index]['groupName'],
-              //   searchSnapshot!.docs[index]['admin'],
-              // );
             },
           )
         : Container(
@@ -184,20 +190,8 @@ class _SearchPageState extends State<SearchPage> {
       String userName, String recipientId, String groupName, String admin) {
     // function to check whether user already exists in group
     joinedOrNot(userName, admin, groupName, groupName);
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      leading: CircleAvatar(
-        radius: 30,
-        backgroundColor: Theme.of(context).primaryColor,
-        child: Text(
-          userName.substring(0, 1).toUpperCase(),
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      title:
-          Text(userName, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text("Admin: ${getName(admin)}"),
-      trailing: InkWell(
+    return Consumer<UserModel>(builder: (context, value, child) {
+      return ListTile(
         onTap: () async {
           if (isJoined) {
             setState(() {
@@ -209,20 +203,24 @@ class _SearchPageState extends State<SearchPage> {
 
             // });
           } else {
-            setState(() {
-              // _isLoading = true;
-            });
-            DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            // setState(() {
+            //   // _isLoading = true;
+            // });
+            await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
                 .createGroup(userName, recipientId, groupName)
-                .whenComplete(() {
+                .then((val) {
               //_isLoading = false;
               isJoined = !isJoined;
+              debugPrint("USERNAME: ${userName}");
+              debugPrint("RECIPIENT ID: ${recipientId}");
+              debugPrint("GROUPNAME: ${groupName}");
+
               nextScreen(
                   context,
                   ChatPage(
-                    groupId: recipientId,
+                    groupId: val,
                     groupName: groupName,
-                    userName: userName,
+                    userName: value.name['name'],
                   ));
               //showSnackbar(context, Colors.red, "Left the group $groupName");
             });
@@ -237,26 +235,41 @@ class _SearchPageState extends State<SearchPage> {
             showSnackbar(context, Colors.green, "chat created successfully.");
           }
         },
-        child: isJoined
-            ? Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.black,
-                  border: Border.all(color: Colors.white, width: 1),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: const Text(
-                  "Joined",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(Icons.arrow_forward_ios)),
-      ),
-    );
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        leading: CircleAvatar(
+          radius: 30,
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Text(
+            userName.substring(0, 1).toUpperCase(),
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+        title:
+            Text(userName, style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: Text("Admin: ${getName(admin)}"),
+        trailing: InkWell(
+          child: isJoined
+              ? Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.black,
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: const Text(
+                    "Joined",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              : Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.arrow_forward_ios)),
+        ),
+      );
+    });
   }
 }

@@ -140,6 +140,7 @@ class DatabaseService {
 
 //get group owner/administrator
   Future getGroupAdmin(String groupId) async {
+    debugPrint("GROUP ID: " + groupId.toString());
     DocumentReference d = groupCollection.doc(groupId);
     DocumentSnapshot documentSnapshot = await d.get();
     return documentSnapshot['admin'];
@@ -150,12 +151,30 @@ class DatabaseService {
     return groupCollection.doc(groupId).snapshots();
   }
 
-  // search
   Future searchByName(String groupName) async {
-    return userCollection
-        .where('name', isGreaterThanOrEqualTo: groupName)
-        .where('name', isLessThan: groupName + 'z')
-        .get();
+    // Get the query snapshot
+    var querySnapshot = await userCollection.get();
+
+    // Get the list of documents from the query snapshot
+    var documents = querySnapshot.docs;
+
+    // Use the map method to transform the documents into a new list of User objects
+    var users =
+        documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+    // Filter the list of users based on the search term
+    var result = searchArray(users, groupName);
+
+    // Return the result
+    return result;
+  }
+
+  List<Map<String, dynamic>> searchArray(
+      List<Map<String, dynamic>> array, String searchTerm) {
+    searchTerm = searchTerm.toLowerCase();
+    return array
+        .where((item) => item['name'].toLowerCase().startsWith(searchTerm))
+        .toList();
   }
 
   // function -> bool
@@ -184,39 +203,10 @@ class DatabaseService {
     } else {
       return 0;
     }
-    // // doc reference
-    // DocumentReference userDocumentReference = userCollection.doc(uid);
-    // DocumentReference groupDocumentReference = groupCollection.doc(groupId);
-
-    // DocumentSnapshot documentSnapshot = await userDocumentReference.get();
-    // List<dynamic> groups = await documentSnapshot['groups'];
-
-    // // if user has our groups -> then remove then or also in other part re join
-    // if (groups.contains("${groupId}_$groupName")) {
-    //   await userDocumentReference.update({
-    //     "groups": FieldValue.arrayRemove(["${groupId}_$groupName"])
-    //   });
-    //   await groupDocumentReference.update({
-    //     "members": FieldValue.arrayRemove(["${uid}_$userName"])
-    //   });
-    // } else {
-    //   await userDocumentReference.update({
-    //     "groups": FieldValue.arrayUnion(["${groupId}_$groupName"])
-    //   });
-    //   await groupDocumentReference.update({
-    //     "members": FieldValue.arrayUnion(["${uid}_$userName"])
-    //   });
-    // }
   }
 
   // send message
   sendMessage(String groupId, Map<String, dynamic> chatMessageData) async {
-    // debugPrint("${}");
-    // var members = await getGroupMembers(groupId).then((value) {
-    //   debugPrint(value.toString());
-    // });
-    // debugPrint(members);
-
     groupCollection.doc(groupId).collection("messages").add(chatMessageData);
     groupCollection.doc(groupId).update({
       "recentMessage": chatMessageData['message'],

@@ -145,7 +145,6 @@ class _ChatPageState extends State<ChatPage> {
 
     //get chat admin/owner
     DatabaseService().getGroupAdmin(widget.groupId).then((val) {
-      debugPrint(val.toString());
       setState(() {
         admin = val;
       });
@@ -161,19 +160,19 @@ class _ChatPageState extends State<ChatPage> {
         elevation: 0,
         title: Text(widget.groupName),
         backgroundColor: Theme.of(context).primaryColor,
-        actions: [
-          IconButton(
-              onPressed: () {
-                nextScreen(
-                    context,
-                    GroupInfo(
-                      groupId: widget.groupId,
-                      groupName: widget.groupName,
-                      adminName: admin,
-                    ));
-              },
-              icon: const Icon(Icons.info))
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         nextScreen(
+        //             context,
+        //             GroupInfo(
+        //               groupId: widget.groupId,
+        //               groupName: widget.groupName,
+        //               adminName: admin,
+        //             ));
+        //       },
+        //       icon: const Icon(Icons.info))
+        // ],
       ),
       body: Stack(
         children: <Widget>[
