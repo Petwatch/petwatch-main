@@ -60,7 +60,6 @@ dependencies:
   onboarding: ^3.1.0
   flutter_inappwebview: ^5.0.0
   path_provider: ^2.0.11
-  rxdart: ^0.27.7
 
 flutter_icons:
   #  image_path: "assets/images/icon-128x128.png"
@@ -108,6 +107,9 @@ flutter:
   assets:
     - assets/images/petwatch_logo.png
     - assets/images/petwatch_logo_white.png
+    - assets/images/HomePage.png
+    - assets/images/Messages.png
+    - assets/images/Transactions.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

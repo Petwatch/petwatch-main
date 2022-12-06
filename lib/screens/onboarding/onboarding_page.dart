@@ -28,16 +28,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [
+            children: const [
               Padding(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/onboarding/HomePage.png',
+                child: Image(
+                    image: AssetImage('assets/images/HomePage.png'),
                     color: pageImageColor),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -51,7 +52,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -65,7 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -102,7 +103,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/onboarding/Messages.png',
+                child: Image.asset('assets/images/Messages.png',
                     color: pageImageColor),
               ),
               const Padding(
@@ -170,7 +171,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/onboarding/Transactions.png',
+                child: Image.asset('assets/images/Transactions.png',
                     color: pageImageColor),
               ),
               const Padding(
