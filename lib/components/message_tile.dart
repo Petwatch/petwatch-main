@@ -21,6 +21,7 @@ class MessageTile extends StatefulWidget {
 class _MessageTileState extends State<MessageTile> {
   @override
   Widget build(BuildContext context) {
+    debugPrint("WIDGET ULR: ${widget.url}");
     return Container(
       padding: EdgeInsets.only(
           top: 4,

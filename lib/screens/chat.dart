@@ -65,13 +65,25 @@ class _ChatPageState extends State<ChatPage> {
         await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null) {
       imageFile = File(result.files.single.path.toString());
-      uploadImage();
+      await uploadImage();
     }
   }
 
   Future uploadImage() async {
     String fileName = Uuid().v1();
     int status = 1;
+
+    debugPrint(widget.groupId);
+
+    var ref =
+        FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
+    final metadata = SettableMetadata(contentType: "image/jpeg");
+    var uploadTask =
+        await ref.putFile(imageFile!, metadata).catchError((error) {
+      status = 0;
+    });
+
+    String imageUrl = await uploadTask.ref.getDownloadURL();
 
     await FirebaseFirestore.instance
         .collection('groups')
@@ -80,28 +92,16 @@ class _ChatPageState extends State<ChatPage> {
         .doc(fileName)
         .set({
       "sender": widget.userName,
-      "message": "",
+      "message": messageController.text,
+      'imageUrl': imageUrl,
       "type": "image/jpeg",
       "time": FieldValue.serverTimestamp(),
-    });
-
-    var ref =
-        FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
-    final metadata = SettableMetadata(contentType: "image/jpeg");
-    var uploadTask =
-        await ref.putFile(imageFile!, metadata).catchError((error) async {
-      await FirebaseFirestore.instance
-          .collection('groups')
-          .doc(widget.groupId)
-          .collection('messages')
-          .doc(fileName)
-          .delete();
-
-      status = 0;
+      "uid": FirebaseAuth.instance.currentUser!.uid,
     });
 
     if (status == 1) {
       String imageUrl = await uploadTask.ref.getDownloadURL();
+      debugPrint("IMAGEURL: " + imageUrl);
 
       await FirebaseFirestore.instance
           .collection('groups')
@@ -110,7 +110,7 @@ class _ChatPageState extends State<ChatPage> {
           .doc(fileName)
           .update({'imageUrl': imageUrl});
 
-      NetworkImage(imageUrl);
+      // NetworkImage(imageUrl);
     }
   }
 
@@ -121,7 +121,8 @@ class _ChatPageState extends State<ChatPage> {
         "message": messageController.text,
         "type": "text",
         "time": FieldValue.serverTimestamp(),
-        "imageUrl": ""
+        "imageUrl": "",
+        "uid": FirebaseAuth.instance.currentUser!.uid,
       };
 
       messageController.clear();
@@ -160,19 +161,6 @@ class _ChatPageState extends State<ChatPage> {
         elevation: 0,
         title: Text(widget.groupName),
         backgroundColor: Theme.of(context).primaryColor,
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {
-        //         nextScreen(
-        //             context,
-        //             GroupInfo(
-        //               groupId: widget.groupId,
-        //               groupName: widget.groupName,
-        //               adminName: admin,
-        //             ));
-        //       },
-        //       icon: const Icon(Icons.info))
-        // ],
       ),
       body: Stack(
         children: <Widget>[
@@ -192,7 +180,7 @@ class _ChatPageState extends State<ChatPage> {
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     prefixIcon: IconButton(
-                      onPressed: () => getImage(),
+                      onPressed: () async => await getImage(),
                       icon: const Icon(Icons.photo),
                     ),
                     hintText: "Send a message...",
@@ -250,12 +238,13 @@ class _ChatPageState extends State<ChatPage> {
                   controller: _scrollController,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
+                    debugPrint(snapshot.data.docs[index]["imageUrl"]);
                     return MessageTile(
                         message: snapshot.data.docs[index]['message'],
                         sender: snapshot.data.docs[index]['sender'],
                         sentByMe: FirebaseAuth.instance.currentUser!.uid ==
                             snapshot.data.docs[index]['uid'],
-                        url: snapshot.data.docs[index]["imageUrl"] ?? "");
+                        url: snapshot.data.docs[index]["imageUrl"]);
                   },
                 ),
               )
