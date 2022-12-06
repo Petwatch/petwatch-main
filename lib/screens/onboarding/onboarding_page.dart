@@ -35,8 +35,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   vertical: 90.0,
                 ),
                 child: Image(
-                    image: AssetImage('assets/images/HomePage.png'),
-                    color: pageImageColor),
+                  image: AssetImage('assets/images/HomePage.png'),
+                ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
@@ -103,8 +103,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/Messages.png',
-                    color: pageImageColor),
+                child: Image.asset(
+                  'assets/images/Messages.png',
+                ),
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
@@ -171,8 +172,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   horizontal: 45.0,
                   vertical: 90.0,
                 ),
-                child: Image.asset('assets/images/Transactions.png',
-                    color: pageImageColor),
+                child: Image.asset(
+                  'assets/images/Transactions.png',
+                ),
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
